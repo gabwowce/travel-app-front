@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Box, Text, Button, Avatar, VStack, HStack, Divider, Heading, Modal, Input } from "native-base";
+import { Box, Text, Button, Avatar, VStack, HStack, Divider, Heading, Modal } from "native-base";
 import LoadingScreen from "@/src/components/screens/loading";
 import { logout } from "@/src/data/features/auth/authSlice";
 import { useRouter } from "expo-router";
+
+import { useAppSelector, useAppDispatch } from "@/src/data/hooks";
+import { selectUser, selectUserLoading } from "@/src/data/features/user/userSelectors";
+import { updateUser, fetchUserProfile } from "@/src/data/features/user/userSlice";
 
 import {
   View,
@@ -13,9 +17,7 @@ import {
   StyleSheet,
 } from "react-native";
 
-import { useAppSelector, useAppDispatch } from "@/src/data/hooks";
-import { selectUser, selectUserLoading } from "@/src/data/features/user/userSelectors";
-import { updateUser, fetchUserProfile } from "@/src/data/features/user/userSlice";
+type EditableFields = "name" | "email" | "password" | "profile[bio]" | "profile[location]" | "profile[website]";
 
 export default function ProfileScreen() {
   const dispatch = useAppDispatch();
@@ -27,7 +29,7 @@ export default function ProfileScreen() {
     dispatch(fetchUserProfile());
   }, [dispatch]);
 
-  const [editField, setEditField] = useState(null);
+  const [editField, setEditField] = useState<EditableFields | null>(null);
   const [fieldValue, setFieldValue] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -36,132 +38,88 @@ export default function ProfileScreen() {
     return <LoadingScreen />;
   }
 
-  // Atidaryti modalą redagavimui
-  const openEditModal = (field, currentValue) => {
+  const openEditModal = (field: EditableFields, currentValue: string | null) => {
     setEditField(field);
-    setFieldValue(currentValue);
+    setFieldValue(currentValue ?? "");
   };
 
-  // Išsaugoti atnaujintą lauką
+  const handleLogout = () => {
+    dispatch(logout()); // Iškviečiame atsijungimo veiksmą
+    router.push("/"); // Perkeliame vartotoją į prisijungimo puslapį
+  };
+  
+
   const handleSave = () => {
+    if (!editField) return;
+
+    let updatedData: any = {};
+
     if (editField === "password") {
       if (password !== confirmPassword) {
         alert("❌ Slaptažodžiai nesutampa!");
         return;
       }
-
-      dispatch(updateUser({ password, password_confirmation: confirmPassword }))
-        .unwrap()
-        .then(() => {
-          dispatch(fetchUserProfile());
-          setEditField(null);
-        });
+      updatedData = { password, password_confirmation: confirmPassword };
+    } else if (editField === "name" || editField === "email") {
+      updatedData = { [editField]: fieldValue };
     } else {
-      dispatch(updateUser({ [editField]: fieldValue }))
-        .unwrap()
-        .then(() => {
-          dispatch(fetchUserProfile());
-          setEditField(null);
-        });
+      updatedData = { profile: { [editField.replace("profile[", "").replace("]", "")]: fieldValue } };
     }
+
+    dispatch(updateUser(updatedData))
+      .unwrap()
+      .then(() => {
+        dispatch(fetchUserProfile());
+        setEditField(null);
+      });
   };
 
   return (
     <Box flex={1} bg="coolGray.50" px={4} py={6} alignItems="center">
-      {/* Profilio nuotrauka */}
-      <Avatar
-        size="2xl"
-        source={{
-          uri: user.profile?.avatar || "https://via.placeholder.com/150",
-        }}
-      >
-        {user.name?.[0]}
-      </Avatar>
+      <Avatar size="2xl" source={{ uri: user.profile?.avatar || "https://via.placeholder.com/150" }}>{user.name?.[0]}</Avatar>
 
-      <Heading mt={3} fontSize="xl">
-        {user.name}
-      </Heading>
+      <Heading mt={3} fontSize="xl">{user.name}</Heading>
       <Text color="gray.500">{user.email}</Text>
 
       <Divider my={4} />
 
       <VStack space={4} width="100%">
-        <HStack justifyContent="space-between" alignItems="center">
-          <Text fontSize="md">Vardas:</Text>
-          <Text fontWeight="bold">{user.name}</Text>
-          <Button size="sm" variant="ghost" onPress={() => openEditModal("name", user.name)}>Keisti</Button>
-        </HStack>
-
-        <HStack justifyContent="space-between" alignItems="center">
-          <Text fontSize="md">El. paštas:</Text>
-          <Text>{user.email}</Text>
-          <Button size="sm" variant="ghost" onPress={() => openEditModal("email", user.email)}>Keisti</Button>
-        </HStack>
-
-        <HStack justifyContent="space-between" alignItems="center">
-          <Text fontSize="md">Bio:</Text>
-          <Text>{user.profile?.bio || "Nėra aprašymo"}</Text>
-          <Button size="sm" variant="ghost" onPress={() => openEditModal("profile[bio]", user.profile?.bio)}>Keisti</Button>
-        </HStack>
-
-        <HStack justifyContent="space-between" alignItems="center">
-          <Text fontSize="md">Vietovė:</Text>
-          <Text>{user.profile?.location || "Nėra vietovės"}</Text>
-          <Button size="sm" variant="ghost" onPress={() => openEditModal("profile[location]", user.profile?.location)}>Keisti</Button>
-        </HStack>
-
-        <HStack justifyContent="space-between" alignItems="center">
-          <Text fontSize="md">Svetainė:</Text>
-          <Text>{user.profile?.website || "Nėra"}</Text>
-          <Button size="sm" variant="ghost" onPress={() => openEditModal("profile[website]", user.profile?.website)}>Keisti</Button>
-        </HStack>
-
+        {["name", "email", "profile[bio]", "profile[location]", "profile[website]"].map((field) => (
+          <HStack key={field} justifyContent="space-between" alignItems="center">
+            <Text fontSize="md">{field.replace("profile[", "").replace("]", "").toUpperCase()}:</Text>
+            <Text>
+              {field === "name" && user.name}
+              {field === "email" && user.email}
+              {field === "profile[bio]" && user.profile?.bio}
+              {field === "profile[location]" && user.profile?.location}
+              {field === "profile[website]" && user.profile?.website}
+            </Text>
+            <Button size="sm" variant="ghost" onPress={() => openEditModal(field as EditableFields, user.profile?.bio)}>Keisti</Button>
+          </HStack>
+        ))}
         <HStack justifyContent="space-between" alignItems="center">
           <Text fontSize="md">Slaptažodis:</Text>
-          <Button size="sm" variant="solid" colorScheme="red" onPress={() => openEditModal("password", "")}>
-            Keisti slaptažodį
-          </Button>
+          <Button size="sm" colorScheme="red" onPress={() => openEditModal("password", "")}>Keisti slaptažodį</Button>
         </HStack>
       </VStack>
 
-      {/* Atsijungimo mygtukas */}
-      <Button mt={6} colorScheme="red" onPress={handleLogout}>
-        Atsijungti
-      </Button>
+      <Button mt={6} colorScheme="red" onPress={handleLogout}>Atsijungti</Button>
 
-      {/* MODALAS PROFILIO KEITIMUI */}
       <Modal isOpen={!!editField} onClose={() => setEditField(null)}>
         <Modal.Content>
           <Modal.CloseButton />
-          <Modal.Header>
-            {editField === "password" ? "Keisti slaptažodį" : `Keisti ${editField}`}
-          </Modal.Header>
+          <Modal.Header>{editField === "password" ? "Keisti slaptažodį" : `Keisti ${editField}`}</Modal.Header>
           <Modal.Body>
             {editField === "password" ? (
               <VStack space={3}>
-                <TextInput
-                  placeholder="Naujas slaptažodis"
-                  secureTextEntry
-                  value={password}
-                  onChangeText={setPassword}
-                />
-                <TextInput
-                  placeholder="Pakartokite slaptažodį"
-                  secureTextEntry
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                />
+                <TextInput placeholder="Slaptažodis" secureTextEntry value={password} onChangeText={setPassword} />
+                <TextInput placeholder="Pakartoti slaptažodį" secureTextEntry value={confirmPassword} onChangeText={setConfirmPassword} />
               </VStack>
             ) : (
-              <TextInput
-                placeholder={`Naujas ${editField}`}
-                value={fieldValue}
-                onChangeText={setFieldValue}
-              />
+              <TextInput placeholder={`Naujas ${editField}`} value={fieldValue} onChangeText={setFieldValue} />
             )}
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="ghost" onPress={() => setEditField(null)}>Atšaukti</Button>
             <Button onPress={handleSave}>Išsaugoti</Button>
           </Modal.Footer>
         </Modal.Content>

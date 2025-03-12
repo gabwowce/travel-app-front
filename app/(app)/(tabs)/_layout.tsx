@@ -33,13 +33,10 @@ export default function TabsLayout() {
         headerTitle: "Search",
         tabBarIcon: ({focused, color}) => <Ionicons name="search-outline" size={24} color={color}/>
         }}/>
-    <Tabs.Screen 
-      name="create-tour" 
-      options={{
-        title: "Create Tour",
-        headerTitle: "Create Tour",
-        tabBarIcon: ({focused, color}) => <Ionicons name="add-outline" size={24} color={color}/>
-        }}/>
+    <Tabs.Screen
+        name="create-tour" // ✅ Tai vienas tabas, kuris valdys vidinius puslapius
+        options={{ title: "Create Tour" }}
+      />
      <Tabs.Screen 
       name="saved" 
       options={{

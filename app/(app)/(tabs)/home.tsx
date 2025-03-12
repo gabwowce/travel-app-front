@@ -1,55 +1,3 @@
-// import React from "react";
-// import { Background } from "@/src/components/BGWrapper"; 
-// import { TourCard } from "@/src/components/TourCard";
-// import { Box, Text, ScrollView, VStack, HStack } from "native-base";
-
-// const VingisImage = require("@/src/assets/images/vingio-parkas.png");
-// const TrakuImage = require("@/src/assets/images/traku-pilis.jpg");
-// const GediminoImage = require("@/src/assets/images/gedimino-pilis.jpg");
-
-// export default function Index() {
-//   return (
-//     <Background>
-//       <Box flex={1} pt="121px">
-//         <VStack pl="35px" pb="54px">
-//           <Text variant="header1">Explore the</Text>
-//           <Text variant="header1Bold">Beautiful world!</Text>
-//         </VStack>
-
-//         <Text variant="header2Bold" pl="35px" pb="14px">Tours for you</Text>
-
-//         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-//           <HStack space={4} px="35px">
-//             <TourCard 
-//               id="vingio-parkas"
-//               image={VingisImage}
-//               title="Vingio parkas"
-//               rating={4.7}
-//               location="Vilnius, Lithuania"
-//             />
-//             <TourCard 
-//               id="traku-pilis"
-//               image={TrakuImage}
-//               title="Trakų pilis"
-//               rating={4.9}
-//               location="Trakai, Lithuania"
-//             />
-//             <TourCard 
-//               id="gedimino-bokstas"
-//               image={GediminoImage}
-//               title="Gedimino pilies bokštas"
-//               rating={4.9}
-//               location="Vilnius, Lithuania"
-//             />
-//           </HStack>
-//         </ScrollView>
-//       </Box>
-//     </Background>
-//   );
-// }
-
-
-
 import React, { useEffect } from "react";
 import { Background } from "@/src/components/BGWrapper";
 import { TourCard } from "@/src/components/TourCard";
@@ -65,8 +13,13 @@ export default function Index() {
   const error = useAppSelector(selectRoutesError);
 
   useEffect(() => {
+    console.log("🔄 Dispatching fetchFeaturedRoutes...");
     dispatch(fetchFeaturedRoutes());
   }, [dispatch]);
+
+  console.log("🌍 Featured Routes:", featuredRoutes);
+  console.log("⏳ Loading state:", loading);
+  console.log("❌ Error state:", error);
 
   return (
     <Background>

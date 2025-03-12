@@ -8,7 +8,7 @@ interface RoutesState {
   featuredRoutes: Route[];
   selectedRoute: Route | null;
   loading: boolean;
-  error: string | null;
+  error: any | null;
 }
 
 const initialState: RoutesState = {
@@ -79,6 +79,18 @@ const routesSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
       builder
+        .addCase(fetchFeaturedRoutes.pending, (state) => {
+          state.loading = true;
+        })
+        .addCase(fetchFeaturedRoutes.fulfilled, (state, action) => {
+          state.loading = false;
+          state.featuredRoutes = action.payload;
+          console.log("🌍 Stored featured routes:", state.featuredRoutes); // <-- Debug Redux store
+        })
+        .addCase(fetchFeaturedRoutes.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action.payload;
+        })
         .addCase(fetchRoutes.pending, (state) => { state.loading = true; })
         .addCase(fetchRoutes.fulfilled, (state, action: PayloadAction<PaginatedRoutesResponse>) => {
           state.loading = false;
