@@ -1,39 +1,87 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import React, { useState, useEffect } from 'react';
+import { Stack, Slot } from 'expo-router';
+import { Provider as ReduxProvider, useSelector, useDispatch } from 'react-redux';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { NativeBaseProvider } from 'native-base';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+import { store } from '@/src/data/store';
+import theme from '@/src/styles/theme';
+import Splash from '@/src/components/screens/splash';
+import { RootState } from '@/src/data/store';
+import {selectIsAuthenticated, selectAuthLoading} from "@/src/data/features/auth/authSelectors";
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ReduxProvider store={store}>
+        <NativeBaseProvider theme={theme}>
+          <MainNavigation />
+        </NativeBaseProvider>
+      </ReduxProvider>
+    </GestureHandlerRootView>
+  );
+}
+
+function MainNavigation() {
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const isLoading = useSelector(selectAuthLoading);
+  
+  
+  const [onboardingDone, setOnboardingDone] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
+    (async () => {
+      try {
+        const done = await AsyncStorage.getItem('onboardingDone');
+        setOnboardingDone(done === 'true'); // Teisingas būdas nustatyti reikšmę
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setReady(true);
+      }
+    })();
+  }, []); // Paleidžiame tik vieną kartą!
+  
 
-  if (!loaded) {
-    return null;
+  // useEffect(() => {
+  //   AsyncStorage.removeItem('onboardingDone');
+  // }, []);
+  
+
+
+  useEffect(() => {
+    setTimeout(() => {
+      setShowSplash(false);
+    }, 3000);
+  }, []);
+ 
+  if (showSplash || isLoading) {
+    return <Splash onFinish={() => setShowSplash(false)} />;
   }
 
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
+  if (!ready) {
+    return <Splash onFinish={() => setReady(true)} />;
+  }
+
+  if (!onboardingDone) {
+    return (
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(onboarding)" />
       </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
-  );
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(auth)/index" />
+      </Stack>
+    );
+  }
+
+  return <Slot />;
 }

@@ -1,0 +1,9 @@
+import { Box, Text } from "native-base";
+
+export default function SavedScreen() {
+  return (
+    <Box flex={1} alignItems="center" justifyContent="center" bg="white">
+      <Text variant="header2Bold">Create Tour Screen</Text>
+    </Box>
+  );
+}

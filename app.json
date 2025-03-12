@@ -1,5 +1,12 @@
 {
   "expo": {
+    "experimental": {
+      "plugins": {
+        "reactNative": {
+          "bridgeless": false
+        }
+      }
+    },
     "name": "front-app",
     "slug": "front-app",
     "version": "1.0.0",
@@ -7,14 +14,26 @@
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "config": {
+        "googleMapsApiKey": "AIzaSyAE9WjsB1kYDc_3tRQFgqeuuLWEz0VSA9E"
+      }
     },
     "android": {
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"],
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "splash": {
+        "backgroundColor": "#00000000"
+      },
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAE9WjsB1kYDc_3tRQFgqeuuLWEz0VSA9E"
+        }
       }
     },
     "web": {
@@ -24,18 +43,14 @@
     },
     "plugins": [
       "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
-        }
-      ]
+      "expo-splash-screen"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "splash": {},
+    "extra": {
+      "API_URL": "http://192.168.0.189:8000"
     }
   }
 }
