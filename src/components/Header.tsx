@@ -6,7 +6,7 @@ import BackButton from "./btns/BackButton";
 
 interface HeaderProps {
   title: string;
-  onBackPress: () => void;
+  onBackPress?: () => void;
 }
 
 export default function Header({ title, onBackPress }: HeaderProps) {
@@ -14,10 +14,14 @@ export default function Header({ title, onBackPress }: HeaderProps) {
 
   return (
     <View style={[styles.headerContainer, { paddingTop: insets.top + 10 }]}>
-      <BackButton onPress={onBackPress} />
-      <Text variant="header2Bold" style={[styles.title, { paddingTop: insets.top }]}>
-        {title}
-      </Text>
+      {/* ✅ Užtikriname, kad vietoj BackButton būtų tuščias blokas, jei jo nėra */}
+      {onBackPress ? <BackButton onPress={onBackPress} /> : <View style={styles.backButtonPlaceholder} />}
+      
+      {/* ✅ Pavadinimas per vidurį */}
+      <Text variant="header2Bold" style={styles.title}>{title}</Text>
+
+      {/* ✅ Papildomas tuščias blokas dešinėje, kad išlaikytume simetriją */}
+      <View style={styles.backButtonPlaceholder} />
     </View>
   );
 }
@@ -30,17 +34,22 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: "#FFFCF9",
     borderRadius: 16,
-    padding: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 20,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
-
+    height: 110, // ✅ Fiksuotas aukštis
   },
   title: {
-    position: "absolute",
-    left: 50, // Užtikrina, kad bus centre
-    right: 50, // Užtikrina, kad bus centre
+    flex: 1, 
     textAlign: "center",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  backButtonPlaceholder: {
+    width: 40, 
   },
 });

@@ -13,13 +13,9 @@ export default function Index() {
   const error = useAppSelector(selectRoutesError);
 
   useEffect(() => {
-    console.log("🔄 Dispatching fetchFeaturedRoutes...");
     dispatch(fetchFeaturedRoutes());
   }, [dispatch]);
 
-  console.log("🌍 Featured Routes:", featuredRoutes);
-  console.log("⏳ Loading state:", loading);
-  console.log("❌ Error state:", error);
 
   return (
     <Background>

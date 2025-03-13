@@ -19,7 +19,11 @@ export const apiRequest = async (
         ...extraHeaders,
       },
     });
+    console.log(
+      `API request: (${API_URL}${endpoint}):`
+    );
     return response.data;
+    
   } catch (error: any) {
     console.error(
       `API request error (${API_URL}${endpoint}):`,

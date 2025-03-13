@@ -22,11 +22,13 @@ const initialState: RoutesState = {
 // ✅ Gauti visus maršrutus su filtrais
 export const fetchRoutes = createAsyncThunk("routes/fetchRoutes", async (params: RouteQueryParams, thunkAPI) => {
   try {
-    return await getFilteredRoutes(params);
+    const response = await getFilteredRoutes(params);
+    return response;
   } catch (error: any) {
-    return thunkAPI.rejectWithValue(error.message || "Nepavyko gauti maršrutų");
+    return thunkAPI.rejectWithValue(error.message || "Failed to fetch routes");
   }
 });
+
 
 // ✅ Gauti rekomenduojamus maršrutus
 export const fetchFeaturedRoutes = createAsyncThunk("routes/fetchFeaturedRoutes", async (_, thunkAPI) => {
@@ -76,7 +78,11 @@ export const fetchRoutesByCity = createAsyncThunk(
 const routesSlice = createSlice({
     name: "routes",
     initialState,
-    reducers: {},
+    reducers: {
+      clearRoutes: (state) => {
+        state.routes = []; // ✅ Išvalome maršrutus
+      },
+    },
     extraReducers: (builder) => {
       builder
         .addCase(fetchFeaturedRoutes.pending, (state) => {
@@ -85,17 +91,17 @@ const routesSlice = createSlice({
         .addCase(fetchFeaturedRoutes.fulfilled, (state, action) => {
           state.loading = false;
           state.featuredRoutes = action.payload;
-          console.log("🌍 Stored featured routes:", state.featuredRoutes); // <-- Debug Redux store
         })
         .addCase(fetchFeaturedRoutes.rejected, (state, action) => {
           state.loading = false;
           state.error = action.payload;
         })
         .addCase(fetchRoutes.pending, (state) => { state.loading = true; })
-        .addCase(fetchRoutes.fulfilled, (state, action: PayloadAction<PaginatedRoutesResponse>) => {
+        .addCase(fetchRoutes.fulfilled, (state, action) => {
           state.loading = false;
-          state.routes = action.payload.items;
+          state.routes = action.payload.data;
         })
+        
         .addCase(fetchRoutes.rejected, (state, action) => {
           state.loading = false;
           state.error = action.payload as string;
@@ -122,7 +128,7 @@ const routesSlice = createSlice({
         })
         .addCase(fetchRoutesByCategory.fulfilled, (state, action: PayloadAction<PaginatedRoutesResponse>) => {
           state.loading = false;
-          state.routes = action.payload.items; // 🔹 Perrašome tik reikiamus maršrutus
+          state.routes = action.payload.data; // 🔹 Perrašome tik reikiamus maršrutus
         })
         .addCase(fetchRoutesByCategory.rejected, (state, action) => {
           state.loading = false;
@@ -135,7 +141,7 @@ const routesSlice = createSlice({
         })
         .addCase(fetchRoutesByCity.fulfilled, (state, action: PayloadAction<PaginatedRoutesResponse>) => {
           state.loading = false;
-          state.routes = action.payload.items;
+          state.routes = action.payload.data;
         })
         .addCase(fetchRoutesByCity.rejected, (state, action) => {
           state.loading = false;
@@ -145,5 +151,5 @@ const routesSlice = createSlice({
   });
   
   
-
+export const { clearRoutes } = routesSlice.actions;
 export default routesSlice.reducer;

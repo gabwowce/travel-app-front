@@ -17,8 +17,6 @@ export const loginUser = async (data: LoginPayload): Promise<LoginResponse> => {
 
     return response;
   } catch (error) {
-    console.log("🔥 Login API error:", error);
-    // ✅ UŽTIKRINAME, KAD TOKEN IŠSAUGOJIMAS NEVYKTŲ
     await AsyncStorage.removeItem("token");
     await AsyncStorage.removeItem("user");
     throw error;

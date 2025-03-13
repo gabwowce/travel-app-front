@@ -5,7 +5,7 @@ import { Route, RouteQueryParams, PaginatedRoutesResponse } from "@/src/data/fea
 export const getFilteredRoutes = async (params: RouteQueryParams): Promise<PaginatedRoutesResponse> => {
   const queryString = new URLSearchParams(params as Record<string, string>).toString();
   const response = await apiRequest(`/api/v1/routes?${queryString}`, "GET");
-  return response.data;
+  return response;
 };
 
 // ✅ Gauti rekomenduojamus (featured) maršrutus

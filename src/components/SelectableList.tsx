@@ -1,0 +1,64 @@
+import React from "react";
+import { FlatList, Pressable, StyleSheet } from "react-native"; // ✅ Importuojame `StyleSheet`
+import { Box, Text, Spinner } from "native-base"; // ✅ Importuojame `native-base`
+
+interface SelectableListProps<T> {
+  title?: string;
+  data: T[];
+  loading: boolean;
+  error: string | null;
+  getItemLabel?: (item: T) => string;
+  renderItem?: (item: T) => React.ReactNode;
+  onSelect: (item: T) => void;
+}
+
+export default function SelectableList<T extends { id: number }>({
+  title,
+  data,
+  loading,
+  error,
+  getItemLabel,
+  renderItem,
+  onSelect,
+}: SelectableListProps<T>) {
+  return (
+    <Box flex={1} px={5} pt={0}>
+      {title && <Text fontSize="xl" fontWeight="bold" mb={4}>{title}</Text>}
+
+      {loading ? (
+        <Box alignItems="center" py={5}>
+          <Spinner size="lg" color="primary.500" />
+        </Box>
+      ) : error ? (
+        <Text color="red.500" textAlign="center">{error}</Text>
+      ) : (
+        <FlatList
+          data={data}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <Pressable onPress={() => onSelect(item)} style={styles.item}>
+              {renderItem ? renderItem(item) : <Text style={styles.text}>{getItemLabel ? getItemLabel(item) : ""}</Text>}
+            </Pressable>
+          )}
+        />
+      )}
+    </Box>
+  );
+}
+
+const styles = StyleSheet.create({
+  item: {
+    // backgroundColor: "#FFF", // Baltas fonas
+    // borderWidth: 1, // ✅ Borderis
+    // borderColor: "#D1D5DB", // Švelniai pilkas borderis
+    // borderRadius: 10, // ✅ Apvalinti kampai
+    // height: 50, // ✅ Fiksuotas aukštis (keisk pagal poreikį)
+    // justifyContent: "center", // ✅ Centruoja tekstą vertikaliai
+    // alignItems: "flex-start", // ✅ Centruoja tekstą horizontaliai
+    // marginBottom: 8, // Tarpai tarp elementų
+    // paddingHorizontal: 16, // Užtikrina gražų tarpelį viduje
+  },
+  text: {
+    
+  },
+});

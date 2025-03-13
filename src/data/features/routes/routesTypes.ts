@@ -89,7 +89,7 @@ export interface City {
   
   // Paginuotas atsakymas
   export interface PaginatedRoutesResponse {
-    items: Route[];
+    data: Route[];
     pagination: {
       total: number;
       per_page: number;

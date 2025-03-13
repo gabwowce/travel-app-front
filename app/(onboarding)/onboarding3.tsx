@@ -7,7 +7,7 @@ export default function Onboarding3() {
 
   async function finishOnboarding() {
     await AsyncStorage.setItem("onboardingDone", "true"); // NEUŽKOMENTUOK!!!
-    router.replace('/(auth)');
+    router.replace('/(auth)/register');
   }
 
   return (

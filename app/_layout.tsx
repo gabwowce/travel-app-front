@@ -11,11 +11,14 @@ import Splash from '@/src/components/screens/splash';
 import { RootState } from '@/src/data/store';
 import {selectIsAuthenticated, selectAuthLoading} from "@/src/data/features/auth/authSelectors";
 
+import { StatusBar } from "expo-status-bar";
+
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ReduxProvider store={store}>
         <NativeBaseProvider theme={theme}>
+          <StatusBar style="dark" />
           <MainNavigation />
         </NativeBaseProvider>
       </ReduxProvider>
@@ -37,14 +40,14 @@ function MainNavigation() {
     (async () => {
       try {
         const done = await AsyncStorage.getItem('onboardingDone');
-        setOnboardingDone(done === 'true'); // Teisingas būdas nustatyti reikšmę
+        setOnboardingDone(done === 'true'); 
       } catch (e) {
         console.warn(e);
       } finally {
         setReady(true);
       }
     })();
-  }, []); // Paleidžiame tik vieną kartą!
+  }, []); 
   
 
   // useEffect(() => {

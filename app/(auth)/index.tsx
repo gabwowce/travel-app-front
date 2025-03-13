@@ -27,7 +27,6 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     const resultAction = await dispatch(login({ email, password }));
-    console.log("resultAction: ", resultAction);
       if (login.fulfilled.match(resultAction)) {
         router.push("/(app)/(tabs)/home");
       }

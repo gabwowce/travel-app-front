@@ -34,9 +34,17 @@ export default function TabsLayout() {
         tabBarIcon: ({focused, color}) => <Ionicons name="search-outline" size={24} color={color}/>
         }}/>
     <Tabs.Screen
-        name="create-tour" // ✅ Tai vienas tabas, kuris valdys vidinius puslapius
-        options={{ title: "Create Tour" }}
-      />
+      name="03-create-tour"
+      options={{
+        title: "Create",
+        headerShown: false,
+        tabBarIcon: ({ color }) => (
+          <Ionicons name="add-circle" size={34} color={color} />
+        ),
+        tabBarLabelStyle: { fontSize: 12, fontWeight: "bold" }, // Paryškintas tekstas
+      }}
+    />
+
      <Tabs.Screen 
       name="saved" 
       options={{

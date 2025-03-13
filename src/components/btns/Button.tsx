@@ -2,16 +2,16 @@ import { View, Pressable, Text, StyleSheet } from "react-native";
 
 type Props = {
     label: string;
-    onPress: () => void; // ✅ Pridedame onPress
+    onPress: () => void;
     theme?: "primary";
 };
 
-export default function Button({ label, onPress }: Props) {
+export default function Button({ label, onPress, theme = "primary" }: Props) {
     return (
         <View style={styles.buttonContainer}>
             <Pressable
-                style={styles.button}
-                onPress={onPress} // ✅ Čia kviečiame funkciją
+                style={[styles.button, theme === "primary" && styles.primaryButton]}
+                onPress={onPress}
             >
                 <Text style={styles.buttonLabel}>{label}</Text>
             </Pressable>
@@ -21,24 +21,27 @@ export default function Button({ label, onPress }: Props) {
 
 const styles = StyleSheet.create({
     buttonContainer: {
-        width: 320,
-        height: 80,
-        marginHorizontal: 20,
+        width: "100%", // ✅ Užtikrina, kad mygtukas prisitaikys prie konteinerio
         alignItems: "center",
         justifyContent: "center",
-        padding: 3,
+        paddingHorizontal: 20,
     },
     button: {
-        borderRadius: 24,
-        width: "100%",
-        height: "100%",
+        borderRadius: 12, // ✅ Apvalesni kampai
+        paddingVertical: 16, // ✅ Geresnis mygtuko aukštis
+        paddingHorizontal: 32,
         alignItems: "center",
         justifyContent: "center",
         flexDirection: "row",
-        backgroundColor: "#007bff", // Pridėta spalva, kad matytųsi mygtukas
+        minWidth: 200, // ✅ Minimalus plotis
+    },
+    primaryButton: {
+        backgroundColor: "#001F3F", // ✅ Tamsiai mėlynas fonas
     },
     buttonLabel: {
-        color: "#fff",
-        fontSize: 16,
+        color: "#FFFFFF", // ✅ Baltas tekstas
+        fontSize: 18, // ✅ Didesnis tekstas
+        fontWeight: "bold",
+        textTransform: "uppercase", // ✅ Mygtuko tekstas didžiosiomis raidėmis
     },
 });

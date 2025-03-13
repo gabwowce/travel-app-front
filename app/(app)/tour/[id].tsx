@@ -29,14 +29,10 @@ export default function TourDetails() {
 
   useEffect(() => {
     if (tourId) {
-      console.log("🟡 Dispatching fetchRouteById:", tourId);
       dispatch(fetchRouteById(Number(tourId)));
     }
   }, [dispatch, tourId]);
-  
-  console.log("🟢 Redux selectedRoute:", route);
 
-  
 
   useEffect(() => {
     if (tourId) {
