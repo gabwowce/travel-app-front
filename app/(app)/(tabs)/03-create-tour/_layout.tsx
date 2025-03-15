@@ -1,6 +1,8 @@
 import { Stack } from "expo-router";
+import { useResetTour } from "@/src/hooks/useResetTour";
 
 export default function CreateTourLayout() {
+  useResetTour();
   return (
     <Stack
       screenOptions={{

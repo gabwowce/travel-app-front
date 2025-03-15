@@ -1,37 +1,60 @@
 import React from "react";
-import { Input, IInputProps } from "native-base";
-import { KeyboardTypeOptions } from "react-native";
+import { TextInput, View, StyleSheet, TextInputProps, TouchableOpacity } from "react-native";
+import { Text, useTheme } from "native-base"; // 🔹 Importuojam useTheme
 
-interface CustomInputProps extends IInputProps {
-  placeholder: string;
-  value: string;
-  onChangeText: (text: string) => void;
-  secureTextEntry?: boolean;
-  keyboardType?: KeyboardTypeOptions;
-}
-
-const CustomInput: React.FC<CustomInputProps> = ({
-  placeholder,
-  value,
-  onChangeText,
-  secureTextEntry,
-  keyboardType = "default",
-  ...props
-}) => {
-  return (
-    <Input
-      variant="filled"
-      placeholder={placeholder}
-      value={value}
-      onChangeText={onChangeText}
-      secureTextEntry={secureTextEntry}
-      keyboardType={keyboardType}
-      autoCapitalize="none"
-      autoCorrect={false}
-      mb={3}
-      {...props}
-    />
-  );
+type Props = TextInputProps & {
+  label?: string;
+  error?: string;
+  onForgotPassword?: () => void;
 };
 
-export default CustomInput;
+export default function CustomInput({ label, error, secureTextEntry, onForgotPassword, ...props }: Props) {
+  const theme = useTheme(); // 🔹 Gauname dinamišką temą
+
+  return (
+    <View style={styles.container}>
+      <TextInput
+        style={[styles.input, error && styles.inputError]}
+        placeholderTextColor={theme.colors.gray[400]}
+        secureTextEntry={secureTextEntry}
+        {...props}
+      />
+      {error && <Text style={styles.error}>{error}</Text>}
+
+      {/* Rodyti "Forget Password?", jei tai slaptažodžio laukas */}
+      {secureTextEntry && onForgotPassword && (
+        <TouchableOpacity onPress={onForgotPassword}>
+          <Text variant="body" color="primary" style={[styles.forgotPassword]}>
+            Forget Password?
+          </Text>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 24,
+    width: "100%",
+  },
+  input: {
+    backgroundColor: "#eaeaea",
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 18,
+    width: "100%",
+  },
+  inputError: {
+    borderColor: "red",
+  },
+  error: {
+    color: "red",
+    marginTop: 4,
+    fontSize: 12,
+  },
+  forgotPassword: {
+    textAlign: "right",
+    marginTop: 6,
+  },
+});

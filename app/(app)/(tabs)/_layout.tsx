@@ -30,6 +30,7 @@ export default function TabsLayout() {
       name="search" 
       options={{
         title: "Search",
+        headerShown: false,
         headerTitle: "Search",
         tabBarIcon: ({focused, color}) => <Ionicons name="search-outline" size={24} color={color}/>
         }}/>
@@ -49,13 +50,15 @@ export default function TabsLayout() {
       name="saved" 
       options={{
         title: "Saved",
+        headerShown: false,
         headerTitle: "Saved",
         tabBarIcon: ({focused, color}) => <Ionicons name="bookmark-outline" size={24} color={color}/>
         }}/>
     <Tabs.Screen 
-      name="profile" 
+      name="05-profile" 
       options={{
         title: "Profile",
+        headerShown: false,
         headerTitle: "Profile",
         tabBarIcon: ({focused, color}) => <Ionicons name="person-outline" size={24} color={color}/>
         }}/>

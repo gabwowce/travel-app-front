@@ -13,13 +13,14 @@ import {selectIsAuthenticated, selectAuthLoading} from "@/src/data/features/auth
 
 import { StatusBar } from "expo-status-bar";
 
+
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ReduxProvider store={store}>
         <NativeBaseProvider theme={theme}>
-          <StatusBar style="dark" />
-          <MainNavigation />
+            <StatusBar style="dark" />
+            <MainNavigation />
         </NativeBaseProvider>
       </ReduxProvider>
     </GestureHandlerRootView>

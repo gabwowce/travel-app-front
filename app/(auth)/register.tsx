@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   View,
-  TextInput,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
@@ -13,119 +12,100 @@ import Button from "@/src/components/btns/Button";
 import { useDispatch } from "react-redux";
 import { register, clearErrors } from "../../src/data/features/auth/authSlice";
 import { useRouter } from "expo-router";
-import { AppDispatch } from "../../src/data/store"; 
+import { AppDispatch } from "../../src/data/store";
 import { useAppSelector } from "@/src/data/hooks";
 import { selectAuthErrors, selectAuthLoading } from "@/src/data/features/auth/authSelectors";
+import CustomInput from "@/src/components/input/CustomInput"; // 🔹 Importuojame CustomInput
+import KeyboardWrapper from "@/src/components/KeyboardWrapper"; // 🔹 Importuojam komponentą
+import ScreenContainer from "@/src/components/ScreenContainer";
 
 export default function RegisterScreen() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const dispatch = useDispatch<AppDispatch>(); 
+  const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-  
   const loading = useAppSelector(selectAuthLoading);
   const errors = useAppSelector(selectAuthErrors);
 
   const handleRegister = async () => {
-    
-    const resultAction = await dispatch(register({
-      name: name,
-      email: email,
-      password: password,
-      password_confirmation: confirmPassword,
-    }));
-    
-
+    const resultAction = await dispatch(
+      register({
+        name: name,
+        email: email,
+        password: password,
+        password_confirmation: confirmPassword,
+      })
+    );
     if (register.fulfilled.match(resultAction)) {
-      router.replace('/(app)/(tabs)/home');
+      router.replace("/(app)/(tabs)/home");
     }
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
+    <KeyboardWrapper>
+      <ScreenContainer variant="center">
         <View style={styles.text}>
           <Text variant="header1">Create an Account</Text>
           <Text variant="bodyGray">Fill in the details to register</Text>
         </View>
 
-        <KeyboardAvoidingView
-          style={styles.inputContainer}
-          behavior={Platform.OS === "ios" ? "height" : "height"}
-          keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-        >
-          <TextInput
-            style={styles.input}
-            placeholder="Full Name"
-            placeholderTextColor="#969696"
-            value={name}
-            onChangeText={setName}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
-            placeholderTextColor="#969696"
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
-          {errors.email && <Text style={{ color: "red", textAlign: "center" }}>{errors.email}</Text>}
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            value={password}
-            onChangeText={setPassword}
-            placeholderTextColor="#969696"
-            secureTextEntry
-          />
-          {errors.password && <Text style={{ color: "red", textAlign: "center" }}>{errors.password}</Text>}
-          <TextInput
-            style={styles.input}
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            placeholderTextColor="#969696"
-            onChangeText={setConfirmPassword}
-            secureTextEntry
-          />
-        </KeyboardAvoidingView>
+        <CustomInput
+          label="Full Name"
+          placeholder="Full Name"
+          value={name}
+          onChangeText={setName}
+          error={errors.name}
+        />
+        <CustomInput
+          label="Email"
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          error={errors.email}
+        />
+        <CustomInput
+          label="Password"
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          error={errors.password}
+        />
+        <CustomInput
+          label="Confirm Password"
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          secureTextEntry
+        />
 
         {errors.general && <Text style={{ color: "red", textAlign: "center" }}>{errors.general}</Text>}
+
         <Button label={loading ? "Creating account..." : "Register"} onPress={handleRegister} />
-        <Text 
+
+        <Text
           onPress={() => {
-            dispatch(clearErrors()); 
+            dispatch(clearErrors());
             router.push("/");
           }}
-          style={{ textAlign: "center", marginTop: 10 }}
+          style={{ textAlign: "center", marginTop: 20 }}
         >
           Have an account? Login
         </Text>
-
-      </View>
-    </TouchableWithoutFeedback>
+      </ScreenContainer>
+    </KeyboardWrapper>
   );
 }
 
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    paddingHorizontal: 16,
-  },
   text: {
     alignItems: "center",
     marginBottom: 20,
   },
   inputContainer: {},
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    marginBottom: 12,
-    borderRadius: 4,
-    paddingHorizontal: 10,
-    height: 40,
-  },
 });

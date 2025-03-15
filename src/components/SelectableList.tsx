@@ -22,7 +22,7 @@ export default function SelectableList<T extends { id: number }>({
   onSelect,
 }: SelectableListProps<T>) {
   return (
-    <Box flex={1} px={5} pt={0}>
+    <Box flex={1} pt={0}>
       {title && <Text fontSize="xl" fontWeight="bold" mb={4}>{title}</Text>}
 
       {loading ? (
@@ -48,17 +48,11 @@ export default function SelectableList<T extends { id: number }>({
 
 const styles = StyleSheet.create({
   item: {
-    // backgroundColor: "#FFF", // Baltas fonas
-    // borderWidth: 1, // ✅ Borderis
-    // borderColor: "#D1D5DB", // Švelniai pilkas borderis
-    // borderRadius: 10, // ✅ Apvalinti kampai
-    // height: 50, // ✅ Fiksuotas aukštis (keisk pagal poreikį)
-    // justifyContent: "center", // ✅ Centruoja tekstą vertikaliai
-    // alignItems: "flex-start", // ✅ Centruoja tekstą horizontaliai
-    // marginBottom: 8, // Tarpai tarp elementų
-    // paddingHorizontal: 16, // Užtikrina gražų tarpelį viduje
+    paddingVertical: 4, // ✅ Tarpas viršuje ir apačioje
+    
   },
   text: {
-    
+    fontSize: 16, // ✅ Didesnis tekstas
+    color: "#333", // ✅ Tamsesnė spalva geresniam matomumui
   },
 });

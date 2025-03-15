@@ -4,8 +4,10 @@ import { Keyboard, TouchableWithoutFeedback } from "react-native";
 import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
 import { fetchRoutes } from "@/src/data/features/routes/routesSlice";
 import { selectRoutes } from "@/src/data/features/routes/routesSelectors";
-import MiniTourCard from "@/src/components/MiniTourCard"; 
+import MiniTourCard from "@/src/components/MiniTourCard";
 import SearchBar from "@/src/components/SearchBar"; // ✅ Naudojame naują komponentą
+import Header from "@/src/components/Header";
+import ScreenContainer from "@/src/components/ScreenContainer";
 
 export default function SearchScreen() {
   const dispatch = useAppDispatch();
@@ -28,17 +30,15 @@ export default function SearchScreen() {
   }, [searchTerm, dispatch]);
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}> 
-      <Box flex={1} bg="white" px={5} pt={10}>
-        <Text fontSize="xl" fontWeight="bold" mb={4}>Search</Text>
-
-        <SearchBar 
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <ScreenContainer variant="top">
+        <Header title="Search" />
+        <SearchBar
           placeholder="Search Tours"
           value={searchTerm}
           onChangeText={setSearchTerm}
-          onClear={() => setSearchTerm("")} // ✅ Išvalo paiešką
+          onClear={() => setSearchTerm("")}
         />
-
         {searchTerm.length < 3 ? (
           <Text color="gray.400" textAlign="center" mt={5}>
             Type to search...
@@ -60,7 +60,8 @@ export default function SearchScreen() {
             renderItem={({ item }) => <MiniTourCard tour={item} />}
           />
         )}
-      </Box>
+      </ScreenContainer>
     </TouchableWithoutFeedback>
   );
+
 }
