@@ -5,6 +5,13 @@ import { Box, Text, ScrollView, VStack, HStack, Spinner } from "native-base";
 import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
 import { fetchFeaturedRoutes } from "@/src/data/features/routes/routesSlice";
 import {selectRoutesLoading, selectRoutesError, selectFeaturedRoutes} from "@/src/data/features/routes/routesSelectors";
+import {
+  Platform,
+} from "react-native";
+
+const API_URL = Platform.OS === "android" ? "http://192.168.0.189:8000" : "http://127.0.0.1:8000";
+
+
 
 export default function Index() {
   const dispatch = useAppDispatch();
@@ -12,9 +19,12 @@ export default function Index() {
   const loading = useAppSelector(selectRoutesLoading);
   const error = useAppSelector(selectRoutesError);
 
+
+
   useEffect(() => {
     dispatch(fetchFeaturedRoutes());
   }, [dispatch]);
+  
 
 
   return (
@@ -41,7 +51,7 @@ export default function Index() {
                   <TourCard
                     key={route.id}
                     id={route.slug}
-                    image={{ uri: `http://127.0.0.1:8000${route.media[0]?.url || ""}` }}
+                    image={{ uri: `${API_URL}${route.media[0]?.url || ""}` }}
                     title={route.name}
                     rating={route.ratings_avg_rating}
                     location={`${route.city.name}, ${route.city.country.name}`}

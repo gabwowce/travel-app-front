@@ -1,7 +1,11 @@
 import axios from "axios";
 import Constants from "expo-constants";
+import {
+  Platform,
+} from "react-native";
+// const API_URL = Constants.expoConfig?.extra?.API_URL;
+const API_URL = Platform.OS === "android" ? "http://192.168.0.189:8000" : "http://127.0.0.1:8000";
 
-const API_URL = Constants.expoConfig?.extra?.API_URL;
 
 export const apiRequest = async (
   endpoint: string,

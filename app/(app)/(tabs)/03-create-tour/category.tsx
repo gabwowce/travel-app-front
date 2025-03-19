@@ -34,34 +34,57 @@ export default function SelectCategoryScreen() {
       category.name.toLowerCase().startsWith(searchTerm.toLowerCase()) 
     );
 
+    useEffect(() => {
+      if (!city_id) {
+        // Jei neturime miesto, reiškia vartotojas tiesiogiai atėjo čia, siųskime jį atgal
+        router.replace("/(app)/(tabs)/03-create-tour/city");
+        return;
+      }
+      dispatch(fetchCategories());
+    }, [dispatch, city_id]);
+
   useEffect(() => {
     dispatch(fetchCategories());
   }, [dispatch]);
 
+  const handleBack = () => {
+    dispatch(
+      setTourData({
+        city: null,
+        city_id: null,
+        category: null,
+        category_id: null,
+      })
+    );
+    router.back();
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <ScreenContainer variant="top">
-        <Header title={`Select Category`} onBackPress={() => router.back()}/>
+        <Header title={`Select Category`} onBackPress={handleBack}/>
         <SearchBar 
               placeholder="Search tour..." 
               value={searchTerm} 
               onChangeText={setSearchTerm} 
               onClear={() => setSearchTerm("")} 
             />
-        <SelectableList
-          title={""}
+         <SelectableList
+          title=""
           data={filteredCategories}
           loading={loading}
           error={error}
           getItemLabel={(item) => item.name}
           onSelect={(item) => {
-            console.log("Selecting category:", item); 
-            dispatch(setTourData({ category: item.name, category_id: item.id }));
-            console.log("Updated Redux state:", { category: item.name, category_id: item.id }); 
-          
+            dispatch(
+              setTourData({
+                category: item.name,
+                category_id: item.id,
+              })
+            );
+            // ir eiti į kitą žingsnį
             router.push("/(app)/(tabs)/03-create-tour/tours");
           }}
-          
         />
       </ScreenContainer>
 

@@ -28,7 +28,7 @@ const tourSlice = createSlice({
       return { ...state, ...action.payload };
     },
     resetTour() {
-      return initialState;
+      return { ...initialState };
     },
   },
 });
