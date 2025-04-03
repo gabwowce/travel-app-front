@@ -1,31 +1,26 @@
-export type UserProfile = {
-  id: number;
-  user_id: number;
-  avatar: string | null;
-  bio: string | null;
-  location: string | null;
-  preferences: string | null;
-  created_at: string;
-  updated_at: string;
-};
+export interface User {
+    id:                number;
+    name:              string;
+    email:             string;
+    email_verified_at: null;
+    is_admin:          boolean;
+    profile:           Profile;
+}
 
-export type User = {
-  id: number;
-  name: string;
-  email: string;
-  email_verified_at: string | null;
-  created_at: string;
-  updated_at: string;
-  is_admin: number;
-  profile: UserProfile;
-};
+export interface Profile {
+    id:       number;
+    user_id:  number;
+    bio:      null;
+    location: null;
+    website:  null;
+}
 
 export type AuthState = {
   isAuthenticated: boolean;
   loading: boolean;
   errors: AuthErrors | any;
   token: string | null;
-  user: User | null; // ✅ Dabar `user` gali būti `null`, kai vartotojas nėra prisijungęs
+  user: User | null; 
 };
 
 export type AuthErrors = {
@@ -47,12 +42,27 @@ export type RegisterPayload = {
   password_confirmation: string;
 };
 
-export type LoginResponse = {
-  user: User;
-  token: string;
+export type ApiResponse<T> = {
+  status: string;
+  message: string;
+  data: T;
 };
 
-export type RegisterResponse = {
+export type LoginResponse = ApiResponse<{
   user: User;
   token: string;
+}>;
+
+export type RegisterResponse = ApiResponse<{
+  user: User;
+  token: string;
+}>;
+
+export type AuthErrorResponse = {
+  status: "error";
+  message: string;
+  data: {
+    errors: AuthErrors;
+  };
 };
+
