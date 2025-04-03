@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Avatar,
   VStack,
@@ -9,7 +9,7 @@ import {
 import { useRouter } from "expo-router";
 import { useAppSelector, useAppDispatch } from "@/src/data/hooks";
 import { selectUser } from "@/src/data/features/user/userSelectors";
-import { updateUser } from "@/src/data/features/user/userSlice";
+import { setUser, updateUser } from "@/src/data/features/user/userSlice";
 import {
   View,
   TouchableOpacity,
@@ -18,21 +18,59 @@ import {
 import Header from "@/src/components/Header";
 import ScreenContainer from "@/src/components/ScreenContainer";
 import CustomInput from "@/src/components/input/CustomInput"; // 🔹 Importuojame CustomInput
+import { UserResponse } from "@/src/data/features/user/userTypes";
 
 export default function EditProfileScreen() {
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
   const router = useRouter();
 
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [location, setLocation] = useState("");
+  const [bio, setBio] = useState("");
+  const [website, setWebsite] = useState("");
+  const [isModified, setIsModified] = useState(false);
+
+
+  useEffect(() => {
+    if (user) {
+      const nameParts = user.name?.split(" ") || [];
+      setFirstName(nameParts[0] || "");
+      setLastName(nameParts[1] || "");
+      setLocation(user.profile?.location || "");
+      setBio(user.profile?.bio || "");
+      setWebsite(user.profile?.website || "");
+    }
+  }, [user]);
+  
+  useEffect(() => {
+    if (!user) return;
+  
+    const nameParts = user.name?.split(" ") || [];
+    const initialFirst = nameParts[0] || "";
+    const initialLast = nameParts[1] || "";
+    const initialLocation = user.profile?.location || "";
+    const initialBio = user.profile?.bio || "";
+    const initialWebsite = user.profile?.website || "";
+  
+    const hasChanged =
+      firstName !== initialFirst ||
+      lastName !== initialLast ||
+      location !== initialLocation ||
+      bio !== initialBio ||
+      website !== initialWebsite;
+  
+    setIsModified(hasChanged);
+  }, [firstName, lastName, location, bio, website, user]);
+  
+  
+
   if (!user) {
     return <Text>Loading...</Text>; // Užtikriname, kad 'user' nėra null
   }
 
-  const [firstName, setFirstName] = useState(user.name?.split(" ")[0] || "");
-  const [lastName, setLastName] = useState(user.name?.split(" ")[1] || "");
-  const [location, setLocation] = useState(user.profile?.location || "");
-  const [bio, setBio] = useState(user.profile?.bio || "");
-  const [website, setWebsite] = useState(user.profile?.website || "");
+  
 
   const handleSave = () => {
     const updatedData = {
@@ -45,16 +83,27 @@ export default function EditProfileScreen() {
     };
 
     dispatch(updateUser(updatedData))
-      .unwrap()
-      .then(() => router.back());
+    .unwrap()
+    .then((res: UserResponse) => {
+      dispatch(setUser(res.data.user)); 
+      router.back();
+    });
   };
 
   return (
     <ScreenContainer>
-      <Header title="Edit Profile" onBackPress={() => router.back()} rightIcon={<Text onPress={handleSave} color="blue.500">Done</Text>} />
+      <Header title="Edit Profile" 
+          onBackPress={() => router.back()} rightIcon={
+          isModified ? (
+            <Text onPress={handleSave} color="blue.500">
+              Save
+            </Text>
+          ) : null
+        }
+      />
       
       <VStack alignItems="center" mt={5}>
-        <Avatar size="xl" source={{ uri: user.profile?.avatar || "https://via.placeholder.com/150" }}>
+        <Avatar size="xl" source={{ uri:  "https://via.placeholder.com/150" }}>
           {user.name?.[0]}
         </Avatar>
         <TouchableOpacity>

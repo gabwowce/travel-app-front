@@ -1,7 +1,7 @@
-export type ParsedApiErrors = {
-  [field: string]: string[];
+export interface ParsedApiErrors {
   general?: string;
-};
+  [field: string]: string[] | string | undefined;
+}
 
 export const parseApiErrors = (error: any): ParsedApiErrors => {
   const parsed: ParsedApiErrors = {};

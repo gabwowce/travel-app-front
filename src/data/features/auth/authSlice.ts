@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { loginUser, registerUser, logoutUser } from "@/src/data/features/auth/authAPI";
-import { AuthState, LoginPayload, RegisterPayload, LoginResponse, User, AuthErrors } from "@/src/data/features/auth/authTypes";
+import { AuthState, LoginPayload, RegisterPayload, LoginResponse, User, AuthErrors, RegisterResponse } from "@/src/data/features/auth/authTypes";
 import { parseApiErrors } from "@/src/utils/parseApiErrors";
 
 const initialState: AuthState = {
@@ -109,12 +109,11 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action: PayloadAction<LoginResponse>) => {
         state.isAuthenticated = true;
         state.loading = false;
-        state.token = action.payload.token;
-        state.user = action.payload.user;
+        state.token = action.payload.data.token;
+        state.user = action.payload.data.user;
+        
       })
       .addCase(login.rejected, (state, action) => {
-        console.log("❌ Login failed, resetting auth state...");
-        console.log("  - action.payload:", action.payload);
         state.loading = false;
         state.errors = action.payload || {};
         state.isAuthenticated = false;
@@ -126,11 +125,11 @@ const authSlice = createSlice({
         state.loading = true;
         state.errors = {};
       })
-      .addCase(register.fulfilled, (state, action: PayloadAction<LoginResponse>) => {
+      .addCase(register.fulfilled, (state, action: PayloadAction<RegisterResponse>) => {
         state.isAuthenticated = true;
         state.loading = false;
-        state.token = action.payload.token;
-        state.user = action.payload.user;
+        state.token = action.payload.data.token;
+        state.user = action.payload.data.user;
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;

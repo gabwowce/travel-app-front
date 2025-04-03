@@ -51,9 +51,9 @@ export const fetchRouteById = createAsyncThunk("routes/fetchRouteById", async (i
 });
 
 // ✅ Filtruoti maršrutus pagal kategoriją iš serverio
-export const fetchRoutesByCategory = createAsyncThunk(
+export const fetchRoutesByCategory = createAsyncThunk<PaginatedRoutesResponse, number>(
   "routes/fetchRoutesByCategory",
-  async (categoryId: number, thunkAPI) => {
+  async (categoryId, thunkAPI) => {
     try {
       return await getRoutesByCategory(categoryId);
     } catch (error: any) {
@@ -62,10 +62,9 @@ export const fetchRoutesByCategory = createAsyncThunk(
   }
 );
 
-// ✅ Filtruoti maršrutus pagal miestą iš serverio
-export const fetchRoutesByCity = createAsyncThunk(
+export const fetchRoutesByCity = createAsyncThunk<PaginatedRoutesResponse, number>(
   "routes/fetchRoutesByCity",
-  async (cityId: number, thunkAPI) => {
+  async (cityId, thunkAPI) => {
     try {
       return await getRoutesByCity(cityId);
     } catch (error: any) {
@@ -75,6 +74,7 @@ export const fetchRoutesByCity = createAsyncThunk(
 );
 
 
+
 const routesSlice = createSlice({
     name: "routes",
     initialState,
@@ -82,16 +82,22 @@ const routesSlice = createSlice({
       clearRoutes: (state) => {
         state.routes = []; // ✅ Išvalome maršrutus
       },
+      clearSelectedRoute: (state) => {
+        state.selectedRoute = null;
+      },
     },
     extraReducers: (builder) => {
       builder
         .addCase(fetchFeaturedRoutes.pending, (state) => {
           state.loading = true;
+          state.error = null;
         })
         .addCase(fetchFeaturedRoutes.fulfilled, (state, action) => {
+          console.log("FETCHED ROUTES PAYLOAD:", action.payload); // 👈 pridėk
           state.loading = false;
-          state.featuredRoutes = action.payload;
+          state.featuredRoutes = action.payload; // gal reikia action.payload.data?
         })
+        
         .addCase(fetchFeaturedRoutes.rejected, (state, action) => {
           state.loading = false;
           state.error = action.payload;

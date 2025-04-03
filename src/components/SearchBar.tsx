@@ -41,6 +41,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F3F3F3",
     borderRadius: 10,
     paddingHorizontal: 10,
+    marginBottom:20,
     height: 50, // ✅ Fiksuotas aukštis, kad būtų vienoda išvaizda
   },
   iconLeft: {

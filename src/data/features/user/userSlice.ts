@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { getUserProfile, updateUserProfile, getUserFavorites, getUserRatings } from "@/src/data/features/user/userAPI";
 import { UserState, UserResponse, FavoritesResponse, RatingsResponse, UpdateUserPayload, User } from "@/src/data/features/user/userTypes";
-
+import { parseApiErrors } from "@/src/utils/parseApiErrors"; 
 import { apiRequest } from "@/src/data/apiService";
 
 const initialState: UserState = {
@@ -11,6 +11,8 @@ const initialState: UserState = {
   loading: false,
   error: null,
 };
+
+
 
 const handleUserThunk = async (
   { rejectWithValue }: any,
@@ -23,23 +25,11 @@ const handleUserThunk = async (
     return response;
   } catch (error: any) {
     console.log("📌 Full error object:", JSON.stringify(error, null, 2));
-
-    const errorMessage = error.message;
-    const errorData = error?.errors || error?.data?.errors || error?.data?.data?.errors || null;
-
-    let errors: Record<string, string> = {};
-    if (errorData) {
-      console.log("📌 Extracted validation errors:", JSON.stringify(errorData, null, 2));
-      Object.keys(errorData).forEach((field) => {
-        errors[field] = errorData[field][0];
-      });
-    }
-
-    const generalError = error?.data?.message || errorMessage || "";
-    errors.general = generalError;
     
-    console.log("🛑 Final processed errors:", JSON.stringify(errors, null, 2));
-    return rejectWithValue(errors);
+    const parsedErrors = parseApiErrors(error);
+
+    console.log("🛑 Final parsed errors:", JSON.stringify(parsedErrors, null, 2));
+    return rejectWithValue(parsedErrors);
   }
 };
 
@@ -48,7 +38,8 @@ export const fetchUserProfile = createAsyncThunk<User, void>(
   async (_, thunkAPI) => {
     try {
       const user = await getUserProfile();
-      return user; // Grąžinam patį User
+      console.log("🛑 user:", user); 
+      return user;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.message || "Nepavyko gauti vartotojo duomenų");
     }
@@ -58,16 +49,13 @@ export const fetchUserProfile = createAsyncThunk<User, void>(
 
 
 
+
 export const updateUser = createAsyncThunk(
   "user/updateUser",
-  async (userData: Partial<{ name: string; email: string; password: string; password_confirmation: string; profile: { bio: string; location: string; website: string } }>, { rejectWithValue }) => {
-    try {
-      return await apiRequest("/api/v1/user", "PUT", userData);
-    } catch (error) {
-      return rejectWithValue(error);
-    }
-  }
+  async (userData: UpdateUserPayload, thunkAPI) =>
+    handleUserThunk(thunkAPI, updateUserProfile, userData)
 );
+
 
 export const fetchUserFavorites = createAsyncThunk("user/fetchFavorites", (_, thunkAPI) =>
   handleUserThunk(thunkAPI, getUserFavorites)
@@ -87,6 +75,9 @@ const userSlice = createSlice({
       state.ratings = [];
       state.error = null;
     },
+    setUser: (state, action: PayloadAction<User>) => {
+      state.user = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -95,7 +86,7 @@ const userSlice = createSlice({
       })
       .addCase(fetchUserProfile.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload; // Tiesiogiai priskiriam user
+        state.user = action.payload; 
       })
         
       .addCase(fetchUserProfile.rejected, (state, action) => {
@@ -114,5 +105,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { resetUser } = userSlice.actions;
+export const { resetUser, setUser } = userSlice.actions;
 export default userSlice.reducer;

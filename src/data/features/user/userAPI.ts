@@ -6,10 +6,14 @@ import { User } from "./userTypes";
 
 export async function getUserProfile(): Promise<User> {
   const token = await AsyncStorage.getItem("token");
-  return await apiRequest("/api/v1/user", "GET", undefined, {
+  const response = await apiRequest("/api/v1/user", "GET", undefined, {
     Authorization: `Bearer ${token}`,
   });
+
+  return response.data; 
 }
+
+
 
 // ✅ Atnaujinti vartotojo profilį
 export const updateUserProfile = async (data: UpdateUserPayload): Promise<UserResponse> => {

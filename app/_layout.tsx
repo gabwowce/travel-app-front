@@ -13,6 +13,9 @@ import {selectIsAuthenticated, selectAuthLoading} from "@/src/data/features/auth
 
 import { StatusBar } from "expo-status-bar";
 
+import { useAppSelector } from "@/src/data/hooks";
+import { initAuth } from "@/src/data/features/auth/authSlice"; 
+import { useAppDispatch } from '@/src/data/hooks';
 
 export default function RootLayout() {
   return (
@@ -28,14 +31,14 @@ export default function RootLayout() {
 }
 
 function MainNavigation() {
-  const isAuthenticated = useSelector(selectIsAuthenticated);
-  const isLoading = useSelector(selectAuthLoading);
-  
+  const isAuthenticated = useAppSelector( state => state.auth.isAuthenticated);
+  const isLoading = useAppSelector(state => state.auth.loading);
+  const dispatch = useAppDispatch();
   
   const [onboardingDone, setOnboardingDone] = useState(false);
   const [ready, setReady] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
-  const dispatch = useDispatch();
+
 
   useEffect(() => {
     (async () => {
@@ -49,6 +52,10 @@ function MainNavigation() {
       }
     })();
   }, []); 
+
+  useEffect(() => {
+    dispatch(initAuth()); // ✅ Dabar saugu naudoti
+  }, []);
   
 
   // useEffect(() => {
@@ -79,7 +86,7 @@ function MainNavigation() {
     );
   }
 
-  if (!isAuthenticated) {
+  if (isAuthenticated) {
     return (
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(auth)/index" />

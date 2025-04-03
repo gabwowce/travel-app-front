@@ -25,11 +25,23 @@ import LoadingScreen from "@/src/components/screens/loading";
 import Header from "@/src/components/Header";
 import ScreenContainer from "@/src/components/ScreenContainer";
 
+import { Linking, Platform } from "react-native";
+
+
+
 export default function ProfileScreen() {
   const dispatch = useAppDispatch();
-  const user = useAppSelector(selectUser);
-  const loading = useAppSelector(selectUserLoading);
+  const user = useAppSelector(state => state.user.user);
+  const loading = useAppSelector(state => state.user.loading);
   const router = useRouter();
+
+  const openNotificationSettings = () => {
+    if (Platform.OS === "ios") {
+      Linking.openURL("app-settings:");
+    } else {
+      Linking.openSettings();
+    }
+  };
 
   const handleLogout = () => {
     dispatch(logout());
@@ -37,8 +49,11 @@ export default function ProfileScreen() {
   };
 
   useEffect(() => {
-    dispatch(fetchUserProfile());
-  }, [dispatch]);
+    if (!user) {
+      dispatch(fetchUserProfile());
+    }
+  }, [user, dispatch]);
+  
 
   if (loading || !user) {
     return <LoadingScreen />;
@@ -55,28 +70,28 @@ export default function ProfileScreen() {
     {
       title: "Preferences & Customization",
       options: [
-        { title: "Interests & Categories", icon: "category" },
-        { title: "Favorites", icon: "favorite-border" },
-        { title: "Visited Places", icon: "place" },
-        { title: "Preferred Map Type", icon: "map" },
-        { title: "Notification Settings", icon: "notifications" },
+        // { title: "Interests & Categories", icon: "category" },
+        { title: "Favorites", icon: "favorite-border", action: () => router.push("/(app)/(tabs)/saved")  },
+        // { title: "Visited Places", icon: "place" },
+        // { title: "Preferred Map Type", icon: "map" },
+        { title: "Notification Settings", icon: "notifications", action: openNotificationSettings },
       ],
     },
     {
       title: "Security & Privacy",
       options: [
-        { title: "Edit Profile", icon: "person" },
-        { title: "Change Password", icon: "lock" },
-        { title: "Enable GPS Tracking", icon: "location-on" },
-        { title: "Enable Audio Guide", icon: "hearing" },
-        { title: "Privacy Settings", icon: "privacy-tip" },
+        { title: "Edit Profile", icon: "person", action: () => router.push("/05-profile/editProfile") },
+        { title: "Change Password", icon: "lock", action: () => router.push("/05-profile/changePassword") },
+        // { title: "Enable GPS Tracking", icon: "location-on" },
+        // { title: "Enable Audio Guide", icon: "hearing" },
+        // { title: "Privacy Settings", icon: "privacy-tip" },
       ],
     },
     {
       title: "Account Management",
       options: [
         { title: "Logout", icon: "logout", color: "red", action: handleLogout },
-        { title: "Delete Account", icon: "delete", color: "red", action: () => console.log("Delete Account") },
+        // { title: "Delete Account", icon: "delete", color: "red", action: () => console.log("Delete Account") },
       ],
     },
   ];
@@ -94,8 +109,8 @@ export default function ProfileScreen() {
       
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
         <VStack alignItems="center" mt={5}>
-          <Avatar size="xl" source={{ uri: user.profile?.avatar || "https://via.placeholder.com/150" }}>
-            {user.name?.[0]}
+          <Avatar size="xl" source={{ uri: "https://via.placeholder.com/150" }}>
+            {user.name[0]}
           </Avatar>
           <Heading mt={3} fontSize="lg">{user.name}</Heading>
           <Text color="gray.500">{user.email}</Text>

@@ -9,7 +9,8 @@ import {
   Platform,
 } from "react-native";
 
-const API_URL = Platform.OS === "android" ? "http://192.168.0.189:8000" : "http://127.0.0.1:8000";
+const API_URL = "http://192.168.0.189:8000";
+
 
 
 
@@ -43,25 +44,23 @@ export default function Index() {
           </Box>
         ) : error ? (
           <Text color="red.500" px="35px">Failed to load tours. Please try again.</Text>
-        ) : (
+        ) : Array.isArray(featuredRoutes) && featuredRoutes.length > 0 ? (
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <HStack space={4} px="35px">
-              {featuredRoutes.length > 0 ? (
-                featuredRoutes.map((route) => (
-                  <TourCard
-                    key={route.id}
-                    id={route.slug}
-                    image={{ uri: `${API_URL}${route.media[0]?.url || ""}` }}
-                    title={route.name}
-                    rating={route.ratings_avg_rating}
-                    location={`${route.city.name}, ${route.city.country.name}`}
-                  />
-                ))
-              ) : (
-                <Text px="35px">No featured routes available.</Text>
-              )}
+              {featuredRoutes.map((route) => (
+                <TourCard
+                  key={route.id}
+                  id={route.slug}
+                  image={{ uri: `${API_URL}${route.media[0]?.url || ""}` }}
+                  title={route.name}
+                  rating={route.ratings_avg_rating}
+                  location={`${route.city.name}, ${route.city.country.name}`}
+                />
+              ))}
             </HStack>
           </ScrollView>
+        ) : (
+          <Text px="35px">No featured routes available.</Text>
         )}
       </Box>
     </Background>

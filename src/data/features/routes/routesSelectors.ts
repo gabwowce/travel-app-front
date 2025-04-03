@@ -5,10 +5,10 @@ import { RootState } from "@/src/data/store";
 export const selectRoutesState = (state: RootState) => state.routes;
 
 // Gauti visus maršrutus
-export const selectRoutes = (state: RootState) => state.routes.routes;
+export const selectRoutes = (state: RootState) => state.routes.routes || [];
 
 // Gauti rekomenduojamus maršrutus
-export const selectFeaturedRoutes = (state: RootState) => state.routes.featuredRoutes;
+export const selectFeaturedRoutes = (state: RootState) => state.routes.featuredRoutes || [];
 
 // Gauti konkretų pasirinktą maršrutą
 export const selectSelectedRoute = (state: RootState) => state.routes.selectedRoute;

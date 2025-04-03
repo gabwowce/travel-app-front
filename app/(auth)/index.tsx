@@ -52,7 +52,7 @@ export default function LoginScreen() {
           onForgotPassword={() => router.push("/(auth)/forgotPassword")} 
         />
   
-        {errors.general && <Text style={{ color: "red", textAlign: "center" }}>{errors.general}</Text>}
+        {errors.general && <Text style={{ color: "red", textAlign: "center", paddingBottom:20 }}>{errors.general}</Text>}
   
         <Button label={loading ? "Signing in..." : "Sign in"} onPress={handleLogin} />
   

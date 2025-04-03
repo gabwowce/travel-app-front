@@ -10,10 +10,10 @@ import {
 // Prisijungimo funkcija (saugo token + user duomenis)
 export const loginUser = async (data: LoginPayload): Promise<LoginResponse> => {
   try {
-    const response: LoginResponse = await apiRequest("/api/v1/login", "POST", data);
+    const response: LoginResponse = await apiRequest("/api/v1/auth/login", "POST", data);
 
-    await AsyncStorage.setItem("token", response.token);
-    await AsyncStorage.setItem("user", JSON.stringify(response.user));
+    await AsyncStorage.setItem("token", response.data.token);
+    await AsyncStorage.setItem("user", JSON.stringify(response.data.user));
 
     return response;
   } catch (error) {
@@ -28,10 +28,10 @@ export const loginUser = async (data: LoginPayload): Promise<LoginResponse> => {
 export const registerUser = async (
   data: RegisterPayload
 ): Promise<RegisterResponse> => {
-  const response: RegisterResponse = await apiRequest("/api/v1/register", "POST", data);
+  const response: RegisterResponse = await apiRequest("/api/v1/auth/register", "POST", data);
 
-  await AsyncStorage.setItem("token", response.token);
-  await AsyncStorage.setItem("user", JSON.stringify(response.user));
+  await AsyncStorage.setItem("token", response.data.token);
+  await AsyncStorage.setItem("user", JSON.stringify(response.data.user));
 
   return response;
 };

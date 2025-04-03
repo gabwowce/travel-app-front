@@ -1,3 +1,14 @@
+export interface Country {
+  id: number;
+  name: string;
+  code: string;
+  created_at: string;
+  updated_at: string;
+  routes_count: number;
+  cities: City[]; // 👈 būtina!
+}
+
+
 export interface City {
     id: number;
     name: string;
