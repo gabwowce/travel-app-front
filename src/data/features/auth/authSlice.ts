@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { loginUser, registerUser, logoutUser } from "@/src/data/features/auth/authAPI";
 import { AuthState, LoginPayload, RegisterPayload, LoginResponse, User, AuthErrors } from "@/src/data/features/auth/authTypes";
+import { parseApiErrors } from "@/src/utils/parseApiErrors";
 
 const initialState: AuthState = {
   isAuthenticated: false,
@@ -21,41 +22,17 @@ const handleAuthThunk = async (
     const response = await apiFunc(data);
     return response;
   } catch (error: any) {
-    const errors: AuthErrors = {};
-
-    // 1️⃣ Tikriname visą klaidos objektą
+    // ⏺️ Log klaidą jei reikia
     console.log("📌 Full error object:", JSON.stringify(error, null, 2));
+    // await writeLog("AuthThunkError", error); // jei log'uojam į failą
 
-    // 2️⃣ Tikriname, kur gali būti klaidos
-    const errorMessage = error.message;
-    const errorData = error?.errors || error?.data?.errors || error?.data?.data?.errors || null;
+    // ✅ Naudojam utils
+    const parsedErrors = parseApiErrors(error);
 
-    if (errorData) {
-      console.log("📌 Extracted validation errors:", JSON.stringify(errorData, null, 2));
-      Object.keys(errorData).forEach((field) => {
-        errors[field as keyof AuthErrors] = errorData[field][0]; // Pasiimam pirmą klaidos reikšmę
-      });
-    }
-
-     // 3️⃣ Bendras klaidos pranešimas (visada nustatome string)
-     const generalError = error?.data?.message || errorMessage || "";
-    
-     if (Object.values(errors).includes(generalError)) {
-       errors.general = ""; 
-     } else {
-       (errors as any).general = generalError;
-     }
-    
-
-    // 4️⃣ Debug log'ai
-    console.log("📌 Processed email error:", errors.email);
-    console.log("📌 Processed password error:", errors.password);
-    console.log("🛑 Final processed errors:", JSON.stringify(errors, null, 2));
-
-    return rejectWithValue(errors);
+    console.log("🛑 Parsed errors:", JSON.stringify(parsedErrors, null, 2));
+    return rejectWithValue(parsedErrors);
   }
 };
-
 
 
 export const initAuth = createAsyncThunk("auth/initAuth", async (_, thunkAPI) => {
