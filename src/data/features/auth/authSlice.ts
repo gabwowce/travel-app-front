@@ -43,7 +43,7 @@ const handleAuthThunk = async (
      if (Object.values(errors).includes(generalError)) {
        errors.general = ""; 
      } else {
-       errors.general = generalError;
+       (errors as any).general = generalError;
      }
     
 
