@@ -98,4 +98,30 @@ export interface Pagination {
   to: number;
 }
 
+export interface UserResponse {
+  data: {
+    user: User;
+  };
+}
+
+export interface UpdateUserPayload {
+  name?: string;
+  email?: string;
+  password?: string;
+  password_confirmation?: string;
+  profile?: {
+    bio?: string;
+    location?: string;
+    website?: string;
+  };
+}
+
+export interface UserState {
+  user: User | null;
+  favorites: FavoriteRoute[];
+  ratings: UserRating[];
+  loading: boolean;
+  error: string | null;
+}
+
   
