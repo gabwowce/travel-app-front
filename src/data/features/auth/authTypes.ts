@@ -24,9 +24,7 @@ export type AuthState = {
 };
 
 export type AuthErrors = {
-  email?: string;
-  password?: string;
-  general?: string;
+  [field: string]: string[];
 };
 
 
