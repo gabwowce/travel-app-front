@@ -10,11 +10,11 @@ import {
 import { Text } from "native-base";
 import Button from "@/src/components/btns/Button";
 import { useDispatch } from "react-redux";
-import { register, clearErrors } from "../../src/data/features/auth/authSlice";
+import { register } from "../../src/data/features/auth/authThunks";
+import {clearErrors} from "@/src/data/features/auth/authSlice";
 import { useRouter } from "expo-router";
 import { AppDispatch } from "../../src/data/store";
 import { useAppSelector } from "@/src/data/hooks";
-import { selectAuthErrors, selectAuthLoading } from "@/src/data/features/auth/authSelectors";
 import CustomInput from "@/src/components/input/CustomInput"; // 🔹 Importuojame CustomInput
 import KeyboardWrapper from "@/src/components/KeyboardWrapper"; // 🔹 Importuojam komponentą
 import ScreenContainer from "@/src/components/ScreenContainer";
@@ -26,8 +26,8 @@ export default function RegisterScreen() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-  const loading = useAppSelector(selectAuthLoading);
-  const errors = useAppSelector(selectAuthErrors);
+  const loading = useAppSelector((state)=> state.auth.loading);
+  const errors = useAppSelector((state)=> state.auth.errors);
 
   const handleRegister = async () => {
     const resultAction = await dispatch(

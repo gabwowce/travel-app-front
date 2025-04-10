@@ -6,10 +6,8 @@ import { NativeBaseProvider } from 'native-base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { store } from '@/src/data/store';
-import theme from '@/src/styles/theme';
+import theme from '@/src/config/theme';
 import Splash from '@/src/components/screens/splash';
-import { RootState } from '@/src/data/store';
-import {selectIsAuthenticated, selectAuthLoading} from "@/src/data/features/auth/authSelectors";
 
 import { StatusBar } from "expo-status-bar";
 

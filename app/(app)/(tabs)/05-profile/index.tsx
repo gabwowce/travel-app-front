@@ -13,8 +13,7 @@ import {
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useAppSelector, useAppDispatch } from "@/src/data/hooks";
-import { logout } from "@/src/data/features/auth/authSlice";
-import { selectUser, selectUserLoading } from "@/src/data/features/user/userSelectors";
+import { logout } from "@/src/data/features/auth/authThunks";
 import { fetchUserProfile } from "@/src/data/features/user/userSlice";
 import {
   View,
@@ -31,8 +30,8 @@ import { Linking, Platform } from "react-native";
 
 export default function ProfileScreen() {
   const dispatch = useAppDispatch();
-  const user = useAppSelector(state => state.user.user);
-  const loading = useAppSelector(state => state.user.loading);
+  const user = useAppSelector(state => state.auth.user);
+  const loading = useAppSelector(state => state.auth.loading);
   const router = useRouter();
 
   const openNotificationSettings = () => {
@@ -110,7 +109,7 @@ export default function ProfileScreen() {
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
         <VStack alignItems="center" mt={5}>
           <Avatar size="xl" source={{ uri: "https://via.placeholder.com/150" }}>
-            {user.name[0]}
+            {user.name}
           </Avatar>
           <Heading mt={3} fontSize="lg">{user.name}</Heading>
           <Text color="gray.500">{user.email}</Text>

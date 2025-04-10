@@ -1,12 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { apiRequest } from "../../apiService";
+import { apiRequest } from "@/src/api/apiService";
 import { UserResponse, UpdateUserPayload, FavoritesResponse, RatingsResponse } from "@/src/data/features/user/userTypes";
 import { User } from "./userTypes";
 
 
 export async function getUserProfile(): Promise<User> {
   const token = await AsyncStorage.getItem("token");
-  const response = await apiRequest("/api/v1/user", "GET", undefined, {
+  const response = await apiRequest("/api/v1/auth/me", "GET", undefined, {
     Authorization: `Bearer ${token}`,
   });
 

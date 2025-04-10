@@ -83,7 +83,7 @@ export default function SelectCategoryScreen() {
       }
       loading={loading}
       error={error}
-      btnLabel="Done"
+      // btnLabel="Done"
       onBackPress={() => {
         dispatch(
           setTourData({

@@ -3,7 +3,6 @@ import { Box, Text, FlatList, Spinner } from "native-base";
 import { Keyboard, TouchableWithoutFeedback } from "react-native";
 import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
 import { fetchRoutes } from "@/src/data/features/routes/routesSlice";
-import { selectRoutes } from "@/src/data/features/routes/routesSelectors";
 import MiniTourCard from "@/src/components/MiniTourCard";
 import SearchBar from "@/src/components/SearchBar"; // ✅ Naudojame naują komponentą
 import Header from "@/src/components/Header";
@@ -11,9 +10,8 @@ import ScreenContainer from "@/src/components/ScreenContainer";
 
 export default function SearchScreen() {
   const dispatch = useAppDispatch();
-  const routes = useAppSelector(selectRoutes);
-  const loading = useAppSelector((state) => state.routes.loading);
-  const error = useAppSelector((state) => state.routes.error);
+  const { loading, error, routes, isEmptyResults } = useAppSelector((state) => state.routes);
+
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
@@ -47,7 +45,7 @@ export default function SearchScreen() {
           <Box alignItems="center" py="20px">
             <Spinner size="lg" color="primary.500" />
           </Box>
-        ) : routes.length === 0 ? (
+        ) : isEmptyResults ? (
           <Text color="gray.500" textAlign="center" mt={5}>
             No results found.
           </Text>

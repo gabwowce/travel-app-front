@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { getUserProfile, updateUserProfile, getUserFavorites, getUserRatings } from "@/src/data/features/user/userAPI";
 import { UserState, UserResponse, FavoritesResponse, RatingsResponse, UpdateUserPayload, User } from "@/src/data/features/user/userTypes";
-import { parseApiErrors } from "@/src/utils/parseApiErrors"; 
-import { apiRequest } from "@/src/data/apiService";
+import { parseApiErrors } from "@/src/api/parseApiErrors"; 
+import { apiRequest } from "@/src/api/apiService";
 
 const initialState: UserState = {
   user: null,

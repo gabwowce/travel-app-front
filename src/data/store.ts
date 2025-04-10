@@ -6,6 +6,7 @@ import favoritesReducer from "@/src/data/features/favorites/favoritesSlice";
 import countryReducer from "@/src/data/features/countries/countriesSlice";
 import categoriesReducer from "@/src/data/features/categories/categoriesSlice";
 import tourReducer from "@/src/data/features/tours/tourSlice";
+import placesReducer from "@/src/data/features/places/placesSlice";
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     countries: countryReducer,
     categories: categoriesReducer,
     tour: tourReducer,
+    places: placesReducer
   },
   
 });

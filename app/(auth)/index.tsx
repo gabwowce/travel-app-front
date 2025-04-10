@@ -3,7 +3,8 @@ import { View, StyleSheet } from "react-native";
 import { Text } from "native-base";
 import Button from "@/src/components/btns/Button";
 import { useRouter } from "expo-router";
-import { login, clearErrors } from "@/src/data/features/auth/authSlice";
+import { login } from "@/src/data/features/auth/authThunks";
+import {clearErrors} from "@/src/data/features/auth/authSlice";
 import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
 import CustomInput from "@/src/components/input/CustomInput";
 import KeyboardWrapper from "@/src/components/KeyboardWrapper"; // 🔹 Importuojam naują komponentą

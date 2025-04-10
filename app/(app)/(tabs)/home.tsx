@@ -3,27 +3,25 @@ import { Background } from "@/src/components/BGWrapper";
 import { TourCard } from "@/src/components/TourCard";
 import { Box, Text, ScrollView, VStack, HStack, Spinner } from "native-base";
 import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
-import { fetchFeaturedRoutes } from "@/src/data/features/routes/routesSlice";
-import {selectRoutesLoading, selectRoutesError, selectFeaturedRoutes} from "@/src/data/features/routes/routesSelectors";
-import {
-  Platform,
-} from "react-native";
+import { fetchFeaturedRoutes } from "@/src/data/features/routes/routesThunks";
+import type { Route } from "@/src/api/generated/models/Route";
 
-const API_URL = "http://192.168.0.189:8000";
+
+const API_URL = "https://travelapp.prus.dev";
 
 
 
 
 export default function Index() {
   const dispatch = useAppDispatch();
-  const featuredRoutes = useAppSelector(selectFeaturedRoutes);
-  const loading = useAppSelector(selectRoutesLoading);
-  const error = useAppSelector(selectRoutesError);
+  const featuredRoutes = useAppSelector(state => state.routes.featuredRoutes) as Route[];
+  const loading = useAppSelector((state)=> state.routes.loading);
+  const error = useAppSelector((state)=>state.routes.error);
 
 
 
   useEffect(() => {
-    dispatch(fetchFeaturedRoutes());
+    dispatch(fetchFeaturedRoutes({ limit: 6 }));
   }, [dispatch]);
   
 
@@ -49,12 +47,12 @@ export default function Index() {
             <HStack space={4} px="35px">
               {featuredRoutes.map((route) => (
                 <TourCard
-                  key={route.id}
-                  id={route.slug}
-                  image={{ uri: `${API_URL}${route.media[0]?.url || ""}` }}
-                  title={route.name}
-                  rating={route.ratings_avg_rating}
-                  location={`${route.city.name}, ${route.city.country.name}`}
+                key={route.id}
+                id={String(route.id)} // naudok id kaip string, nes slug nėra
+                image={{ uri: `${API_URL}${route.media?.[0]?.url ?? ""}` }}
+                title={route.name ?? "Unnamed"}
+                rating={route.ratings_avg ?? 0}
+                location={`${route.city?.name ?? "Unknown"}, ${route.city?.country?.name ?? "Unknown"}`}
                 />
               ))}
             </HStack>
