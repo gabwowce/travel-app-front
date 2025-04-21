@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
 import CustomInput from "@/src/components/input/CustomInput";
 import KeyboardWrapper from "@/src/components/KeyboardWrapper"; // 🔹 Importuojam naują komponentą
 import ScreenContainer from "@/src/components/ScreenContainer";
+import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");

@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import BackButton from "./btns/BackButton";
+import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 
 interface HeaderProps {
   title?: string;
@@ -24,6 +25,7 @@ export default function Header({ title, onBackPress, onPressClose, transparent =
         styles.headerContainer,
         { 
           paddingTop: insets.top + 10, 
+          paddingHorizontal: wp("3%"),
           backgroundColor: transparent ? "transparent" : "#FFFCF9",
         }
       ]}
@@ -36,9 +38,7 @@ export default function Header({ title, onBackPress, onPressClose, transparent =
 
       <View style={styles.sideIconContainer}>
         {onPressClose ? (
-          <TouchableOpacity onPress={onPressClose} style={styles.closeButton}>
-            <Ionicons name="close" size={24} color="black" />
-          </TouchableOpacity>
+          <BackButton onPress={onPressClose} iconName="close"/>
         ) : rightIcon ? (
           rightIcon
         ) : (
@@ -51,13 +51,10 @@ export default function Header({ title, onBackPress, onPressClose, transparent =
 
 const styles = StyleSheet.create({
   headerContainer: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
+    
     borderRadius: 16,
-    paddingHorizontal: 20,
-    paddingVertical: 20,
+    // paddingHorizontal: 20,
+    // paddingVertical: 20,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",

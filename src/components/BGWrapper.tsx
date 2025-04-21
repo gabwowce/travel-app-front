@@ -1,19 +1,24 @@
 import React from "react";
-import { StyleSheet, ImageBackground, ImageBackgroundProps } from "react-native";
+import { StyleSheet, ImageBackground, ImageBackgroundProps, useWindowDimensions } from "react-native";
 
-// Nurodome tą patį paveikslėlį, kuris bus fonas
-const BG_IMAGE = require("../assets/images/background-blob.png");
+// Įkeliam dvi skirtingas fono versijas
+const BG_IMAGE_PHONE = require("../assets/images/background-blob.png");
+const BG_IMAGE_TABLET = require("../assets/images/background-blob-tablet.png"); // <- sukurk šį failą
 
-// Apibrėžiame komponento „props“, kad galėtume perduoti children, stilių, ir t. t.
 interface BackgroundProps extends ImageBackgroundProps {
   children: React.ReactNode;
 }
 
 export function Background({ children, style, ...props }: BackgroundProps) {
+  const { width } = useWindowDimensions();
+
+  const isLargeScreen = width >= 500; // arba kita tavo logika
+  const backgroundSource = isLargeScreen ? BG_IMAGE_TABLET : BG_IMAGE_PHONE;
+
   return (
     <ImageBackground
-      source={BG_IMAGE}
-      style={[styles.bgImage, style]} 
+      source={backgroundSource}
+      style={[styles.bgImage, style]}
       resizeMode="cover"
       {...props}
     >
@@ -25,6 +30,6 @@ export function Background({ children, style, ...props }: BackgroundProps) {
 const styles = StyleSheet.create({
   bgImage: {
     flex: 1,
-    backgroundColor:"#FFFCF9"
+    backgroundColor: "#FFFCF9",
   },
 });

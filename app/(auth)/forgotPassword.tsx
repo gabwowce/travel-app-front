@@ -7,7 +7,8 @@ import Button from "@/src/components/btns/Button";
 import KeyboardWrapper from "@/src/components/KeyboardWrapper";
 import Header from "@/src/components/Header";
 import ScreenContainer from "@/src/components/ScreenContainer";
-
+import FlexContainer from "@/src/components/layout/FlexContainer";
+import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState("");
@@ -24,7 +25,7 @@ export default function ForgotPasswordScreen() {
 
   return (
     <KeyboardWrapper>
-      <ScreenContainer variant="center">
+     <FlexContainer gap={16} px={wp("3%")}>
         <Header onBackPress={() => router.back()} transparent />
 
         <Text variant="header1" style={styles.title}>
@@ -47,7 +48,7 @@ export default function ForgotPasswordScreen() {
 
         {/* Slaptažodžio atstatymo mygtukas */}
         <Button label="Reset Password" onPress={handleResetPassword} />
-      </ScreenContainer>
+      </FlexContainer>
     </KeyboardWrapper>
   );
 }

@@ -1,6 +1,7 @@
 import React from "react";
 import { View, TextInput, StyleSheet, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 
 interface SearchBarProps {
   placeholder?: string;
@@ -40,10 +41,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#F3F3F3",
     borderRadius: 10,
-    paddingHorizontal: 10,
-    marginBottom:20,
-    height: 50, // ✅ Fiksuotas aukštis, kad būtų vienoda išvaizda
+    paddingHorizontal: wp("3%"),
+    marginHorizontal: wp("3%"),
+    marginBottom: 20,
+    height: 50,
+
+    alignSelf: "center",
   },
+  
   iconLeft: {
     marginRight: 8,
   },

@@ -5,12 +5,14 @@ export default function NotFoundScreen() {
   const router = useRouter(); // ✅ Naudojame expo-router navigaciją
 
   return (
+
+    
     <>
       <Stack.Screen options={{ title: "Oops! Not Found!" }} />
       <Center flex={1} bg="white">
         <Box alignItems="center">
           <Text variant="header2Bold">Not Found 404</Text>
-          <Button mt={4} colorScheme="primary" onPress={() => router.push("/")}>
+          <Button mt={4} colorScheme="primary" onPress={() => router.push("/(app)/(tabs)/home")}>
             Go Home
           </Button>
         </Box>
@@ -18,3 +20,4 @@ export default function NotFoundScreen() {
     </>
   );
 }
+

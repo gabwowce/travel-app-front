@@ -1,22 +1,26 @@
-import React from 'react';
+// Map.tsx
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   StyleSheet,
-  ActivityIndicator,
-  Platform,
-  StatusBar,
+  StatusBar as RNStatusBar,
   Linking,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
-import { StatusBar as RNStatusBar } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Text } from "native-base";
-import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps';
-import useUserLocation from '@/src/hooks/useUserLocation';
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import { Text } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import useUserLocation from "@/src/hooks/useUserLocation";
 import Header from "../Header";
-import TourBottomSheet from "../TourBottomSheet";
-import LoadingScreen from '@/src/components/screens/loading';
+import TourBottomSheet from "../tour/TourBottomSheet";
+import { getMarkerIcon } from "../tour/getMarkerIconByCategory";
+import { Platform } from "react-native";
+
+interface MapProps {
+  title: string;
+  points: TourPoint[];
+}
 
 export interface TourPoint {
   id: string;
@@ -26,109 +30,154 @@ export interface TourPoint {
     longitude: number;
   };
   url: string;
+  category?: "museum" | "nature" | "food";
 }
-
-interface MapProps {
-  title: string;
-  points: TourPoint[];
-}
-
-const defaultLocation = { latitude: 54.687157, longitude: 25.279652 };
-
-const places = [
-  { id: "1", name: "Čili Pizza", distance: "200 m" },
-  { id: "2", name: "Čili Pizza", distance: "300 m" },
-  { id: "3", name: "Čili Pizza", distance: "500 m" },
-];
 
 export default function Map({ title, points }: MapProps) {
-  const insets = useSafeAreaInsets();
+  const bottomSheetRef = useRef<any>(null);
   const navigation = useNavigation();
-  const { userLocation, loading } = useUserLocation(defaultLocation);
+  const mapRef = useRef<MapView>(null);
+  const [selectedPoint, setSelectedPoint] = useState<TourPoint | null>(null);
+  const { userLocation } = useUserLocation();
+  const [showMainHeader, setShowMainHeader] = useState(true);
 
-  if (loading) {
-    return (
-      // <View style={styles.loadingContainer}>
-      //   <ActivityIndicator size="large" color="#444" />
-      // </View>
-      <LoadingScreen/>
+
+  const handleSelectPoint = (point: TourPoint) => {
+    setSelectedPoint(point);
+    mapRef.current?.animateToRegion(
+      {
+        latitude: point.coords.latitude - 0.001,
+        longitude: point.coords.longitude,
+        latitudeDelta: 0.005,
+        longitudeDelta: 0.005,
+      },
+      1000
     );
-  }
+    bottomSheetRef.current?.snapToIndex(0);
+  };
+  
+
+  const handleBackToList = () => {
+    setSelectedPoint(null);
+    bottomSheetRef.current?.snapToIndex(1);
+  };
+
+  useEffect(() => {
+    if (points.length > 0 && mapRef.current) {
+      const timeout = setTimeout(() => {
+        mapRef.current?.fitToCoordinates(points.map(p => p.coords), {
+          edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
+          animated: true,
+        });
+      }, 300);
+      return () => clearTimeout(timeout);
+    }
+  }, [points]);
 
   return (
     <View style={styles.container}>
       <ExpoStatusBar style="dark" translucent backgroundColor="transparent" />
       <RNStatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
-  
-      <View style={styles.headerContainer}>
-        <Header title={title} onBackPress={() => navigation.goBack()} />
+      {showMainHeader && (
+        <View style={styles.headerContainer}>
+          
+        <Header
+          title={title}
+          onBackPress={selectedPoint ? handleBackToList : () => navigation.goBack()}
+          onPressClose={selectedPoint ? () => navigation.goBack() : undefined}
+        />
       </View>
-  
-      {/* Žemėlapis */}
+
+      )}
       <MapView
-        provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
+        provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined}
         userInterfaceStyle="light"
+        ref={mapRef}
         style={styles.map}
-        initialRegion={{
-          latitude: userLocation.latitude,
-          longitude: userLocation.longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        }}
         showsUserLocation
         showsCompass
       >
-        {points.map((point) => (
-          <Marker key={point.id} coordinate={point.coords} title={point.title}>
-            <Callout onPress={() => Linking.openURL(point.url)}>
-              <View style={styles.callout}>
-                <Text style={styles.calloutTitle}>{point.title}</Text>
-                <Text style={styles.calloutLink}>Spausti čia</Text>
+        {points.map((point) => {
+          const { name, color } = getMarkerIcon(point.category);
+          const isSelected = selectedPoint?.id === point.id;
+
+          return (
+            <Marker
+              key={point.id}
+              coordinate={point.coords}
+              anchor={{ x: 0.5, y: 1 }} // <- rodo į markerio apačią (taip kaip Waze)
+              onPress={() => handleSelectPoint(point)}
+            >
+              <View
+                style={[
+                  styles.customMarker,
+                  isSelected && styles.customMarkerSelected,
+                  isSelected && styles.customMarkerLarge // ← pridedam padidinimą!
+                ]}
+              >
+
+                <Ionicons
+                  name={name as any}
+                  size={isSelected ? 32 : 28}
+                  color={isSelected ? "#000" : color}
+                />
               </View>
-            </Callout>
-          </Marker>
-        ))}
+            </Marker>
+
+          );
+        })}
       </MapView>
-  
-      <TourBottomSheet />
+
+      <TourBottomSheet
+        onFullScreenChange={(isFull) => setShowMainHeader(!isFull)}
+        ref={bottomSheetRef}
+        points={points}
+        userLocation={userLocation}
+        selectedPoint={selectedPoint}
+        onSelectPoint={handleSelectPoint}
+        onBack={handleBackToList}
+      />
     </View>
   );
-  
 }
 
 const styles = StyleSheet.create({
+  customMarker: {
+    width: 36, // arba 44, priklausomai nuo ikonėlės
+    height: 36,
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 5,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "visible", // ← svarbu Android'e!
+  },
+  customMarkerLarge: {
+    width: 36,
+    height: 36,
+    borderRadius: 20, // kad ir didesnis išliktų apskritas
+  },
   container: { flex: 1, backgroundColor: "#fff" },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   headerContainer: {
     position: "absolute",
     top: 0,
     left: 0,
     right: 0,
-    zIndex: 10, // Užtikrina, kad headeris būtų viršuje
+    zIndex: 10,
   },
   map: {
     flex: 1,
-    marginTop: 100, // Padarome, kad žemėlapis nebūtų uždengtas
+    marginTop: 100,
   },
-  callout: {
-    width: 150,
-    padding: 5,
-    alignItems: 'center',
-  },
-  calloutTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  calloutLink: {
-    fontSize: 12,
-    color: 'blue',
-    textDecorationLine: 'underline',
-  },
-  bottomSheetContainer: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    zIndex: 20, // Užtikrina, kad Bottom Sheet būtų viršuje
+ 
+  customMarkerSelected: {
+    backgroundColor: "#D1E8FF",
+    borderColor: "#1E90FF",
   },
 });

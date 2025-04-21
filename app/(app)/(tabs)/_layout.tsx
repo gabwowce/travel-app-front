@@ -34,7 +34,7 @@ export default function TabsLayout() {
         headerTitle: "Search",
         tabBarIcon: ({focused, color}) => <Ionicons name="search-outline" size={24} color={color}/>
         }}/>
-    <Tabs.Screen
+    {/* <Tabs.Screen
       name="03-create-tour"
       options={{
         title: "Create",
@@ -44,7 +44,7 @@ export default function TabsLayout() {
         ),
         tabBarLabelStyle: { fontSize: 12, fontWeight: "bold" }, // Paryškintas tekstas
       }}
-    />
+    /> */}
 
      <Tabs.Screen 
       name="saved" 

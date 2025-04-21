@@ -5,9 +5,10 @@ import { Ionicons } from '@expo/vector-icons';
 
 type Props = {
   onPress: () => void;
+  iconName?: string; // ← galima pasirinkti ikonėlę, pvz. „close“
 };
 
-export default function BackButton({ onPress }: Props) {
+export default function BackButton({ onPress, iconName = "chevron-back" }: Props) {
   return (
     <Box>
       <Pressable
@@ -15,16 +16,15 @@ export default function BackButton({ onPress }: Props) {
         style={{
           width: 44,
           height: 44,
-          borderRadius: 24, // Sukuria apskritimą
-          backgroundColor: "#F7F7F7", // Švelniai pilkas fonas
+          borderRadius: 24,
+          backgroundColor: "#F7F7F7",
           justifyContent: "center",
           alignItems: "center",
           shadowColor: "#000",
-      
         }}
         android_ripple={{ color: "#E0E0E0", borderless: true }}
       >
-        <Icon as={Ionicons} name="chevron-back" size="lg" color="#181818" />
+        <Icon as={Ionicons} name={iconName} size="lg" color="#181818" />
       </Pressable>
     </Box>
   );

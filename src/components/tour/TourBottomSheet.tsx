@@ -1,0 +1,168 @@
+// TourBottomSheet.tsx
+import React, { forwardRef, useImperativeHandle, useMemo, useRef, useState, useEffect } from "react";
+import { StyleSheet, View, Text, Dimensions, Linking, TouchableOpacity, Platform } from "react-native";
+import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import { TourPoint } from "../map/map";
+import TourPointItem from "./TourPointItem";
+import Header from "../Header";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import SelectedTourPointDetails from "./SelectedTourPointDetails";
+
+const SCREEN_HEIGHT = Dimensions.get("window").height;
+
+interface Props {
+  points: TourPoint[];
+  userLocation: { latitude: number; longitude: number } | null;
+  selectedPoint: TourPoint | null;
+  onSelectPoint: (point: TourPoint) => void;
+  onBack: () => void;
+  onFullScreenChange?: (isFull: boolean) => void;
+}
+
+const TourBottomSheet = forwardRef<BottomSheet, Props>(({ points, userLocation, selectedPoint, onSelectPoint, onBack, onFullScreenChange }, ref) => {
+  const localRef = useRef<BottomSheet>(null);
+  const snapPoints = useMemo(() => ["25%", "50%", SCREEN_HEIGHT], []);
+  const [index, setIndex] = useState(1);
+  const insets = useSafeAreaInsets();
+
+  const isFullScreen = index === 2;
+
+  useImperativeHandle(ref, () => localRef.current as BottomSheet);
+
+  useEffect(() => {
+    onFullScreenChange?.(isFullScreen);
+  }, [isFullScreen]);
+
+  const renderScrollView = () => {
+    if (!selectedPoint && userLocation) {
+      return (
+        <BottomSheetScrollView
+         
+          contentContainerStyle={styles.contentContainer}
+          scrollEnabled={true}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {points.map((point) => (
+            <TourPointItem
+              key={point.id}
+              point={point}
+              userLocation={userLocation}
+              onSelect={(p) => {
+                onSelectPoint(p);
+                localRef.current?.snapToIndex(0);
+              }}
+            />
+          ))}
+        </BottomSheetScrollView>
+      );
+    }
+
+    if (selectedPoint) {
+      return (
+        <BottomSheetScrollView
+          contentContainerStyle={styles.contentContainer}
+          scrollEnabled={true}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <SelectedTourPointDetails point={selectedPoint} />
+
+
+        </BottomSheetScrollView>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <BottomSheet
+      ref={localRef}
+      index={1}
+      snapPoints={snapPoints}
+      enablePanDownToClose={false}
+      enableContentPanningGesture={true}
+      handleStyle={isFullScreen ? styles.hiddenHandle : styles.handleStyle}
+      handleIndicatorStyle={isFullScreen ? styles.hiddenHandle : styles.handleIndicatorStyle}
+      onChange={(i) => setIndex(i)}
+      backgroundStyle={isFullScreen ? styles.fullscreenBackground : {}}
+    >
+      {selectedPoint ? (
+        isFullScreen && (
+          <Header
+            title="Informacija"
+            onBackPress={() => localRef.current?.snapToIndex(1)}
+            onPressClose={onBack}
+          />
+        )
+      ) : isFullScreen && (
+        <Header
+          title="Geo Points"
+          onBackPress={() => {
+            if (isFullScreen) {
+              localRef.current?.snapToIndex(1);
+            } else {
+              onBack();
+            }
+          }}
+          onPressClose={onBack}
+        />
+      )}
+
+      {renderScrollView()}
+    </BottomSheet>
+  );
+});
+
+export default TourBottomSheet;
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    padding: 16,
+    paddingBottom: 48,
+    gap: 12,
+    flexGrow: 1,
+    paddingTop: 16,
+  },
+  handleStyle: {
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+  },
+  handleIndicatorStyle: {
+    backgroundColor: "#aaa",
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    alignSelf: "center",
+    marginTop: 8,
+  },
+  hiddenHandle: {
+    display: "none",
+  },
+  fullscreenBackground: {
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+  },
+  detailTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 8,
+  },
+  detailLink: {
+    fontSize: 14,
+    color: "#1E90FF",
+    textDecorationLine: "underline",
+  },
+  detailHint: {
+    marginTop: 8,
+    fontSize: 12,
+    color: "#888",
+  },
+  selectedContainer: {
+    paddingTop: 16,
+    paddingHorizontal: 16,
+  },
+  
+});

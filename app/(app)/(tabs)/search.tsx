@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Box, Text, FlatList, Spinner } from "native-base";
-import { Keyboard, TouchableWithoutFeedback } from "react-native";
+import { Keyboard, ScrollView, TouchableWithoutFeedback, View } from "react-native";
 import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
-import { fetchRoutes } from "@/src/data/features/routes/routesSlice";
+import { fetchRoutes } from "@/src/data/features/routes/routesThunks";
 import MiniTourCard from "@/src/components/MiniTourCard";
-import SearchBar from "@/src/components/SearchBar"; // ✅ Naudojame naują komponentą
+import SearchBar from "@/src/components/SearchBar"; 
 import Header from "@/src/components/Header";
-import ScreenContainer from "@/src/components/ScreenContainer";
+import FlexContainer from "@/src/components/layout/FlexContainer";
+import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 
 export default function SearchScreen() {
   const dispatch = useAppDispatch();
@@ -29,7 +30,11 @@ export default function SearchScreen() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <ScreenContainer variant="top">
+    <ScrollView
+      keyboardShouldPersistTaps="handled"
+      style={{ backgroundColor: "#FFF" }}
+    >
+      <FlexContainer gap={16}>
         <Header title="Search" />
         <SearchBar
           placeholder="Search Tours"
@@ -38,7 +43,7 @@ export default function SearchScreen() {
           onClear={() => setSearchTerm("")}
         />
         {searchTerm.length < 3 ? (
-          <Text color="gray.400" textAlign="center" mt={5}>
+          <Text color="gray.400" textAlign="center">
             Type to search...
           </Text>
         ) : loading ? (
@@ -46,7 +51,7 @@ export default function SearchScreen() {
             <Spinner size="lg" color="primary.500" />
           </Box>
         ) : isEmptyResults ? (
-          <Text color="gray.500" textAlign="center" mt={5}>
+          <Text color="gray.500" textAlign="center">
             No results found.
           </Text>
         ) : (
@@ -54,12 +59,22 @@ export default function SearchScreen() {
             data={routes}
             keyExtractor={(item) => item.id.toString()}
             numColumns={2}
-            columnWrapperStyle={{ justifyContent: "space-between" }}
+            columnWrapperStyle={{
+              justifyContent: "space-between",
+              gap: wp("1%")
+            }}
+            contentContainerStyle={{
+              gap: wp("1%"),
+              marginHorizontal: wp("3%"),
+            }}
             renderItem={({ item }) => <MiniTourCard tour={item} />}
+            scrollEnabled={false}
           />
-        )}
-      </ScreenContainer>
-    </TouchableWithoutFeedback>
-  );
 
+        )}
+      </FlexContainer>
+    </ScrollView>
+  </TouchableWithoutFeedback>
+  
+  );
 }

@@ -26,10 +26,15 @@ export const fetchCategories = createThunk<void, CategoryList>(
 );
 
 // Get category by ID
-export const fetchCategoryById = createThunk<string, CategoryDetails>(
+export const fetchCategoryById = createThunk<number, CategoryDetails>(
   "categories/fetchCategoryById",
-  (categoryId) => CategoriesService.getCategoryById(categoryId).then(response => ({ data: response.data! }))
+  (categoryId) =>
+    CategoriesService.getCategoryById(categoryId.toString()).then(response => ({
+      data: response.data!,
+    }))
 );
+
+
 
 // Create category (admin only)
 export const createCategory = createThunk<CategoryRequest, NewCategory>(

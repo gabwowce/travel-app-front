@@ -5,6 +5,8 @@ import type { RegisterRequest } from "@/src/api/generated/models/RegisterRequest
 import type { UserResponse } from "@/src/api/generated/models/UserResponse";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ExtractData, ExtractList } from "@/src/utils/typeHelpers";
+import { OpenAPI } from "@/src/api/generated/core/OpenAPI";
+
 
 // =============================
 // Išgryninti "data" tipai

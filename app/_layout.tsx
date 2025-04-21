@@ -1,9 +1,12 @@
+// app/_layout.tsx
 import React, { useState, useEffect } from 'react';
 import { Stack, Slot } from 'expo-router';
 import { Provider as ReduxProvider, useSelector, useDispatch } from 'react-redux';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { NativeBaseProvider } from 'native-base';
+import { NativeBaseProvider, View } from 'native-base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { useRouter } from 'expo-router';
 
 import { store } from '@/src/data/store';
 import theme from '@/src/config/theme';
@@ -12,19 +15,22 @@ import Splash from '@/src/components/screens/splash';
 import { StatusBar } from "expo-status-bar";
 
 import { useAppSelector } from "@/src/data/hooks";
-import { initAuth } from "@/src/data/features/auth/authSlice"; 
+import { initAuth } from "@/src/data/features/auth/authThunks"; 
 import { useAppDispatch } from '@/src/data/hooks';
 
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ReduxProvider store={store}>
-        <NativeBaseProvider theme={theme}>
-            <StatusBar style="dark" />
-            <MainNavigation />
-        </NativeBaseProvider>
-      </ReduxProvider>
-    </GestureHandlerRootView>
+    <ReduxProvider store={store}>
+      <NativeBaseProvider theme={theme}>
+        <StatusBar style="dark" translucent backgroundColor="transparent"/>
+        <View style={{ flex: 1 }}> 
+          <MainNavigation />
+        </View>
+      </NativeBaseProvider>
+    </ReduxProvider>
+  </GestureHandlerRootView>
+  
   );
 }
 
@@ -34,27 +40,35 @@ function MainNavigation() {
   const dispatch = useAppDispatch();
   
   const [onboardingDone, setOnboardingDone] = useState(false);
-  const [ready, setReady] = useState(false);
+  const [ready, setReady] = useState(true);
   const [showSplash, setShowSplash] = useState(true);
 
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const done = await AsyncStorage.getItem('onboardingDone');
-        setOnboardingDone(done === 'true'); 
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        setReady(true);
-      }
-    })();
-  }, []); 
+  // useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       const done = await AsyncStorage.getItem('onboardingDone');
+  //       setOnboardingDone(done === 'true'); 
+  //     } catch (e) {
+  //       console.warn(e);
+  //     } finally {
+  //       setReady(true);
+  //     }
+  //   })();
+  // }, []); 
 
   useEffect(() => {
     dispatch(initAuth()); // ✅ Dabar saugu naudoti
   }, []);
-  
+
+  const router = useRouter();
+
+  // useEffect(() => {
+  //   if (ready && isAuthenticated && onboardingDone) {
+  //     router.replace('/(app)/(tabs)/home'); // arba '/(auth)/index' jei nori tiksliai
+  //   }
+  // }, [ready, isAuthenticated, onboardingDone]);
+
 
   // useEffect(() => {
   //   AsyncStorage.removeItem('onboardingDone');
@@ -76,21 +90,27 @@ function MainNavigation() {
     return <Splash onFinish={() => setReady(true)} />;
   }
 
-  if (!onboardingDone) {
-    return (
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(onboarding)" />
-      </Stack>
-    );
-  }
+  // if (!onboardingDone) {
+  //   return (
+  //     <Stack screenOptions={{ headerShown: false }}>
+  //       <Stack.Screen name="(onboarding)" />
+  //     </Stack>
+  //   );
+  // }
 
-  if (isAuthenticated) {
-    return (
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(auth)/index" />
-      </Stack>
-    );
-  }
+  
+  // if (!isAuthenticated) {
+  //   return (
+  //     <Stack screenOptions={{ headerShown: false }}>
+  //       <Stack.Screen name="(auth)/index" />
+  //     </Stack>
+  //   );
+  // }
 
-  return <Slot />;
+  return (
+    <View style={{ flex: 1 }}>
+      <Slot />
+    </View>
+  );
+  
 }

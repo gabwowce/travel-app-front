@@ -1,5 +1,19 @@
 {
   "expo": {
+    "name": "front-app",
+    "slug": "front-app",
+    "version": "1.0.0",
+    "orientation": "default",
+    "icon": "./src/assets/images/icon.png",
+    "scheme": "myapp",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": false,
+    "plugins": [
+      "expo-router",
+      "expo-splash-screen",
+      "./plugins/android-uses-feature-plugin.js",
+      "./plugins/android-resizable-activity-plugin.js"
+    ],
     "experimental": {
       "plugins": {
         "reactNative": {
@@ -7,50 +21,64 @@
         }
       }
     },
-    "name": "front-app",
-    "slug": "front-app",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": false,
+    "androidStatusBar": {
+      "backgroundColor": "#00000000",
+      "translucent": true,
+      "barStyle": "dark-content"
+    },
     "ios": {
       "supportsTablet": true,
       "config": {
         "googleMapsApiKey": "AIzaSyAE9WjsB1kYDc_3tRQFgqeuuLWEz0VSA9E"
       }
     },
+    "infoPlist": {
+      "UIStatusBarStyle": "UIStatusBarStyleLightContent",
+      "UIViewControllerBasedStatusBarAppearance": false
+    },
     "android": {
-      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"],
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ],
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/icon.png",
+        "foregroundImage": "./src/assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
       "splash": {
-        "backgroundColor": "#00000000"
+        "backgroundColor": "#ffffff",
+        "image": "./src/assets/images/splashscreen_logo.png"
       },
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyAE9WjsB1kYDc_3tRQFgqeuuLWEz0VSA9E"
         }
-      }
+      },
+      "windowLayout": {
+        "mode": "edgeToEdge"
+      },
+      "package": "com.gabwowce.frontapp"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-    "plugins": [
-      "expo-router",
-      "expo-splash-screen"
-    ],
+    "splash": {},
     "experiments": {
       "typedRoutes": true
     },
-    "splash": {},
     "extra": {
-      "API_URL": "https://travelapp.prus.dev"
-    }
+      "API_URL": "https://travelapp.prus.dev",
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "28a51559-e325-43e6-976c-29b679b73b69"
+      }
+    },
+    "owner": "gabwowce"
   }
 }

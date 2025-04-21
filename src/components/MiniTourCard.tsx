@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
-import { Route } from "@/src/data/features/routes/routesTypes";
+import { Route } from "@/src/data/features/routes/routesThunks";
+const VINGIO_IMG = require("../assets/images/traku-pilis.jpg");
 
 interface TourCardProps {
   tour: Route;
@@ -11,7 +12,12 @@ const MiniTourCard: React.FC<TourCardProps> = ({ tour, onPress }) => {
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
       {tour.media?.length > 0 && (
-        <Image source={{ uri: tour.media[0]?.url }} style={styles.cardImage} />
+        // <Image source={{ uri: tour.media[0]?.url }} style={styles.cardImage} />
+        <Image
+          source={VINGIO_IMG}
+          style={styles.cardImage}
+          resizeMode="cover"
+        />
       )}
       <View style={styles.cardContent}>
         <Text style={styles.cardTitle}>{tour.name}</Text>
@@ -30,7 +36,6 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     backgroundColor: "#fff",
-    borderRadius: 15,
     overflow: "hidden",
     marginBottom: 15,
     marginHorizontal: 5,
@@ -38,6 +43,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
   },
   cardImage: {
     width: "100%",
