@@ -1,23 +1,27 @@
 import React from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { router } from "expo-router";          // ⬅️ expo-router import
 import { Route } from "@/src/data/features/routes/routesThunks";
 const VINGIO_IMG = require("../assets/images/traku-pilis.jpg");
 
 interface TourCardProps {
   tour: Route;
-  onPress?: () => void;
+  onPress?: () => void;   // paliekame, jei kartais norėtumėte perrašyti elgesį
 }
 
 const MiniTourCard: React.FC<TourCardProps> = ({ tour, onPress }) => {
+  const handlePress = onPress
+    ? onPress
+    : () =>
+        router.push({
+          pathname: "/tour/[id]",
+          params: { id: tour.id },  // ← perduodame id
+        });
+
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress}>
+    <TouchableOpacity style={styles.card} onPress={handlePress}>
       {tour.media?.length > 0 && (
-        // <Image source={{ uri: tour.media[0]?.url }} style={styles.cardImage} />
-        <Image
-          source={VINGIO_IMG}
-          style={styles.cardImage}
-          resizeMode="cover"
-        />
+        <Image source={VINGIO_IMG} style={styles.cardImage} resizeMode="cover" />
       )}
       <View style={styles.cardContent}>
         <Text style={styles.cardTitle}>{tour.name}</Text>

@@ -30,7 +30,9 @@ export interface TourPoint {
     longitude: number;
   };
   url: string;
+  address: string;
   category?: "museum" | "nature" | "food";
+  description: string;
 }
 
 export default function Map({ title, points }: MapProps) {
@@ -40,6 +42,7 @@ export default function Map({ title, points }: MapProps) {
   const [selectedPoint, setSelectedPoint] = useState<TourPoint | null>(null);
   const { userLocation } = useUserLocation();
   const [showMainHeader, setShowMainHeader] = useState(true);
+  const [sheetState, setSheetState] = useState<'list' | 'details' | 'full'>('list');
 
 
   const handleSelectPoint = (point: TourPoint) => {
@@ -86,6 +89,8 @@ export default function Map({ title, points }: MapProps) {
           onBackPress={selectedPoint ? handleBackToList : () => navigation.goBack()}
           onPressClose={selectedPoint ? () => navigation.goBack() : undefined}
         />
+
+        
       </View>
 
       )}

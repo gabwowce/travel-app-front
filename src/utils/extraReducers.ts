@@ -1,5 +1,6 @@
-import { isAnyOf } from "@reduxjs/toolkit";
 
+import { isAnyOf, type AnyAction, type AsyncThunk } from "@reduxjs/toolkit";
+import type { ParsedError } from "@/src/api/parseApiErrors";
 /**
  * Helper funkcija, kuri generuoja extraReducers pending/fulfilled/rejected handling globaliai
  */
@@ -20,11 +21,23 @@ export function createCommonReducers(thunks: any[], sliceName: string) {
         }
       )
       .addMatcher(
-        isAnyOf(...thunks.map(thunk => thunk.rejected)),
-        (state: any, action: any) => {
+        isAnyOf(...thunks.map((t) => t.rejected)),
+        (state: any, action: AnyAction) => {
           state.loading = false;
-          state.errors = action.error.message || {};
+
+          const payload = action.payload as ParsedError | undefined;
+
+          if (payload?.errors) {
+            state.errors = payload.errors; // 422 – laukų klaidos
+          } else if (payload?.message) {
+            state.errors = { general: payload.message }; // 401, 403, …
+          } else {
+            state.errors = {
+              general: action.error?.message ?? "Unknown error",
+            };
+          }
         }
       );
+      
   };
 }

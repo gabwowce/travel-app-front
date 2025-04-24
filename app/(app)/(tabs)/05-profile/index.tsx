@@ -95,6 +95,7 @@ export default function ProfileScreen() {
     },
   ];
   
+  const initial = user.name?.charAt(0)?.toUpperCase() ?? "?";
 
   return(
 <ScrollView style={{ backgroundColor: "#FFF" }} keyboardShouldPersistTaps="handled">
@@ -112,7 +113,7 @@ export default function ProfileScreen() {
     {/* Profilio info (avatar, vardas, el.paštas) */}
     <VStack alignItems="center" mb={hp("1%")}>
       <Avatar size="xl" source={{ uri: "https://via.placeholder.com/150" }}>
-        {user.name}
+        {initial}
       </Avatar>
       <Heading mt={hp("4%")} fontSize="lg">{user.name}</Heading>
       <Text color="gray.500">{user.email}</Text>

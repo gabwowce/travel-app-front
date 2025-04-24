@@ -13,9 +13,10 @@ interface HeaderProps {
   onPressClose?: () => void; // ✅ Custom funkcija uždarymui
   transparent?: boolean;
   rightIcon?: React.ReactNode;
+  disableSafeArea?:boolean;
 }
 
-export default function Header({ title, onBackPress, onPressClose, transparent = false, rightIcon }: HeaderProps) {
+export default function Header({ title, onBackPress, onPressClose, transparent = false, rightIcon, disableSafeArea = false }: HeaderProps) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
@@ -24,9 +25,18 @@ export default function Header({ title, onBackPress, onPressClose, transparent =
       style={[
         styles.headerContainer,
         { 
-          paddingTop: insets.top + 10, 
+          paddingTop: disableSafeArea ? 10 : insets.top + 10,
+
           paddingHorizontal: wp("3%"),
           backgroundColor: transparent ? "transparent" : "#FFFCF9",
+          borderWidth: 1,
+          borderColor: "rgba(0,0,0,0.1)", // ✨ subtle border
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+          elevation: 4, // for Android
+
         }
       ]}
     >
@@ -51,8 +61,8 @@ export default function Header({ title, onBackPress, onPressClose, transparent =
 
 const styles = StyleSheet.create({
   headerContainer: {
-    
-    borderRadius: 16,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
     // paddingHorizontal: 20,
     // paddingVertical: 20,
     flexDirection: "row",

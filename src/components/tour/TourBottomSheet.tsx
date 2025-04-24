@@ -9,7 +9,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import SelectedTourPointDetails from "./SelectedTourPointDetails";
 
-const SCREEN_HEIGHT = Dimensions.get("window").height;
 
 interface Props {
   points: TourPoint[];
@@ -22,9 +21,12 @@ interface Props {
 
 const TourBottomSheet = forwardRef<BottomSheet, Props>(({ points, userLocation, selectedPoint, onSelectPoint, onBack, onFullScreenChange }, ref) => {
   const localRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ["25%", "50%", SCREEN_HEIGHT], []);
-  const [index, setIndex] = useState(1);
   const insets = useSafeAreaInsets();
+  const fullHeight = Dimensions.get('screen').height + insets.top;
+  const snapPoints = useMemo(() => ['28%', '50%', '100%'], []);
+  
+  const [index, setIndex] = useState(1);
+
 
   const isFullScreen = index === 2;
 
@@ -67,7 +69,7 @@ const TourBottomSheet = forwardRef<BottomSheet, Props>(({ points, userLocation, 
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <SelectedTourPointDetails point={selectedPoint} />
+          <SelectedTourPointDetails point={selectedPoint} userLocation={userLocation}/>
 
 
         </BottomSheetScrollView>
@@ -82,11 +84,13 @@ const TourBottomSheet = forwardRef<BottomSheet, Props>(({ points, userLocation, 
       index={1}
       snapPoints={snapPoints}
       enablePanDownToClose={false}
+      topInset={0}
       enableContentPanningGesture={true}
       handleStyle={isFullScreen ? styles.hiddenHandle : styles.handleStyle}
       handleIndicatorStyle={isFullScreen ? styles.hiddenHandle : styles.handleIndicatorStyle}
       onChange={(i) => setIndex(i)}
-      backgroundStyle={isFullScreen ? styles.fullscreenBackground : {}}
+      backgroundStyle={isFullScreen ? styles.fullscreenBackground : styles.screenBackground}
+      enableDynamicSizing = {false}
     >
       {selectedPoint ? (
         isFullScreen && (
@@ -94,6 +98,7 @@ const TourBottomSheet = forwardRef<BottomSheet, Props>(({ points, userLocation, 
             title="Informacija"
             onBackPress={() => localRef.current?.snapToIndex(1)}
             onPressClose={onBack}
+            disableSafeArea
           />
         )
       ) : isFullScreen && (
@@ -107,6 +112,7 @@ const TourBottomSheet = forwardRef<BottomSheet, Props>(({ points, userLocation, 
             }
           }}
           onPressClose={onBack}
+          disableSafeArea
         />
       )}
 
@@ -141,9 +147,21 @@ const styles = StyleSheet.create({
     display: "none",
   },
   fullscreenBackground: {
-    backgroundColor: "#fff",
+    backgroundColor: "#FFFCF9",
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
+  },
+  screenBackground: {
+    backgroundColor: "#FFFCF9",
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.1)",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   detailTitle: {
     fontSize: 18,

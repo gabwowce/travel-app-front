@@ -1,36 +1,32 @@
-export interface ParsedApiErrors {
-  general?: string;
-  [field: string]: string[] | string | undefined;
-}
+/* ────────────────────────────────────────────────────────
+   src/api/parseApiErrors.ts
+   Vienintelė vieta, kur „išverčiam“ API klaidas į bendrą
+   { message, errors? } formatą.
+   ──────────────────────────────────────────────────────── */
+   import { ApiError } from "@/src/api/generated/core/ApiError";
 
-export const parseApiErrors = (error: any): ParsedApiErrors => {
-  const parsed: ParsedApiErrors = {};
-
-  // Axios klaidos atveju error.response.data
-  const errorData =
-    error?.response?.data?.errors ||
-    error?.data?.errors ||
-    error?.errors ||
-    error?.data?.data?.errors ||
-    null;
-
-  if (errorData) {
-    Object.keys(errorData).forEach((field) => {
-      parsed[field] = errorData[field]; // išlaikom visą masyvą
-    });
-
-    const firstField = Object.keys(errorData)[0];
-    if (firstField && errorData[firstField]?.[0]) {
-      parsed.general = errorData[firstField][0];
-    }
-  } else {
-    parsed.general =
-      error?.response?.data?.message ||
-      error?.data?.message ||
-      error?.message ||
-      "Unknown error";
-  }
-
-  return parsed;
-};
-
+   export interface ParsedError {
+     message: string;
+     errors?: Record<string, string[]>;
+   }
+   
+   export function parseApiErrors(err: unknown): ParsedError {
+     // Laravel 422
+     if (err instanceof ApiError && err.body?.errors) {
+       return { message: err.body.message, errors: err.body.errors };
+     }
+   
+     // Laravel 401, 403, 404…
+     if (err instanceof ApiError && err.body?.message) {
+       return { message: err.body.message };
+     }
+   
+     // Fallback
+     const message =
+       typeof err === "object" && err !== null && "message" in err
+         ? (err as any).message
+         : "Unknown error";
+   
+     return { message };
+   }
+   

@@ -8,6 +8,7 @@ export default function AppLayout() {
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       {/* A separate screen for the Tour, using [id] param */}
       <Stack.Screen name="tour/[id]" options={{ headerShown: false }} />
+      <Stack.Screen name="category/[id]" options={{ headerShown: false }} />
     </Stack>
   );
 }

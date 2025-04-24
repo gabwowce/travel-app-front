@@ -1,13 +1,23 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Linking, Platform, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Linking,
+  Platform,
+  StyleSheet,
+  Share,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { TourPoint } from "../map/map";
+import { getDistanceLabel } from "@/src/components/tour/getDistanceLabel";
 
 interface Props {
   point: TourPoint;
+  userLocation?: { latitude: number; longitude: number } | null;
 }
 
-export default function SelectedTourPointDetails({ point }: Props) {
+export default function SelectedTourPointDetails({ point, userLocation }: Props) {
   const openNavigation = () => {
     const { latitude, longitude } = point.coords;
     const url = Platform.select({
@@ -17,76 +27,125 @@ export default function SelectedTourPointDetails({ point }: Props) {
     Linking.openURL(url!);
   };
 
+  const handleShare = () => {
+    Share.share({
+      message: `${point.title} – ${point.url}`,
+    });
+  };
+
   return (
-    <View style={styles.container}>
+    <View style={styles.wrapper}>
       <Text style={styles.title}>{point.title}</Text>
-      <Text
-        style={styles.link}
-        onPress={() => Linking.openURL(point.url)}
-      >
-        {point.url}
-      </Text>
-      <Text style={styles.hint}>📍 Šis taškas pasirinktas</Text>
+      <Text style={styles.address}>{point.address}</Text>
 
-      <View style={styles.actionRow}>
-        <TouchableOpacity
-          style={styles.iconButton}
-          onPress={() => Linking.openURL(point.url)}
-        >
-          <Ionicons name="information-circle-outline" size={22} color="#888" />
-          <Text style={styles.iconLabel}>Info</Text>
+      {userLocation && (
+        <Text style={styles.distance}>
+          📏 Atstumas: {getDistanceLabel(userLocation, point.coords)}
+        </Text>
+      )}
+
+      <TouchableOpacity onPress={() => Linking.openURL(point.url)}>
+        <Text style={styles.link}>{point.url}</Text>
+      </TouchableOpacity>
+
+      <View style={styles.buttons}>
+        <TouchableOpacity style={styles.button}>
+          <Ionicons name="bookmark-outline" size={20} color="#666" />
+          <Text style={styles.buttonText}>Išsaugoti</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.iconButton}
-          onPress={openNavigation}
-        >
-          <Ionicons name="navigate-outline" size={22} color="#1E90FF" />
-          <Text style={styles.iconLabel}>Naviguoti</Text>
+        <TouchableOpacity style={styles.button} onPress={handleShare}>
+          <Ionicons name="share-social-outline" size={20} color="#666" />
+          <Text style={styles.buttonText}>Dalintis</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button} onPress={openNavigation}>
+          <Ionicons name="navigate-outline" size={20} color="#1E90FF" />
+          <Text style={styles.buttonText}>Naviguoti</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Nuotraukos</Text>
+        {/* media render in future */}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Aprašymas</Text>
+        <Text style={styles.sectionText}>{point.description}</Text>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    paddingTop: 16,
-    paddingHorizontal: 16,
+  wrapper: {
+    width: "100%",
+    padding: 16,
   },
   title: {
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: 20,
+    fontWeight: "700",
+    marginBottom: 4,
+  },
+  address: {
+    fontSize: 14,
+    color: "#555",
+    marginBottom: 6,
+  },
+  distance: {
+    backgroundColor: "#F0F0F0",
+    alignSelf: "flex-start",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    fontSize: 13,
+    color: "#333",
     marginBottom: 8,
   },
   link: {
     fontSize: 14,
     color: "#1E90FF",
     textDecorationLine: "underline",
+    marginBottom: 16,
   },
-  hint: {
-    marginTop: 8,
-    fontSize: 12,
-    color: "#888",
-  },
-  actionRow: {
+  buttons: {
     flexDirection: "row",
-    justifyContent: "flex-start",
-    gap: 16,
-    marginTop: 16,
+    gap: 12,
+    flexWrap: "wrap",
+    marginBottom: 24,
   },
-  iconButton: {
+  button: {
+    flexDirection: "row",
     alignItems: "center",
-    flexDirection: "row",
     gap: 6,
-    backgroundColor: "#f1f1f1",
+    backgroundColor: "#f3f3f3",
     paddingVertical: 8,
     paddingHorizontal: 12,
-    borderRadius: 8,
+    borderRadius: 10,
   },
-  iconLabel: {
+  buttonText: {
     fontSize: 14,
-    color: "#333",
     fontWeight: "500",
+    color: "#333",
+  },
+  section: {
+    backgroundColor: "#FAFAFA",
+    borderRadius: 12,
+    borderColor: "#E0E0E0",
+    borderWidth: 1,
+    padding: 12,
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 8,
+    color: "#333",
+  },
+  sectionText: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: "#444",
   },
 });
