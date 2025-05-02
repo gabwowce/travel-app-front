@@ -7,15 +7,15 @@ import {
   Platform,
   StyleSheet,
 } from "react-native";
-import { Text } from "native-base";
-import Button from "@/src/components/btns/Button";
+import { Checkbox, Text } from "native-base";
+import Button from "@/src/components/ui/btns/Button";
 import { useDispatch } from "react-redux";
 import { register } from "../../src/data/features/auth/authThunks";
 import {clearErrors} from "@/src/data/features/auth/authSlice";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { AppDispatch } from "../../src/data/store";
 import { useAppSelector } from "@/src/data/hooks";
-import CustomInput from "@/src/components/input/CustomInput"; // 🔹 Importuojame CustomInput
+import CustomInput from "@/src/components/ui/input/CustomInput"; // 🔹 Importuojame CustomInput
 import KeyboardWrapper from "@/src/components/KeyboardWrapper"; // 🔹 Importuojam komponentą
 import ScreenContainer from "@/src/components/ScreenContainer";
 
@@ -28,6 +28,7 @@ export default function RegisterScreen() {
   const router = useRouter();
   const loading = useAppSelector((state)=> state.auth.loading);
   const errors = useAppSelector((state)=> state.auth.errors);
+  const [agreed, setAgreed] = useState(false);
 
   const handleRegister = async () => {
     const resultAction = await dispatch(
@@ -38,6 +39,11 @@ export default function RegisterScreen() {
         password_confirmation: confirmPassword,
       })
     );
+    if (!agreed) {
+      alert("You must agree to the Privacy Policy & Terms");
+      return;
+    }
+    
     if (register.fulfilled.match(resultAction)) {
       router.replace("/(app)/(tabs)/home");
     }
@@ -85,6 +91,21 @@ export default function RegisterScreen() {
 
         {errors.general && <Text style={{ color: "red", textAlign: "center" }}>{errors.general}</Text>}
 
+        <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 10 }}>
+          <Checkbox isChecked={agreed} onChange={setAgreed} value="agree" accessibilityLabel="Agree to terms" />
+          <Text ml={2}>
+            I agree to the{" "}
+            <Text
+              onPress={() => router.push("/(legal)/privacy")}
+              style={{ textAlign: "center", textDecorationLine: "underline" }}
+            >
+              Privacy & Terms
+            </Text>
+
+          </Text>
+        </View>
+
+
         <Button label={loading ? "Creating account..." : "Register"} onPress={handleRegister} />
 
         <Text
@@ -96,6 +117,7 @@ export default function RegisterScreen() {
         >
           Have an account? Login
         </Text>
+        
       </ScreenContainer>
     </KeyboardWrapper>
   );

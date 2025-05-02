@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "front-app",
-    "slug": "front-app",
+    "name": "Elatray",
+    "slug": "Elatray",
     "version": "1.0.0",
     "orientation": "default",
-    "icon": "./src/assets/images/icon.png",
+    "icon": "./src/assets/logo/logo-v1.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": false,
@@ -44,12 +44,19 @@
         "ACCESS_COARSE_LOCATION"
       ],
       "adaptiveIcon": {
-        "foregroundImage": "./src/assets/images/icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./src/assets/logo/logo-v1.png",
+        "backgroundColor": "#FFFFFF"
       },
       "splash": {
-        "backgroundColor": "#ffffff",
-        "image": "./src/assets/images/splashscreen_logo.png"
+        "backgroundColor": "#FFFFFF",
+        "image": "./src/assets/images/splashscreen_logo.png",
+        "resizeMode": "contain",
+        "statusBarStyle": "dark"
+      },
+      "android12Splash": {             
+        "backgroundColor": "#FFFFFF",  
+        "image": "./src/assets/images/splashscreen_logo.png",
+        "resizeMode": "contain"
       },
       "config": {
         "googleMaps": {
@@ -66,7 +73,12 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-    "splash": {},
+    "splash": {
+      "statusBarStyle": "dark",
+      "backgroundColor": "#FFFFFF",
+      "image": "./src/assets/images/splashscreen_logo.png",
+      "resizeMode": "contain"
+    },
     "experiments": {
       "typedRoutes": true
     },

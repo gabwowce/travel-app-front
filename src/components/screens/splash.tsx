@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Center, Text } from "native-base";
-import { LinearGradient } from 'expo-linear-gradient';
+import React, { useEffect } from 'react';
+import { Box, Center, Image, Text, VStack } from "native-base";
 
 interface SplashProps {
   onFinish: () => void;
@@ -16,15 +15,21 @@ export default function Splash({ onFinish }: SplashProps) {
   }, []);
 
   return (
-    <Box flex={1}>
-      <LinearGradient
-        colors={['#90DAEE', '#C3F1D5']}
-        style={{ flex: 1 }}
-      >
-        <Center flex={1}>
-          <Text fontSize="3xl" fontWeight="bold">TravelMate</Text>
-        </Center>
-      </LinearGradient>
+    <Box flex={1} bg="#FFFFFF">
+      <Center flex={1}>
+        <VStack space={4} alignItems="center">
+          <Image
+            source={require('@/src/assets/logo/logo-v1.png')}
+            alt="Logo"
+            width={150}
+            height={150}
+            resizeMode="contain"
+          />
+          <Text fontSize="3xl" fontWeight="bold" color="black">
+            Elatray
+          </Text>
+        </VStack>
+      </Center>
     </Box>
   );
 }

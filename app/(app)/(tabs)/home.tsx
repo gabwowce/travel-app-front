@@ -10,6 +10,7 @@ import type { Category } from "@/src/api/generated/models/Category";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 import useBreakpoint from "@/src/hooks/useBreakpoint";
 import { useRouter } from "expo-router";
+import SectionHeader from "@/src/components/ui/SectionHeader";
 
 const VINGIO_IMG = require("../../../src/assets/images/vingio-parkas.png");
 
@@ -27,7 +28,7 @@ export default function Home() {
   const categoriesLoading = useAppSelector((state) => state.categories.loading);
 
   const { heightBreakpoint } = useBreakpoint();
-  const paddingTop = heightBreakpoint === "short" ? wp("10%") : wp("37%");
+  const paddingTop = heightBreakpoint === "short" ? wp("10%") : wp("17%");
 
   // ────────────────── INITIAL LOAD ────────────────────────────
   useEffect(() => {
@@ -60,7 +61,7 @@ export default function Home() {
           </VStack>
 
           {/* ───────────────── CATEGORIES SECTION ─────── */}
-          <Text variant="header2Bold" pl={wp("3%")} pb={wp("2%")}>Categories</Text>
+          <SectionHeader title="Categories" />
 
           {categoriesLoading ? (
             <Box alignItems="center" py="15px">
@@ -89,9 +90,7 @@ export default function Home() {
           )}
 
           {/* ───────────────── FEATURED ROUTES SECTION ───────────── */}
-          <Text variant="header2Bold" pl={wp("3%")} pt={wp("4%")} pb={wp("2%")}>
-            Featured tours
-          </Text>
+          <SectionHeader title="Featured tours" topPadding />
 
           {routesLoading ? (
             <Box alignItems="center" py="20px">

@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { Text } from "native-base";
-import Button from "@/src/components/btns/Button";
-import { useRouter } from "expo-router";
+import Button from "@/src/components/ui/btns/Button";
+import { Link, useRouter } from "expo-router";
 import { login } from "@/src/data/features/auth/authThunks";
 import {clearErrors} from "@/src/data/features/auth/authSlice";
 import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
-import CustomInput from "@/src/components/input/CustomInput";
+import CustomInput from "@/src/components/ui/input/CustomInput";
 import KeyboardWrapper from "@/src/components/KeyboardWrapper"; // 🔹 Importuojam naują komponentą
 import ScreenContainer from "@/src/components/ScreenContainer";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
@@ -67,6 +67,13 @@ export default function LoginScreen() {
         >
           Don't have an account? Register
         </Text>
+        <Text
+          onPress={() => router.push("/(legal)/privacy")}
+          style={{ textAlign: "center", marginTop: 20, textDecorationLine: "underline" }}
+        >
+          Privacy & Terms
+        </Text>
+
       </ScreenContainer>
     </KeyboardWrapper>
   );

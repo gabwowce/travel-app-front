@@ -4,7 +4,7 @@ import { Text } from "native-base";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import BackButton from "./btns/BackButton";
+import BackButton from "./ui/btns/BackButton";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 
 interface HeaderProps {

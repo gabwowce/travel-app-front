@@ -40,7 +40,7 @@ export default function SelectedTourPointDetails({ point, userLocation }: Props)
 
       {userLocation && (
         <Text style={styles.distance}>
-          📏 Atstumas: {getDistanceLabel(userLocation, point.coords)}
+          📏 Distance: {getDistanceLabel(userLocation, point.coords)}
         </Text>
       )}
 
@@ -51,27 +51,27 @@ export default function SelectedTourPointDetails({ point, userLocation }: Props)
       <View style={styles.buttons}>
         <TouchableOpacity style={styles.button}>
           <Ionicons name="bookmark-outline" size={20} color="#666" />
-          <Text style={styles.buttonText}>Išsaugoti</Text>
+          <Text style={styles.buttonText}>Save</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.button} onPress={handleShare}>
           <Ionicons name="share-social-outline" size={20} color="#666" />
-          <Text style={styles.buttonText}>Dalintis</Text>
+          <Text style={styles.buttonText}>Share</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.button} onPress={openNavigation}>
           <Ionicons name="navigate-outline" size={20} color="#1E90FF" />
-          <Text style={styles.buttonText}>Naviguoti</Text>
+          <Text style={styles.buttonText}>Navigate</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Nuotraukos</Text>
+        <Text style={styles.sectionTitle}>Photos</Text>
         {/* media render in future */}
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Aprašymas</Text>
+        <Text style={styles.sectionTitle}>Description</Text>
         <Text style={styles.sectionText}>{point.description}</Text>
       </View>
     </View>

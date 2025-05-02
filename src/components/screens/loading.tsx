@@ -5,9 +5,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import {ActivityIndicator,} from 'react-native';
 
 export default function LoadingScreen() {
-  useEffect(() => {
-    SplashScreen.preventAutoHideAsync().catch(() => {});
-  }, []);
+  // useEffect(() => {
+  //   SplashScreen.preventAutoHideAsync().catch(() => {});
+  // }, []);
 
   return (
     <Box flex={1}>

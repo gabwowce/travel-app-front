@@ -17,18 +17,21 @@ import { StatusBar } from "expo-status-bar";
 import { useAppSelector } from "@/src/data/hooks";
 import { initAuth } from "@/src/data/features/auth/authThunks"; 
 import { useAppDispatch } from '@/src/data/hooks';
-
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-    <ReduxProvider store={store}>
-      <NativeBaseProvider theme={theme}>
-        <StatusBar style="dark" translucent backgroundColor="transparent"/>
-        <View style={{ flex: 1 }}> 
-          <MainNavigation />
-        </View>
-      </NativeBaseProvider>
-    </ReduxProvider>
+       <BottomSheetModalProvider>
+        <ReduxProvider store={store}>
+          <NativeBaseProvider theme={theme}>
+            <StatusBar style="dark" translucent backgroundColor="transparent"/>
+            <View style={{ flex: 1 }}> 
+              <MainNavigation />
+            </View>
+          </NativeBaseProvider>
+        </ReduxProvider>
+       </BottomSheetModalProvider>
+    
   </GestureHandlerRootView>
   
   );

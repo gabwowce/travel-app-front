@@ -95,7 +95,7 @@ const TourBottomSheet = forwardRef<BottomSheet, Props>(({ points, userLocation, 
       {selectedPoint ? (
         isFullScreen && (
           <Header
-            title="Informacija"
+            title={`About`}
             onBackPress={() => localRef.current?.snapToIndex(1)}
             onPressClose={onBack}
             disableSafeArea

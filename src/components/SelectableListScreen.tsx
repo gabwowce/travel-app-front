@@ -4,7 +4,7 @@ import { Box, HStack, Text, IconButton, CloseIcon } from "native-base";
 import ScreenContainer from "@/src/components/ScreenContainer";
 import Header from "@/src/components/Header";
 import SearchBar from "@/src/components/SearchBar";
-import Button from "@/src/components/btns/Button";
+import Button from "@/src/components/ui/btns/Button";
 import { useAppDispatch } from "@/src/data/hooks";
 import { resetTour } from "@/src/data/features/tours/tourSlice";
 import { useRouter } from "expo-router";

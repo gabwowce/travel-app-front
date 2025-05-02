@@ -13,7 +13,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { StatusBar as RNStatusBar } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import BackButton from './btns/BackButton';
+import BackButton from './ui/btns/BackButton';
 import { Text } from "native-base";
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 
