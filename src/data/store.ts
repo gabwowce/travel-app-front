@@ -5,15 +5,18 @@ import routesReducer from "./features/routes/routesSlice";
 import categoriesReducer from "@/src/data/features/categories/categoriesSlice";
 import tourReducer from "@/src/data/features/tours/tourSlice";
 import placesReducer from "@/src/data/features/places/placesSlice";
-
+import { travelApi } from '../store/travelApi'; 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     routes: routesReducer,
     categories: categoriesReducer,
     tour: tourReducer,
-    places: placesReducer
+    places: placesReducer,
+    [travelApi.reducerPath]: travelApi.reducer,
   },
+
+  middleware: (gDM) => gDM().concat(travelApi.middleware), // įdedam middleware
   
 });
 

@@ -1,30 +1,46 @@
+// LoginScreen.tsx
 import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { Text } from "native-base";
 import Button from "@/src/components/ui/btns/Button";
 import { Link, useRouter } from "expo-router";
-import { login } from "@/src/data/features/auth/authThunks";
-import {clearErrors} from "@/src/data/features/auth/authSlice";
-import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
+
+import {
+  useLoginUserMutation,          // ← sugeneruotas hook’as
+} from "@/src/store/travelApi";
+
 import CustomInput from "@/src/components/ui/input/CustomInput";
-import KeyboardWrapper from "@/src/components/KeyboardWrapper"; // 🔹 Importuojam naują komponentą
+import KeyboardWrapper from "@/src/components/KeyboardWrapper";
 import ScreenContainer from "@/src/components/ScreenContainer";
-import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState("");
+  const [email,    setEmail]    = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-  const dispatch = useAppDispatch();
-  const loading = useAppSelector((state) => state.auth.loading);
-  const errors = useAppSelector((state) => state.auth.errors);
-  
 
-  const handleLogin = async () => {
-    const resultAction = await dispatch(login({ email, password }));
-    if (login.fulfilled.match(resultAction)) {
-      router.push("/(app)/(tabs)/home");
-    }
+  /* --- RTK Query --- */
+  const [login, { isLoading, error, reset }] = useLoginUserMutation();
+
+  /* --- Padeda rodyti backend’o klaidas --- */
+  const apiErrors = (error as any)?.data?.errors ?? {};      // { email: ['msg'], password: [...] }
+  const general   = (error as any)?.data?.message;           // pvz. “Invalid credentials”
+
+ const handleLogin = async () => {
+  try {
+    await login({                    // ← argumentas
+      loginRequest: { email, password }
+    }).unwrap();                     // sėkmės atveju
+    router.push("/(app)/(tabs)/home");
+  } catch {
+    /* error jau laikomas hook’o state */
+  }
+};
+
+
+  /* Navigacija į registraciją – pakanka „reset()“, kad nuvalytume klaidų būseną */
+  const gotoRegister = () => {
+    reset();
+    router.push("/register");
   };
 
   return (
@@ -34,7 +50,7 @@ export default function LoginScreen() {
           <Text variant="header1">Sign in now</Text>
           <Text variant="bodyGray">Please sign in to continue</Text>
         </View>
-  
+
         <CustomInput
           label="Email"
           placeholder="Email"
@@ -42,7 +58,7 @@ export default function LoginScreen() {
           keyboardType="email-address"
           value={email}
           onChangeText={setEmail}
-          error={errors.email}
+          error={apiErrors.email?.[0]}
         />
         <CustomInput
           label="Password"
@@ -50,38 +66,36 @@ export default function LoginScreen() {
           secureTextEntry
           value={password}
           onChangeText={setPassword}
-          error={errors.password}
-          onForgotPassword={() => router.push("/(auth)/forgotPassword")} 
+          error={apiErrors.password?.[0]}
+          onForgotPassword={() => router.push("/(auth)/forgotPassword")}
         />
-  
-        {errors.general && <Text style={{ color: "red", textAlign: "center", paddingBottom:20 }}>{errors.general}</Text>}
-  
-        <Button label={loading ? "Signing in..." : "Sign in"} onPress={handleLogin} />
-  
-        <Text
-          onPress={() => {
-            dispatch(clearErrors());
-            router.push("/register");
-          }}
-          style={{ textAlign: "center", marginTop: 20 }}
-        >
+
+        {general && (
+          <Text style={{ color: "red", textAlign: "center", paddingBottom: 20 }}>
+            {general}
+          </Text>
+        )}
+
+        <Button
+          label={isLoading ? "Signing in..." : "Sign in"}
+          onPress={handleLogin}
+        />
+
+        <Text onPress={gotoRegister} style={styles.link}>
           Don't have an account? Register
         </Text>
         <Text
           onPress={() => router.push("/(legal)/privacy")}
-          style={{ textAlign: "center", marginTop: 20, textDecorationLine: "underline" }}
+          style={[styles.link, { textDecorationLine: "underline" }]}
         >
           Privacy & Terms
         </Text>
-
       </ScreenContainer>
     </KeyboardWrapper>
   );
 }
 
 const styles = StyleSheet.create({
-  text: {
-    alignItems: "center",
-    marginBottom: 20,
-  },
+  text: { alignItems: "center", marginBottom: 20 },
+  link: { textAlign: "center", marginTop: 20 },
 });

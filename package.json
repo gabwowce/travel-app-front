@@ -9,7 +9,10 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "api:pull":   "curl -L https://travelapp.prus.dev/api/documentation-json -o spec/openapi.json",
+    "api:gen":    "rtk-query-codegen-openapi openapi-config.js",
+    "api:update": "npm run api:pull && npm run api:gen"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
@@ -54,6 +57,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
+    "@rtk-query/codegen-openapi": "^2.0.0",
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-native": "^13.2.0",
     "@types/jest": "^29.5.14",
