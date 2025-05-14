@@ -26,7 +26,7 @@ import { Linking, Platform } from "react-native";
 import FlexContainer from "@/src/components/layout/FlexContainer";
 
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
-import { useGetUserProfileQuery } from '@/src/store/travelApi';
+import { useGetUserProfileQuery, useLogoutUserMutation  } from '@/src/store/travelApi';
 
 
 export default function ProfileScreen() {
@@ -41,7 +41,8 @@ export default function ProfileScreen() {
     isError,
     refetch,
   } = useGetUserProfileQuery();
-
+  const [logoutUser, { isLoading: loggingOut }] = useLogoutUserMutation();
+  
   const openNotificationSettings = () => {
     if (Platform.OS === "ios") {
       Linking.openURL("app-settings:");
@@ -54,6 +55,7 @@ export default function ProfileScreen() {
     dispatch(logout());
     router.push("/(auth)");
   };
+  
 
   // useEffect(() => {
   //   if (!user) {
