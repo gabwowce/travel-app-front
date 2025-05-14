@@ -5,12 +5,13 @@ import {
   FlatList,
   Spinner,
   ScrollView,
-  TouchableWithoutFeedback,
-  Keyboard,
+  IconButton,
 } from 'native-base';
+import {TouchableWithoutFeedback, Keyboard} from "react-native"
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { skipToken } from '@reduxjs/toolkit/query';
 import { useRouter } from 'expo-router';
+import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 
 import Header from '@/src/components/Header';
 import SearchBar from '@/src/components/SearchBar';
@@ -58,9 +59,13 @@ export default function SearchScreen() {
         <FlexContainer gap={16}>
           <Header
             title="Search"
-            rightIcon="filter"
-            iconBadge={!!filters}
-            onRightPress={() => router.push('/filter')}
+            rightIcon={
+                    <IconButton
+                      icon={<AntDesign name="edit" size={24} color="black" />}
+                      onPress={() => router.push("/(app)/(tabs)/02-search/filter")}
+                    />
+                  }
+           
           />
 
           <SearchBar

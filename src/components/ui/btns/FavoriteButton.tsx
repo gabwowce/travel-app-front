@@ -3,28 +3,29 @@ import React from 'react';
 import { IconButton } from 'native-base';
 import { MaterialIcons } from '@expo/vector-icons';
 import {
-  useAddToFavoritesMutation,
-  useRemoveFromFavoritesMutation,
-  useGetFavoritesQuery,
+  useGetUserFavoritesQuery,
+  useAddRouteToFavoritesMutation,
+  useRemoveRouteFromFavoritesMutation,
 } from '@/src/store/travelApi';
 
 type Props = {
-  routeId: number;
+  routeId: string;
 };
 
 export default function FavoriteButton({ routeId }: Props) {
-  const { data: favorites } = useGetFavoritesQuery();
-  const [addFavorite] = useAddToFavoritesMutation();
-  const [removeFavorite] = useRemoveFromFavoritesMutation();
+  const { data: favorites } = useGetUserFavoritesQuery({});
 
-  const isFavorited = favorites?.data?.some((fav) => fav.id === routeId);
+  const [addToFavorites] = useAddRouteToFavoritesMutation();
+  const [removeFromFavorites] = useRemoveRouteFromFavoritesMutation();
+
+  const isFavorited = favorites?.data?.some((fav) => fav.id === Number(routeId));
 
   const toggleFavorite = async () => {
     try {
       if (isFavorited) {
-        await removeFavorite(routeId).unwrap();
+        await removeFromFavorites(routeId).unwrap();
       } else {
-        await addFavorite({ route_id: routeId }).unwrap();
+        await addToFavorites({ route_id: routeId }).unwrap();
       }
     } catch (err) {
       console.error('Favorite toggle error', err);

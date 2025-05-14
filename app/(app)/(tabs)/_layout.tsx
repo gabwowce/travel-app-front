@@ -27,7 +27,7 @@ export default function TabsLayout() {
         tabBarIcon: ({focused, color}) => <Ionicons name="home-outline" size={24} color={color}/>
         }}/>
     <Tabs.Screen 
-      name="search" 
+      name="02-search" 
       options={{
         title: "Search",
         headerShown: false,

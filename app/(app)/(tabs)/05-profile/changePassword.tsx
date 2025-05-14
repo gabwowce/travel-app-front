@@ -15,9 +15,9 @@ import * as Yup from 'yup';
 
 import ScreenContainer from '@/src/components/ScreenContainer';
 import Header from '@/src/components/Header';
-import CustomInput from '@/src/components/input/CustomInput';
+import CustomInput from '@/src/components/ui/input/CustomInput';
 import Button from '@/src/components/ui/btns/Button';
-import passwordSchema from "@src/validation/passwordSchema"
+import {passwordSchema} from "@/src/validation/passwordSchema";
 
 
 import {
@@ -26,14 +26,14 @@ import {
 } from '@/src/store/travelApi';
 
 /* ────────────────────── Yup schema ────────────────────── */
-const passwordSchema = Yup.object({
-  password: Yup.string()
-    .min(6, 'Password must be at least 6 characters')
-    .required('New password is required'),
-  password_confirmation: Yup.string()
-    .oneOf([Yup.ref('password')], 'Passwords do not match')
-    .required('Please confirm the password'),
-});
+// const passwordSchema = Yup.object({
+//   password: Yup.string()
+//     .min(6, 'Password must be at least 6 characters')
+//     .required('New password is required'),
+//   password_confirmation: Yup.string()
+//     .oneOf([Yup.ref('password')], 'Passwords do not match')
+//     .required('Please confirm the password'),
+// });
 
 /* ───────────────────  Component  ──────────────────────── */
 export default function ChangePasswordScreen() {

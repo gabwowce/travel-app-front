@@ -10,7 +10,7 @@ import type { RootState } from '@/src/data/store';
 
 /* 1. Neapdorotas bazinis fetch’as */
 const rawBaseQuery = fetchBaseQuery({
-  baseUrl: 'https://travelapp.prus.dev/',
+  baseUrl: 'https://travelapp.prus.dev',
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token;
     if (token) headers.set('Authorization', `Bearer ${token}`);

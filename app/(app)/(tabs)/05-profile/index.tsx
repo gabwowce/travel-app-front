@@ -26,7 +26,7 @@ import { Linking, Platform } from "react-native";
 import FlexContainer from "@/src/components/layout/FlexContainer";
 
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
-import { useGetUserProfileQuery, useLogoutUserMutation  } from '@/src/store/travelApi';
+import { useGetUserProfileQuery, useLogoutUserMutation, useGetCurrentUserQuery  } from '@/src/store/travelApi';
 
 
 export default function ProfileScreen() {
@@ -40,10 +40,10 @@ export default function ProfileScreen() {
     isLoading: loading,
     isError,
     refetch,
-  } = useGetUserProfileQuery();
+  } = useGetCurrentUserQuery();
   
   const user = data?.data; // <- Čia tikras user objektas
-  const profile = user?.profile;
+  // const profile = user?.profile;
   
   const [logoutUser, { isLoading: loggingOut }] = useLogoutUserMutation();
   
@@ -127,7 +127,7 @@ export default function ProfileScreen() {
     {/* Profilio info (avatar, vardas, el.paštas) */}
     <VStack alignItems="center" mb={hp("1%")}>
       <Avatar size="xl" source={{ uri: "https://via.placeholder.com/150" }}>
-        {user?.name?.charAt(0)?.toUpperCase() ?? "?"}
+        {initial}
       </Avatar>
     
       <Heading mt={hp("4%")} fontSize="lg">{user?.name}</Heading>

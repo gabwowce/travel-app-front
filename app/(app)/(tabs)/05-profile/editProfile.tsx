@@ -15,10 +15,10 @@ import * as Yup from 'yup';
 
 import Header from '@/src/components/Header';
 import ScreenContainer from '@/src/components/ScreenContainer';
-import CustomInput from '@/src/components/input/CustomInput';
+import CustomInput from '@/src/components/ui/input/CustomInput';
 import Button from '@/src/components/ui/btns/Button';
 
-import editProfileSchema from "@/src/validation/editProfileSchema";
+import {editProfileSchema} from "@/src/validation/editProfileSchema";
 
 import {
   useGetUserProfileQuery,
@@ -26,14 +26,14 @@ import {
 } from '@/src/store/travelApi';
 
 /* ─────────────────────────  Yup schema  ───────────────────────── */
-const editProfileSchema = Yup.object({
-  name: Yup.string().trim().required('Name is required'),
-  profile: Yup.object({
-    location: Yup.string().nullable(),
-    bio: Yup.string().max(160, 'Bio is too long').nullable(),
-    website: Yup.string().url('Invalid URL').nullable(),
-  }),
-});
+// const editProfileSchema = Yup.object({
+//   name: Yup.string().trim().required('Name is required'),
+//   profile: Yup.object({
+//     location: Yup.string().nullable(),
+//     bio: Yup.string().max(160, 'Bio is too long').nullable(),
+//     website: Yup.string().url('Invalid URL').nullable(),
+//   }),
+// });
 
 /* ───────────────────────  Component  ──────────────────────────── */
 export default function EditProfileScreen() {

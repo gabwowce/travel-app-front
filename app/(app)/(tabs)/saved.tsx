@@ -1,12 +1,12 @@
 // screens/SavedScreen.tsx
 import React from 'react';
 import { Background } from '@/src/components/BGWrapper';
-import { TourCard } from '@/src/components/TourCard';
+import { TourCard } from '@/src/components/tour/TourCard';
 import { Box, Text, ScrollView, Spinner } from 'native-base';
-import { useGetFavoritesQuery } from '@/src/store/travelApi';
+import { useGetUserFavoritesQuery } from '@/src/store/travelApi';
 
 export default function SavedScreen() {
-  const { data, isLoading, isError } = useGetFavoritesQuery();
+  const { data, isLoading, isError } = useGetUserFavoritesQuery({});
 
   const favorites = data?.data ?? [];
 
@@ -28,8 +28,17 @@ export default function SavedScreen() {
         )}
         <ScrollView mt={4}>
           {favorites.map((route) => (
-            <TourCard key={route.id} {...route} />
+            <TourCard
+              key={route.id}
+              id={`${route.id}`}
+              image={'https://via.placeholder.com/150'} // default image jei nėra
+              title={route.name ?? ""}
+              rating={route.ratings_avg ?? 0}
+              location={route.city?.name ?? 'Unknown'}
+            />
           ))}
+
+
         </ScrollView>
       </Box>
     </Background>

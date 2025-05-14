@@ -12,7 +12,7 @@ import { useLocalSearchParams } from "expo-router";
 import { useWindowDimensions } from "react-native";
 
 import useBreakpoint from "@/src/hooks/useBreakpoint";
-import FavoriteButton from '@/src/components/FavoriteButton';
+import FavoriteButton from '@/src/components/ui/btns/FavoriteButton';
 
 interface TourCardProps {
   id: string; 
