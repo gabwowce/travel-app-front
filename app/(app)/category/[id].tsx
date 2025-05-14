@@ -8,15 +8,37 @@ import type { Route } from "@/src/api/generated/models/Route";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 import Header from "@/src/components/Header";
 import MiniTourCard from "@/src/components/MiniTourCard";
+import { useGetRoutesQuery, useGetCategoryByIdQuery  } from "@/src/store/travelApi";
 
 export default function CategoryScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const dispatch = useAppDispatch();
 
-  const categories = useAppSelector((state) => state.categories.categories);
-  const routes = useAppSelector((state) => state.routes.routes);
-  const loading = useAppSelector((state) => state.routes.loading);
-  const error = useAppSelector((state) => state.routes.error);
+  //const categories = useAppSelector((state) => state.categories.categories);
+  //const routes = useAppSelector((state) => state.routes.routes);
+  //const loading = useAppSelector((state) => state.routes.loading);
+  //const error = useAppSelector((state) => state.routes.error);
+  
+  const {
+    data: name,
+    isLoading: catLoading,
+  } = useGetCategoryByIdQuery(catId, {
+    skip: isNaN(catId),
+    selectFromResult: ({ data, isLoading }) => ({
+      data: data?.name,
+      isLoading,
+    }),
+  });
+
+  const {
+    data: routeRes,
+    isLoading,
+    isError,
+  } = useGetRoutesQuery(
+    { category_id: catId, limit: 30, sort: "rating_desc" },
+    { skip: isNaN(catId) }
+  );
+
 
   const catId = useMemo(() => Number(id), [id]);
   const category = useMemo(() => categories.find((c) => c.id === catId), [categories, catId]);
@@ -29,7 +51,11 @@ export default function CategoryScreen() {
 
   return (
     <Background>
-      <Header title={category?.name ?? "Category"} onBackPress={() => router.back()} />
+      {catLoading ? (
+        <Header title="Loading..." />
+      ) : (
+        <Header title={name ?? "Category"} onBackPress={() => router.back()} />
+      )}
       <ScrollView
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
