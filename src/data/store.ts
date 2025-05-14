@@ -5,6 +5,7 @@ import routesReducer from "./features/routes/routesSlice";
 import categoriesReducer from "@/src/data/features/categories/categoriesSlice";
 import tourReducer from "@/src/data/features/tours/tourSlice";
 import placesReducer from "@/src/data/features/places/placesSlice";
+import filtersReducer from "@/src/data/features/filters/filtersSlice";
 import { travelApi } from '../store/travelApi'; 
 export const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
     categories: categoriesReducer,
     tour: tourReducer,
     places: placesReducer,
+    filters: filtersReducer,
     [travelApi.reducerPath]: travelApi.reducer,
   },
 
