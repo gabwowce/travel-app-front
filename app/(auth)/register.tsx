@@ -18,6 +18,9 @@ import { useAppSelector } from "@/src/data/hooks";
 import CustomInput from "@/src/components/ui/input/CustomInput"; // 🔹 Importuojame CustomInput
 import KeyboardWrapper from "@/src/components/KeyboardWrapper"; // 🔹 Importuojam komponentą
 import ScreenContainer from "@/src/components/ScreenContainer";
+import {
+    useRegisterUserMutation,        
+  } from "@/src/store/travelApi";
 
 export default function RegisterScreen() {
   const [name, setName] = useState("");
@@ -30,23 +33,31 @@ export default function RegisterScreen() {
   const errors = useAppSelector((state)=> state.auth.errors);
   const [agreed, setAgreed] = useState(false);
 
+  const [register, { isLoading, error, reset }] = useRegisterUserMutation();
+  const getFieldError = (field: string) =>
+  (error as any)?.data?.errors?.[field]?.[0] ?? "";
+
+  
   const handleRegister = async () => {
-    const resultAction = await dispatch(
-      register({
-        name: name,
-        email: email,
-        password: password,
-        password_confirmation: confirmPassword,
-      })
-    );
-    if (!agreed) {
+     if (!agreed) {
       alert("You must agree to the Privacy Policy & Terms");
       return;
     }
-    
-    if (register.fulfilled.match(resultAction)) {
-      router.replace("/(app)/(tabs)/home");
+     try {
+      await register({
+        registerRequest:{
+          name,
+          email, 
+          password,
+          confirmPassword
+        }
+      }).unwrap();                     // sėkmės atveju
+      router.push("/(app)/(tabs)/home");
+    } catch {
+      /* error jau laikomas hook’o state */
     }
+    
+
   };
 
   return (
@@ -62,7 +73,8 @@ export default function RegisterScreen() {
           placeholder="Full Name"
           value={name}
           onChangeText={setName}
-          error={errors.name}
+          error={getFieldError("name")}
+
         />
         <CustomInput
           label="Email"
@@ -71,7 +83,7 @@ export default function RegisterScreen() {
           onChangeText={setEmail}
           autoCapitalize="none"
           keyboardType="email-address"
-          error={errors.email}
+          error={getFieldError("email")}
         />
         <CustomInput
           label="Password"
@@ -79,7 +91,7 @@ export default function RegisterScreen() {
           value={password}
           onChangeText={setPassword}
           secureTextEntry
-          error={errors.password}
+          error={getFieldError("password")}
         />
         <CustomInput
           label="Confirm Password"
@@ -89,7 +101,12 @@ export default function RegisterScreen() {
           secureTextEntry
         />
 
-        {errors.general && <Text style={{ color: "red", textAlign: "center" }}>{errors.general}</Text>}
+        {error && (
+          <Text style={{ color: "red", textAlign: "center", marginVertical: 5 }}>
+            {(error as any)?.data?.message || "Registration failed. Try again."}
+          </Text>
+        )}
+
 
         <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 10 }}>
           <Checkbox isChecked={agreed} onChange={setAgreed} value="agree" accessibilityLabel="Agree to terms" />
