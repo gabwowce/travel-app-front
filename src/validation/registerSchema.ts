@@ -1,25 +1,24 @@
-
 import * as Yup from 'yup';
 
 export const registerSchema = Yup.object({
   name: Yup.string()
     .trim()
-    .min(2, 'Vardas per trumpas')
-    .max(50, 'Vardas per ilgas')
-    .required('Vardas privalomas'),
+    .min(2, 'Name is too short')
+    .max(50, 'Name is too long')
+    .required('Name is required'),
 
   email: Yup.string()
     .trim()
-    .email('Įvesk galiojantį el. paštą')
-    .required('El. paštas privalomas'),
+    .email('Please enter a valid email address')
+    .required('Email is required'),
 
   password: Yup.string()
-    .min(6, 'Slaptažodį turi sudaryti bent 6 simboliai')
-    .matches(/[A-Z]/, 'Slaptažodyje turi būti bent viena didžioji raidė')
-    .matches(/[0-9]/, 'Slaptažodyje turi būti bent vienas skaičius')
-    .required('Slaptažodis privalomas'),
+    .min(6, 'Password must be at least 6 characters long')
+    .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .matches(/[0-9]/, 'Password must contain at least one number')
+    .required('Password is required'),
 
   password_confirmation: Yup.string()
-    .oneOf([Yup.ref('password')], 'Slaptažodžiai nesutampa')
-    .required('Pakartoti slaptažodį privaloma'),
+    .oneOf([Yup.ref('password')], 'Passwords must match')
+    .required('Please confirm your password'),
 });
