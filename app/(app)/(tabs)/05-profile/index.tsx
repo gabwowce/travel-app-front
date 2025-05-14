@@ -26,12 +26,21 @@ import { Linking, Platform } from "react-native";
 import FlexContainer from "@/src/components/layout/FlexContainer";
 
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
+import { useGetUserProfileQuery } from '@/src/store/travelApi';
+
 
 export default function ProfileScreen() {
   const dispatch = useAppDispatch();
-  const user = useAppSelector(state => state.auth.user);
-  const loading = useAppSelector(state => state.auth.loading);
+  // const user = useAppSelector(state => state.auth.user);
+  // const loading = useAppSelector(state => state.auth.loading);
   const router = useRouter();
+
+  const {
+    data: user,
+    isLoading: loading,
+    isError,
+    refetch,
+  } = useGetUserProfileQuery();
 
   const openNotificationSettings = () => {
     if (Platform.OS === "ios") {
@@ -42,7 +51,6 @@ export default function ProfileScreen() {
   };
 
   const handleLogout = () => {
-    
     dispatch(logout());
     router.push("/(auth)");
   };
