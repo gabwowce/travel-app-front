@@ -36,11 +36,15 @@ export default function ProfileScreen() {
   const router = useRouter();
 
   const {
-    data: user,
+    data,
     isLoading: loading,
     isError,
     refetch,
   } = useGetUserProfileQuery();
+  
+  const user = data?.data; // <- Čia tikras user objektas
+  const profile = user?.profile;
+  
   const [logoutUser, { isLoading: loggingOut }] = useLogoutUserMutation();
   
   const openNotificationSettings = () => {
@@ -80,7 +84,7 @@ export default function ProfileScreen() {
       title: "Preferences & Customization",
       options: [
         // { title: "Interests & Categories", icon: "category" },
-        { title: "Favorites", icon: "favorite-border", action: () => router.push("/(app)/(tabs)/search")  },
+        { title: "Favorites", icon: "favorite-border", action: () => router.push("/(app)/(tabs)/saved")  },
         // { title: "Visited Places", icon: "place" },
         // { title: "Preferred Map Type", icon: "map" },
         { title: "Notification Settings", icon: "notifications", action: openNotificationSettings },
@@ -123,11 +127,36 @@ export default function ProfileScreen() {
     {/* Profilio info (avatar, vardas, el.paštas) */}
     <VStack alignItems="center" mb={hp("1%")}>
       <Avatar size="xl" source={{ uri: "https://via.placeholder.com/150" }}>
-        {initial}
+        {user?.name?.charAt(0)?.toUpperCase() ?? "?"}
       </Avatar>
-      <Heading mt={hp("4%")} fontSize="lg">{user.name}</Heading>
-      <Text color="gray.500">{user.email}</Text>
+    
+      <Heading mt={hp("4%")} fontSize="lg">{user?.name}</Heading>
+      <Text color="gray.500">{user?.email}</Text>
+    
+      {profile?.bio && (
+        <Text mt={2} fontStyle="italic" textAlign="center" maxW="80%">
+          {profile.bio}
+        </Text>
+      )}
+    
+      {profile?.location && (
+        <Text mt={1} color="gray.500">
+          📍 {profile.location}
+        </Text>
+      )}
+    
+      {profile?.website && (
+        <Text
+          mt={1}
+          color="blue.500"
+          textDecorationLine="underline"
+          onPress={() => Linking.openURL(profile.website)}
+        >
+          {profile.website}
+        </Text>
+      )}
     </VStack>
+
 
     {/* Meniu sekcijos */}
     {menuItems.map((section, index) => (
