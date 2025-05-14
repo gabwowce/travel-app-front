@@ -1,26 +1,31 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import * as Location from "expo-location";
 import { Background } from "@/src/components/BGWrapper";
-import { Box, Text, ScrollView, Spinner, FlatList } from "native-base";
+import {
+  Box,
+  Text,
+  ScrollView,
+  Spinner,
+  FlatList,
+  Heading,
+} from "native-base";
 import { router, useLocalSearchParams } from "expo-router";
-import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
-import { fetchRoutes } from "@/src/data/features/routes/routesThunks";
-import type { Route } from "@/src/api/generated/models/Route";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 import Header from "@/src/components/Header";
 import MiniTourCard from "@/src/components/MiniTourCard";
-import { useGetRoutesQuery, useGetCategoryByIdQuery  } from "@/src/store/travelApi";
+import {
+  useGetRoutesQuery,
+  useGetCategoryByIdQuery,
+} from "@/src/store/travelApi";
+import { getDistanceKm } from "@/src/utils/distance";
 
 export default function CategoryScreen() {
+  /* ---------- URL param & category name ---------- */
   const { id } = useLocalSearchParams<{ id: string }>();
-  const dispatch = useAppDispatch();
+  const catId = Number(id);
 
-  //const categories = useAppSelector((state) => state.categories.categories);
-  //const routes = useAppSelector((state) => state.routes.routes);
-  //const loading = useAppSelector((state) => state.routes.loading);
-  //const error = useAppSelector((state) => state.routes.error);
-  
   const {
-    data: name,
+    data: categoryName,
     isLoading: catLoading,
   } = useGetCategoryByIdQuery(catId, {
     skip: isNaN(catId),
@@ -30,32 +35,57 @@ export default function CategoryScreen() {
     }),
   });
 
+  /* ----------  All routes for this category ---------- */
   const {
     data: routeRes,
-    isLoading,
+    isLoading: loadingRoutes,
     isError,
   } = useGetRoutesQuery(
-    { category_id: catId, limit: 30, sort: "rating_desc" },
+    { category_id: catId, limit: 200, sort: "rating_desc" },
     { skip: isNaN(catId) }
   );
 
+  const allRoutes = routeRes?.data ?? [];
 
-  const catId = useMemo(() => Number(id), [id]);
-  const category = useMemo(() => categories.find((c) => c.id === catId), [categories, catId]);
+  /* ---------- 1) Get user location ---------- */
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(
+    null
+  );
+  const [locDenied, setLocDenied] = useState(false);
 
   useEffect(() => {
-    if (!isNaN(catId)) {
-      dispatch(fetchRoutes({ categoryId: catId, perPage: 30, sort: "rating_desc" }));
-    }
-  }, [dispatch, catId]);
+    (async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setLocDenied(true);
+        return;
+      }
+      const loc = await Location.getCurrentPositionAsync({});
+      setLocation({ lat: loc.coords.latitude, lng: loc.coords.longitude });
+    })();
+  }, []);
 
+  /* ---------- 2) Split into nearby (≤100 km) & global ---------- */
+  const nearbyRoutes = useMemo(() => {
+    if (!location) return [];
+    return allRoutes.filter((r) => {
+      if (r.lat == null || r.lng == null) return false;
+      return getDistanceKm(location.lat, location.lng, r.lat, r.lng) <= 100;
+    });
+  }, [allRoutes, location]);
+
+  /* ---------- UI ---------- */
   return (
     <Background>
       {catLoading ? (
         <Header title="Loading..." />
       ) : (
-        <Header title={name ?? "Category"} onBackPress={() => router.back()} />
+        <Header
+          title={categoryName ?? "Category"}
+          onBackPress={() => router.back()}
+        />
       )}
+
       <ScrollView
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
@@ -63,38 +93,77 @@ export default function CategoryScreen() {
         contentContainerStyle={{ paddingBottom: wp("5%") }}
       >
         <Box flex={1} pt={wp("5%")}>
-          {loading && (
+          {/* -------- Error / Spinner -------- */}
+          {loadingRoutes && (
             <Box alignItems="center" py="20px">
               <Spinner size="lg" />
             </Box>
           )}
 
-          {!loading && error && (
+          {!loadingRoutes && isError && (
             <Text color="red.500" px={wp("3%")}>
               Failed to load tours. Please try again.
             </Text>
           )}
 
-          {!loading && !error && routes.length === 0 && (
-            <Text px={wp("3%")}>No tours found in this category.</Text>
+          {/* -------- 1. Routes Around You -------- */}
+          {location && !loadingRoutes && !isError && (
+            <>
+              <Heading size="md" px={wp("3%")} mb={2}>
+                Routes Around You
+              </Heading>
+
+              {nearbyRoutes.length === 0 ? (
+                <Text px={wp("3%")}>No nearby tours within 100 km.</Text>
+              ) : (
+                <FlatList
+                  data={nearbyRoutes}
+                  horizontal
+                  keyExtractor={(item) => item.id.toString()}
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ paddingHorizontal: wp("3%") }}
+                  renderItem={({ item }) => (
+                    <MiniTourCard tour={item} mr={wp("2%")} />
+                  )}
+                />
+              )}
+            </>
           )}
 
-          {!loading && !error && routes.length > 0 && (
-            <FlatList
-              data={routes}
-              keyExtractor={(item) => item.id.toString()}
-              numColumns={2}
-              columnWrapperStyle={{
-                justifyContent: "space-between",
-                gap: wp("1%"),
-              }}
-              contentContainerStyle={{
-                gap: wp("1%"),
-                marginHorizontal: wp("3%"),
-              }}
-              renderItem={({ item }) => <MiniTourCard tour={item} />}
-              scrollEnabled={false}
-            />
+          {/* -------- 2. Popular Worldwide -------- */}
+          {!loadingRoutes && !isError && (
+            <>
+              <Heading size="md" mt={5} px={wp("3%")} mb={2}>
+                Popular Routes Around the World
+              </Heading>
+
+              {allRoutes.length === 0 ? (
+                <Text px={wp("3%")}>No tours found in this category.</Text>
+              ) : (
+                <FlatList
+                  data={allRoutes}
+                  numColumns={2}
+                  keyExtractor={(item) => item.id.toString()}
+                  columnWrapperStyle={{
+                    justifyContent: "space-between",
+                    gap: wp("1%"),
+                  }}
+                  contentContainerStyle={{
+                    gap: wp("1%"),
+                    marginHorizontal: wp("3%"),
+                  }}
+                  renderItem={({ item }) => <MiniTourCard tour={item} />}
+                  scrollEnabled={false}
+                />
+              )}
+            </>
+          )}
+
+          {/* --------  Location denied message -------- */}
+          {locDenied && (
+            <Text mt={4} px={wp("3%")} color="gray.500" fontSize="xs">
+              Location permission denied – showing worldwide routes only.
+            </Text>
           )}
         </Box>
       </ScrollView>
