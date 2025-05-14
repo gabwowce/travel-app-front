@@ -10,7 +10,7 @@ import FlexContainer from "@/src/components/layout/FlexContainer";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 import { Formik } from 'formik';
 import { routesFilterSchema, routesFilterInitial } from '@/src/validation/routesFilterSchema';
-import { useGetRoutesQuery } from '@/src/store/travelApi';
+import { useGetRoutesQuery, useLazyGetRoutesQuery  } from '@/src/store/travelApi';
 import { useAppDispatch } from '@/src/data/hooks';
 import { setFilters } from '@/src/data/features/filters/filtersSlice';
 
@@ -33,17 +33,21 @@ export const routesFilterInitial = {
 
 
 export default function FilterScreen() {
-/* …Formik… */
-onSubmit={(values) => {
-  const cleaned = Object.fromEntries(
-    Object.entries(values).filter(
-      ([_, v]) =>
-        v !== null && v !== '' && !(Array.isArray(v) && v.length === 0)
-    )
-  );
-  dispatch(setFilters(cleaned));   // 1) saugom filtrus
-  router.back();                   // 2) grįžtam į SearchScreen
-}}
+  const [triggerGetRoutes, { data, isFetching, isError }] = useLazyGetRoutesQuery();
+
+  onSubmit={(values) => {
+    const cleaned = Object.fromEntries(
+      Object.entries(values).filter(
+        ([_, v]) =>
+          v !== null && v !== '' && !(Array.isArray(v) && v.length === 0)
+      )
+    );
+  
+    dispatch(setFilters(cleaned));         // pasirenkama: naudinga, jei nori išsaugoti pasirinktus filtrus
+    triggerGetRoutes(cleaned);             // Pagrindinis dalykas – paleidžiam užklausą
+    router.back();                         // grįžtam į SearchScreen
+  };
+
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
