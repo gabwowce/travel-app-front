@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 
-const editProfileSchema = Yup.object({
+export const editProfileSchema = Yup.object({
   name: Yup.string().trim().required('Name is required'),
   profile: Yup.object({
     location: Yup.string().nullable(),
