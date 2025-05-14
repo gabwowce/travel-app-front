@@ -1,128 +1,164 @@
-// import React, { useState, useEffect } from "react";
-// import { Avatar, Divider, Heading, Text, VStack } from "native-base";
-// import { useRouter } from "expo-router";
-// import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
-// import { updateUser } from "@/src/data/features/user/userSlice";
-// import ScreenContainer from "@/src/components/ScreenContainer";
-// import Header from "@/src/components/Header";
-// import CustomInput from "@/src/components/input/CustomInput";
+// screens/ChangePasswordScreen.tsx
+import React from 'react';
+import {
+  VStack,
+  Heading,
+  Text,
+  Divider,
+  Spinner,
+  Box,
+  ScrollView,
+} from 'native-base';
+import { useRouter } from 'expo-router';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 
-// export default function ChangePasswordScreen() {
-//   const dispatch = useAppDispatch();
-//   const router = useRouter();
-//   const user = useAppSelector((state)=>state.auth.user);
+import ScreenContainer from '@/src/components/ScreenContainer';
+import Header from '@/src/components/Header';
+import CustomInput from '@/src/components/input/CustomInput';
+import Button from '@/src/components/ui/btns/Button';
+import passwordSchema from "@src/validation/passwordSchema"
 
-//   const [current, setCurrent] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [confirm, setConfirm] = useState("");
-//   const [errors, setErrors] = useState<{ [key: string]: string[] }>({});
-//   const [success, setSuccess] = useState(false);
-//   const [isModified, setIsModified] = useState(false);
 
-//   useEffect(() => {
-//     setIsModified(
-//       current.length > 0 || password.length > 0 || confirm.length > 0
-//     );
-//   }, [current, password, confirm]);
+import {
+  useGetUserProfileQuery,
+  useUpdateUserProfileMutation,
+} from '@/src/store/travelApi';
 
-//   const handleSave = async () => {
-//     setErrors({});
-//     setSuccess(false);
+/* ────────────────────── Yup schema ────────────────────── */
+const passwordSchema = Yup.object({
+  password: Yup.string()
+    .min(6, 'Password must be at least 6 characters')
+    .required('New password is required'),
+  password_confirmation: Yup.string()
+    .oneOf([Yup.ref('password')], 'Passwords do not match')
+    .required('Please confirm the password'),
+});
 
-//     if (password.length < 6) {
-//       setErrors({ password: ["Password must be at least 6 characters"] });
-//       return;
-//     }
+/* ───────────────────  Component  ──────────────────────── */
+export default function ChangePasswordScreen() {
+  const router = useRouter();
 
-//     if (password !== confirm) {
-//       setErrors({ password_confirmation: ["Passwords do not match"] });
-//       return;
-//     }
+  const { data: user, isLoading } = useGetUserProfileQuery();
+  const [updateProfile, { isLoading: saving }] =
+    useUpdateUserProfileMutation();
 
-//     const res = await dispatch(
-//       updateUser({
-//         password,
-//         password_confirmation: confirm,
-//       })
-//     );
+  if (isLoading)
+    return (
+      <Box flex={1} justifyContent="center" alignItems="center">
+        <Spinner size="lg" />
+      </Box>
+    );
+  if (!user)
+    return (
+      <Text textAlign="center" mt={8}>
+        Error loading user.
+      </Text>
+    );
 
-//     if (updateUser.fulfilled.match(res)) {
-//       setSuccess(true);
-//       setCurrent("");
-//       setPassword("");
-//       setConfirm("");
-//     } else if (res.payload) {
-//       setErrors(res.payload as { [key: string]: string[] });
-//     }
-//   };
+  return (
+    <Formik
+      initialValues={{ password: '', password_confirmation: '' }}
+      validationSchema={passwordSchema}
+      onSubmit={async (values, { setErrors, resetForm, setStatus }) => {
+        setStatus(null);
 
-//   return (
-//     <ScreenContainer variant="top">
-//       <Header
-//         title="Change Password"
-//         onBackPress={() => router.back()}
-//         rightIcon={
-//           isModified ? (
-//             <Text onPress={handleSave} color="blue.500">
-//               Save
-//             </Text>
-//           ) : null
-//         }
-//       />
+        try {
+          await updateProfile(values).unwrap();
+          setStatus({ success: true });
+          resetForm();
+          // Optionally navigate back:
+          // router.back();
+        } catch (err: any) {
+          const details = err?.data?.error?.details;
+          if (details) setErrors(details as any); // 422 validation errors
+          else setStatus({ error: 'Something went wrong' });
+        }
+      }}
+    >
+      {({
+        values,
+        errors,
+        touched,
+        handleChange,
+        handleSubmit,
+        isValid,
+        dirty,
+        status,
+      }) => (
+        <ScreenContainer variant="top">
+          <Header
+            title="Change Password"
+            onBackPress={() => router.back()}
+            rightIcon={
+              dirty && isValid ? (
+                <Text onPress={() => handleSubmit()} color="blue.500">
+                  {saving ? 'Saving...' : 'Save'}
+                </Text>
+              ) : null
+            }
+          />
 
-//       <VStack px={5} space={4}>
-//         {user && (
-//           <>
-//             <VStack alignItems="center" mt={4}>
-                
-//                 <Heading fontSize="lg">{user.name}</Heading>
-//                 <Text color="gray.500">{user.email}</Text>
-//             </VStack>
-            
-//             <Divider my={4} />
-//             <Text mb={4} fontSize="sm" textAlign="center" color="gray.500">
-//               Please enter your current password and a new password below.
-//             </Text>
-//           </>
-//         )}
+          <ScrollView keyboardShouldPersistTaps="handled">
+            <VStack px={5} space={4}>
+              <VStack alignItems="center" mt={4}>
+                <Heading fontSize="lg">{user.name}</Heading>
+                <Text color="gray.500">{user.email}</Text>
+              </VStack>
 
-//         <CustomInput
-//           label="Current Password"
-//           secureTextEntry
-//           placeholder="Enter your current password"
-//           value={current}
-//           onChangeText={setCurrent}
-//           error={errors.current_password?.[0]}
-//         />
-//         <CustomInput
-//           label="New Password"
-//           secureTextEntry
-//           placeholder="Enter new password"
-//           value={password}
-//           onChangeText={setPassword}
-//           error={errors.password?.[0]}
-//         />
-//         <CustomInput
-//           label="Confirm New Password"
-//           secureTextEntry
-//           placeholder="Confirm new password"
-//           value={confirm}
-//           onChangeText={setConfirm}
-//           error={errors.password_confirmation?.[0]}
-//         />
+              <Divider my={4} />
 
-//         {errors.general && (
-//           <Text color="red.500" textAlign="center">
-//             {errors.general}
-//           </Text>
-//         )}
+              <Text
+                mb={4}
+                fontSize="sm"
+                textAlign="center"
+                color="gray.500"
+              >
+                Enter a new password below.
+              </Text>
 
-//         {success && (
-//           <Text color="green.500" textAlign="center">
-//             Password updated successfully!
-//           </Text>
-//         )}
-//       </VStack>
-//     </ScreenContainer>
-//   );
-// }
+              <CustomInput
+                label="New Password"
+                secureTextEntry
+                placeholder="Enter new password"
+                value={values.password}
+                onChangeText={handleChange('password')}
+                error={touched.password && (errors.password as string)}
+              />
+              <CustomInput
+                label="Confirm New Password"
+                secureTextEntry
+                placeholder="Confirm new password"
+                value={values.password_confirmation}
+                onChangeText={handleChange('password_confirmation')}
+                error={
+                  touched.password_confirmation &&
+                  (errors.password_confirmation as string)
+                }
+              />
+
+              {status?.error && (
+                <Text color="red.500" textAlign="center">
+                  {status.error}
+                </Text>
+              )}
+              {status?.success && (
+                <Text color="green.500" textAlign="center">
+                  Password updated successfully!
+                </Text>
+              )}
+
+              {/* Extra button for small devices */}
+              {dirty && isValid && (
+                <Button
+                  label={saving ? 'Saving...' : 'Save'}
+                  onPress={() => handleSubmit()}
+                />
+              )}
+            </VStack>
+          </ScrollView>
+        </ScreenContainer>
+      )}
+    </Formik>
+  );
+}
