@@ -1,122 +1,173 @@
-// import React, { useEffect, useState } from "react";
-// import {
-//   Avatar,
-//   VStack,
-//   Heading,
-//   Text,
-//   Button,
-// } from "native-base";
-// import { useRouter } from "expo-router";
-// import { useAppSelector, useAppDispatch } from "@/src/data/hooks";
-// import { setUser, updateUser } from "@/src/data/features/user/userSlice";
-// import {
-//   View,
-//   TouchableOpacity,
-//   StyleSheet,
-// } from "react-native";
-// import Header from "@/src/components/Header";
-// import ScreenContainer from "@/src/components/ScreenContainer";
-// import CustomInput from "@/src/components/input/CustomInput"; // 🔹 Importuojame CustomInput
-// import { UserResponse } from "@/src/data/features/user/userTypes";
+// screens/EditProfileScreen.tsx
+import React from 'react';
+import {
+  Avatar,
+  VStack,
+  Heading,
+  Text,
+  ScrollView,
+  Spinner,
+  Box,
+} from 'native-base';
+import { useRouter } from 'expo-router';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 
-// export default function EditProfileScreen() {
-//   const dispatch = useAppDispatch();
-//   const user = useAppSelector((state)=>state.auth.user);
-//   const router = useRouter();
+import Header from '@/src/components/Header';
+import ScreenContainer from '@/src/components/ScreenContainer';
+import CustomInput from '@/src/components/input/CustomInput';
+import Button from '@/src/components/ui/btns/Button';
 
-//   const [firstName, setFirstName] = useState("");
-//   const [lastName, setLastName] = useState("");
-//   const [location, setLocation] = useState("");
-//   const [bio, setBio] = useState("");
-//   const [website, setWebsite] = useState("");
-//   const [isModified, setIsModified] = useState(false);
+import editProfileSchema from "@/src/validation/editProfileSchema";
 
+import {
+  useGetUserProfileQuery,
+  useUpdateUserProfileMutation,
+} from '@/src/store/travelApi';
 
-//   useEffect(() => {
-//     if (user) {
-//       const nameParts = user.name?.split(" ") || [];
-//       setFirstName(nameParts[0] || "");
-//       setLastName(nameParts[1] || "");
-//       setLocation(user.profile?.location || "");
-//       setBio(user.profile?.bio || "");
-//       setWebsite(user.profile?.website || "");
-//     }
-//   }, [user]);
-  
-//   useEffect(() => {
-//     if (!user) return;
-  
-//     const nameParts = user.name?.split(" ") || [];
-//     const initialFirst = nameParts[0] || "";
-//     const initialLast = nameParts[1] || "";
-//     const initialLocation = user.profile?.location || "";
-//     const initialBio = user.profile?.bio || "";
-//     const initialWebsite = user.profile?.website || "";
-  
-//     const hasChanged =
-//       firstName !== initialFirst ||
-//       lastName !== initialLast ||
-//       location !== initialLocation ||
-//       bio !== initialBio ||
-//       website !== initialWebsite;
-  
-//     setIsModified(hasChanged);
-//   }, [firstName, lastName, location, bio, website, user]);
-  
-  
+/* ─────────────────────────  Yup schema  ───────────────────────── */
+const editProfileSchema = Yup.object({
+  name: Yup.string().trim().required('Name is required'),
+  profile: Yup.object({
+    location: Yup.string().nullable(),
+    bio: Yup.string().max(160, 'Bio is too long').nullable(),
+    website: Yup.string().url('Invalid URL').nullable(),
+  }),
+});
 
-//   if (!user) {
-//     return <Text>Loading...</Text>; // Užtikriname, kad 'user' nėra null
-//   }
+/* ───────────────────────  Component  ──────────────────────────── */
+export default function EditProfileScreen() {
+  const router = useRouter();
 
-  
+  /* Fetch current user */
+  const {
+    data: user,
+    isLoading: loading,
+    isError,
+    refetch,
+  } = useGetUserProfileQuery();
 
-//   const handleSave = () => {
-//     const updatedData = {
-//       name: `${firstName} ${lastName}`,
-//       profile: {
-//         location,
-//         bio,
-//         website,
-//       },
-//     };
+  /* Mutation */
+  const [updateProfile, { isLoading: isSaving }] =
+    useUpdateUserProfileMutation();
 
-//     dispatch(updateUser(updatedData))
-//     .unwrap()
-//     .then((res: UserResponse) => {
-//       dispatch(setUser(res.data.user)); 
-//       router.back();
-//     });
-//   };
+  if (loading)
+    return (
+      <Box flex={1} justifyContent="center" alignItems="center">
+        <Spinner size="lg" />
+      </Box>
+    );
+  if (isError || !user)
+    return (
+      <Text textAlign="center" mt={8}>
+        Error loading profile.
+      </Text>
+    );
 
-//   return (
-//     <ScreenContainer>
-//       <Header title="Edit Profile" 
-//           onBackPress={() => router.back()} rightIcon={
-//           isModified ? (
-//             <Text onPress={handleSave} color="blue.500">
-//               Save
-//             </Text>
-//           ) : null
-//         }
-//       />
-      
-//       <VStack alignItems="center" mt={5}>
-//         <Avatar size="xl" source={{ uri:  "https://via.placeholder.com/150" }}>
-//           {user.name?.[0]}
-//         </Avatar>
-//         <TouchableOpacity>
-//           <Text color="blue.500" mt={2}>Change Profile Picture</Text>
-//         </TouchableOpacity>
-//       </VStack>
-      
-//       <VStack space={4} mt={5} px={5}>
-//         <CustomInput label="First Name" value={firstName} onChangeText={setFirstName} placeholder="Enter first name" />
-//         <CustomInput label="Last Name" value={lastName} onChangeText={setLastName} placeholder="Enter last name" />
-//         <CustomInput label="Location" value={location} onChangeText={setLocation} placeholder="Enter location" />
-//         <CustomInput label="Bio" value={bio} onChangeText={setBio} placeholder="Enter your bio" />
-//         <CustomInput label="Website" value={website} onChangeText={setWebsite} placeholder="Enter website URL" />
-//       </VStack>
-//     </ScreenContainer>
-//   );
-// }
+  /* Initial values from API */
+  const initialValues = {
+    name: user.name ?? '',
+    profile: {
+      location: user.profile?.location ?? '',
+      bio: user.profile?.bio ?? '',
+      website: user.profile?.website ?? '',
+    },
+  };
+
+  return (
+    <Formik
+      initialValues={initialValues}
+      validationSchema={editProfileSchema}
+      enableReinitialize
+      onSubmit={async (values, { setErrors }) => {
+        try {
+          await updateProfile(values).unwrap();
+          router.back(); // ✅ go back to Profile
+        } catch (err: any) {
+          // Laravel 422 => { error: { details: { field: ["msg"] } } }
+          const details = err?.data?.error?.details;
+          if (details) setErrors(details as any);
+        }
+      }}
+    >
+      {({
+        values,
+        errors,
+        touched,
+        handleChange,
+        handleSubmit,
+        isValid,
+        dirty,
+      }) => (
+        <ScreenContainer>
+          <Header
+            title="Edit Profile"
+            onBackPress={() => router.back()}
+            rightIcon={
+              dirty && isValid ? (
+                <Text onPress={() => handleSubmit()} color="blue.500">
+                  {isSaving ? 'Saving...' : 'Save'}
+                </Text>
+              ) : null
+            }
+          />
+
+          <ScrollView keyboardShouldPersistTaps="handled">
+            <VStack alignItems="center" mt={5} space={4}>
+              <Avatar
+                size="xl"
+                source={{ uri: 'https://via.placeholder.com/150' }}
+              >
+                {values.name.charAt(0).toUpperCase()}
+              </Avatar>
+              <Heading size="md">{values.name}</Heading>
+            </VStack>
+
+            <VStack space={4} mt={6} px={5}>
+              <CustomInput
+                label="Full Name"
+                value={values.name}
+                onChangeText={handleChange('name')}
+                error={touched.name && (errors.name as string)}
+              />
+              <CustomInput
+                label="Location"
+                value={values.profile.location}
+                onChangeText={handleChange('profile.location')}
+                error={
+                  touched.profile?.location &&
+                  (errors.profile?.location as string)
+                }
+              />
+              <CustomInput
+                label="Bio"
+                value={values.profile.bio}
+                onChangeText={handleChange('profile.bio')}
+                error={
+                  touched.profile?.bio && (errors.profile?.bio as string)
+                }
+              />
+              <CustomInput
+                label="Website"
+                value={values.profile.website}
+                onChangeText={handleChange('profile.website')}
+                error={
+                  touched.profile?.website &&
+                  (errors.profile?.website as string)
+                }
+              />
+
+              {/* Fallback button for small screens */}
+              {dirty && isValid && (
+                <Button
+                  label={isSaving ? 'Saving...' : 'Save'}
+                  onPress={() => handleSubmit()}
+                />
+              )}
+            </VStack>
+          </ScrollView>
+        </ScreenContainer>
+      )}
+    </Formik>
+  );
+}
