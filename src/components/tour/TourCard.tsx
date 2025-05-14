@@ -12,7 +12,7 @@ import { useLocalSearchParams } from "expo-router";
 import { useWindowDimensions } from "react-native";
 
 import useBreakpoint from "@/src/hooks/useBreakpoint";
-
+import FavoriteButton from '@/src/components/FavoriteButton';
 
 interface TourCardProps {
   id: string; 
@@ -66,6 +66,7 @@ export function TourCard({ id, image, title, rating, location }: TourCardProps) 
             <ImageViewer imgSource={image} />
           </View>
           <Ionicons name="bookmark-outline" size={20} color="white" style={styles.bookmarkIcon} />
+          <FavoriteButton routeId={id} />
         </View>
         {/* <Button size="sm" mt="2" colorScheme={isFavorite ? "red" : "blue"} onPress={handleFavoriteToggle}>
           {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
