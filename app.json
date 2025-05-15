@@ -12,7 +12,8 @@
       "expo-router",
       "expo-splash-screen",
       "./plugins/android-uses-feature-plugin.js",
-      "./plugins/android-resizable-activity-plugin.js"
+      "./plugins/android-resizable-activity-plugin.js",
+      "expo-secure-store"
     ],
     "experimental": {
       "plugins": {
@@ -53,8 +54,8 @@
         "resizeMode": "contain",
         "statusBarStyle": "dark"
       },
-      "android12Splash": {             
-        "backgroundColor": "#FFFFFF",  
+      "android12Splash": {
+        "backgroundColor": "#FFFFFF",
         "image": "./src/assets/images/splashscreen_logo.png",
         "resizeMode": "contain"
       },

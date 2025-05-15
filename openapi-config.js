@@ -5,4 +5,5 @@ module.exports = {
   outputFile: './src/store/travelApi.ts', 
   exportName: 'travelApi', 
   hooks: true, 
+  exportLazy: true,
 };

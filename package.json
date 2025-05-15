@@ -11,13 +11,14 @@
     "test": "jest --watchAll",
     "lint": "expo lint",
     "api:pull": "curl -L https://travelapp.prus.dev/api/documentation-json -o spec/openapi.json",
-    "api:gen": "rtk-query-codegen-openapi openapi-config.js",
+    "api:gen": "npx @rtk-query/codegen-openapi openapi-config.js",
     "api:update": "npm run api:pull && npm run api:gen"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
     "@gorhom/bottom-sheet": "^5.1.1",
     "@react-native-async-storage/async-storage": "2.1.2",
+    "@react-native-picker/picker": "^2.11.0",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
     "@reduxjs/toolkit": "^2.6.0",
@@ -55,7 +56,8 @@
     "react-native-web": "^0.20.0",
     "react-native-webview": "13.13.5",
     "react-redux": "^9.2.0",
-    "yup": "^1.6.1"
+    "yup": "^1.6.1",
+    "expo-secure-store": "~14.2.3"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",

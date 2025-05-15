@@ -13,6 +13,7 @@ const rawBaseQuery = fetchBaseQuery({
   baseUrl: 'https://travelapp.prus.dev',
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token;
+    console.log("✅ INIT AUTH: ",token);
     if (token) headers.set('Authorization', `Bearer ${token}`);
     headers.set('Accept', 'application/json');
     return headers;

@@ -16,7 +16,7 @@ export const routesFilterInitial = {
   max_elevation: null,
   search: '',
   cursor: null,
-  limit: 20,
+  limit: 2,
   direction: 'forward',
   sort: 'created_at_desc',
 } as Yup.InferType<typeof routesFilterSchema>;

@@ -43,7 +43,7 @@ export default function ProfileScreen() {
   } = useGetCurrentUserQuery();
   
   const user = data?.data; // <- Čia tikras user objektas
-  // const profile = user?.profile;
+   const profile = user?.profile;
   
   const [logoutUser, { isLoading: loggingOut }] = useLogoutUserMutation();
   

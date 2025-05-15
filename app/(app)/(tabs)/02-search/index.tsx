@@ -59,13 +59,6 @@ export default function SearchScreen() {
         <FlexContainer gap={16}>
           <Header
             title="Search"
-            rightIcon={
-                    <IconButton
-                      icon={<AntDesign name="edit" size={24} color="black" />}
-                      onPress={() => router.push("/(app)/(tabs)/02-search/filter")}
-                    />
-                  }
-           
           />
 
           <SearchBar

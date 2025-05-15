@@ -21,7 +21,10 @@ import useBreakpoint from "@/src/hooks/useBreakpoint";
 import { useRouter } from "expo-router";
 import SectionHeader from "@/src/components/ui/SectionHeader";
 import {travelApi} from "@/src/store/travelApi";
+import { useSearchParams } from "@/src/hooks/useFilters";
 import { generateEndpointDefinition } from './../../../node_modules/@rtk-query/codegen-openapi/src/codegen';
+import { setFiltersForKey } from "@/src/utils/searchParamsStore";
+
 const VINGIO_IMG = require("../../../src/assets/images/vingio-parkas.png");
 
 export default function Home() {
@@ -48,12 +51,15 @@ const featuredRoutes = featuredRoutesResponse?.data ?? [];
   const paddingTop = heightBreakpoint === "short" ? wp("10%") : wp("17%");
 
   /* ─────────── Navigacija ─────────── */
-  const handleCategoryPress = (category: Category) => {
-    router.push({
-      pathname: "/category/[id]",
-      params: { id: String(category.id) },
-    });
-  };
+ const handleCategoryPress = (cat: Category) => {
+  const key = "results";                      // VISI naudokim vieną raktą
+  setFiltersForKey(key, { categoryId: cat.id });
+
+  /* navigate → jei jau atidarytas Results, pereis prie jo, 
+     jei dar ne – įpush’ins */
+  router.navigate(`/results/${key}`);
+};
+
 
   return (
     <Background>
@@ -123,7 +129,7 @@ const featuredRoutes = featuredRoutesResponse?.data ?? [];
                     id={String(route.id)}
                     image={VINGIO_IMG /* TODO: route.media[0] */}
                     title={route.name ?? "Unnamed"}
-                    rating={route.ratings_avg ?? 0}
+                    rating={(route as any).ratings_avg_rating ?? 0}
                     location={`${route.city?.name ?? "Unknown"}, ${
                       route.city?.country?.name ?? "Unknown"
                     }`}

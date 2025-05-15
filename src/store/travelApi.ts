@@ -1,4 +1,7 @@
 import { emptySplitApi as api } from "./emptyApi";
+import * as SecureStore from 'expo-secure-store';
+import { setCredentials, clearAuth } from '@/src/data/features/auth/authSlice';
+
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
     registerUser: build.mutation<RegisterUserApiResponse, RegisterUserApiArg>({
@@ -7,16 +10,37 @@ const injectedRtkApi = api.injectEndpoints({
         method: "POST",
         body: queryArg.registerRequest,
       }),
-    }),
+    }), // ✅ ← šitas kablelis būtinas tarp endpoint’ų!
+
     loginUser: build.mutation<LoginUserApiResponse, LoginUserApiArg>({
-      query: (queryArg) => ({
-        url: `/api/v1/auth/login`,
-        method: "POST",
-        body: queryArg.loginRequest,
+      query: (arg) => ({
+        url: '/api/v1/auth/login',
+        method: 'POST',
+        body: arg.loginRequest,
       }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          const token = data.data?.token ?? '';
+          const user = data.data?.user ?? null;
+
+          dispatch(setCredentials({ token, user }));
+          await SecureStore.setItemAsync('token', token);
+          await SecureStore.setItemAsync('user', JSON.stringify(user));
+        } catch {}
+      },
     }),
-    logoutUser: build.mutation<LogoutUserApiResponse, LogoutUserApiArg>({
-      query: () => ({ url: `/api/v1/auth/logout`, method: "POST" }),
+    logoutUser: build.mutation<LogoutUserApiResponse, void>({
+      query: () => ({ url: '/api/v1/auth/logout', method: 'POST' }),
+
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try { await queryFulfilled; } catch {}
+        /* 1️⃣ Redux → tuščias */
+        dispatch(clearAuth());
+        /* 2️⃣ Storage → ištrinam */
+        await SecureStore.deleteItemAsync('token');
+        await SecureStore.deleteItemAsync('user');
+      },
     }),
     getCurrentUser: build.query<
       GetCurrentUserApiResponse,
@@ -1597,6 +1621,11 @@ export type UserUpdateRequest = {
     website?: string;
   };
 };
+
+
+export const useLazyGetCitiesQuery = injectedRtkApi.endpoints.getCities.useLazyQuery;
+export const useLazyGetCountriesQuery = injectedRtkApi.endpoints.getCountries.useLazyQuery;
+export const useLazyGetRoutesQuery = injectedRtkApi.endpoints.getRoutes.useLazyQuery;
 export const {
   useRegisterUserMutation,
   useLoginUserMutation,

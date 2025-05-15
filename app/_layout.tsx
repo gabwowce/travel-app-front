@@ -7,6 +7,7 @@ import { NativeBaseProvider, View } from 'native-base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useRouter } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
 
 import { store } from '@/src/data/store';
 import theme from '@/src/config/theme';
@@ -18,6 +19,8 @@ import { useAppSelector } from "@/src/data/hooks";
 import { initAuth } from "@/src/data/features/auth/authThunks"; 
 import { useAppDispatch } from '@/src/data/hooks';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { setCredentials } from '@/src/data/features/auth/authSlice';
+import { useLoginUserMutation } from '@/src/store/travelApi';
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -38,54 +41,29 @@ export default function RootLayout() {
 }
 
 function MainNavigation() {
-  const isAuthenticated = useAppSelector( state => state.auth.isAuthenticated);
-  const isLoading = useAppSelector(state => state.auth.loading);
   const dispatch = useAppDispatch();
-  
-  const [onboardingDone, setOnboardingDone] = useState(false);
-  const [ready, setReady] = useState(true);
+  const isAuthenticated = useAppSelector((state) => !!state.auth.token);
+
+  const [ready, setReady] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
-
-
-  // useEffect(() => {
-  //   (async () => {
-  //     try {
-  //       const done = await AsyncStorage.getItem('onboardingDone');
-  //       setOnboardingDone(done === 'true'); 
-  //     } catch (e) {
-  //       console.warn(e);
-  //     } finally {
-  //       setReady(true);
-  //     }
-  //   })();
-  // }, []); 
+  const [login, { isLoading }] = useLoginUserMutation();
 
   useEffect(() => {
-    dispatch(initAuth()); // ✅ Dabar saugu naudoti
+    (async () => {
+      const token = await SecureStore.getItemAsync('token');  
+      const user  = await SecureStore.getItemAsync('user');
+      if (token && user) {
+        dispatch(setCredentials({ token, user: JSON.parse(user) }));
+      }
+      setReady(true);
+    })();
   }, []);
-
-  const router = useRouter();
-
-  // useEffect(() => {
-  //   if (ready && isAuthenticated && onboardingDone) {
-  //     router.replace('/(app)/(tabs)/home'); // arba '/(auth)/index' jei nori tiksliai
-  //   }
-  // }, [ready, isAuthenticated, onboardingDone]);
-
-
-  // useEffect(() => {
-  //   AsyncStorage.removeItem('onboardingDone');
-  // }, []);
-  
-
 
   useEffect(() => {
-    setTimeout(() => {
-      setShowSplash(false);
-    }, 3000);
+    setTimeout(() => setShowSplash(false), 2000);
   }, []);
- 
-  if (showSplash || isLoading) {
+
+    if (showSplash || isLoading) {
     return <Splash onFinish={() => setShowSplash(false)} />;
   }
 
@@ -93,27 +71,14 @@ function MainNavigation() {
     return <Splash onFinish={() => setReady(true)} />;
   }
 
-  // if (!onboardingDone) {
-  //   return (
-  //     <Stack screenOptions={{ headerShown: false }}>
-  //       <Stack.Screen name="(onboarding)" />
-  //     </Stack>
-  //   );
-  // }
-
-  
-  // if (!isAuthenticated) {
-  //   return (
-  //     <Stack screenOptions={{ headerShown: false }}>
-  //       <Stack.Screen name="(auth)/index" />
-  //     </Stack>
-  //   );
-  // }
 
   return (
-    <View style={{ flex: 1 }}>
-      <Slot />
-    </View>
+    <Stack screenOptions={{ headerShown: false }}>
+      {isAuthenticated ? (
+        <Stack.Screen name="(app)" />
+      ) : (
+        <Stack.Screen name="(auth)/index" />
+      )}
+    </Stack>
   );
-  
 }
