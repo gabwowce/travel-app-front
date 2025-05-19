@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Elatray",
-    "slug": "Elatray",
+    "slug": "elatray",
     "version": "1.0.0",
     "orientation": "default",
     "icon": "./src/assets/logo/logo-v1.png",
@@ -67,7 +67,7 @@
       "windowLayout": {
         "mode": "edgeToEdge"
       },
-      "package": "com.gabwowce.frontapp"
+      "package": "com.gabwowce.elatray"
     },
     "web": {
       "bundler": "metro",
@@ -89,7 +89,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "28a51559-e325-43e6-976c-29b679b73b69"
+        "projectId": "7f5aa1f4-1b7e-43af-a058-355be731db3e"
       }
     },
     "owner": "gabwowce"

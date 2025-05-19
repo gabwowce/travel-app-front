@@ -6,12 +6,10 @@ import { useRouter } from "expo-router"; // Navigacijai
 
 
 import { Box, Text, Image, Button } from "native-base";
-import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
-import { addFavorite, removeFavorite } from "@/src/data/features/favorites/favoritesSlice";
-import { useLocalSearchParams } from "expo-router";
+import { useAppDispatch } from "@/src/data/hooks";
 import { useWindowDimensions } from "react-native";
+import { useBreakpointValue } from "native-base";
 
-import useBreakpoint from "@/src/hooks/useBreakpoint";
 import FavoriteButton from '@/src/components/ui/btns/FavoriteButton';
 
 interface TourCardProps {
@@ -24,21 +22,28 @@ interface TourCardProps {
 
 export function TourCard({ id, image, title, rating, location }: TourCardProps) {
   const router = useRouter();
+  const { width: screenW } = useWindowDimensions();
+  const cardW = useBreakpointValue({
+    base: 0.9 * screenW,  // xs-sm: beveik visas ekranas
+    sm:   0.6 * screenW,  // ~2 kortelės
+    md:   0.4 * screenW,  // ~3 kortelės
+    lg:   0.3 * screenW,  // ~4 kortelės
+    xl:   0.25 * screenW, // ~5 kortelių
+  });
 
-  const dispatch = useAppDispatch();
-  const { width } = useWindowDimensions();
-
-  const { breakpoint, heightBreakpoint } = useBreakpoint();
-
-  const isWide = breakpoint === "md" || breakpoint === "lg" || breakpoint === "xl";
-
-  const cardWidth = isWide ? width * 0.4 : width * 0.6;
+  // skirtingas nuotraukos santykis (jei reikia)
+  const imgRatio = useBreakpointValue({
+    base: 4 / 3,
+    sm:   4 / 3,
+    md:   16 / 11,
+    lg:   16 / 9,
+  });
 
   return (
       <TouchableOpacity
         onPress={() =>
           router.push({
-            pathname: "/tour/[id]",
+            pathname: "/routes/[id]",
             params: {
               id,
               title,
@@ -50,23 +55,20 @@ export function TourCard({ id, image, title, rating, location }: TourCardProps) 
         }
       >
 
-      <View style={[styles.card, { width: cardWidth }]}>
+      <View style={[styles.card, { width: cardW }]}>
 
         {/* Nuotrauka su bookmark ikona */}
         <View style={styles.imageContainer}>
           <View
             style={[
               styles.imageWrapper,
-              {
-                width: "100%",
-                aspectRatio: heightBreakpoint === "regular" ? 1 : 16 / 11,
-              },
+              {width: "100%",},{ aspectRatio: imgRatio }
             ]}
           >
             <ImageViewer imgSource={image} />
           </View>
-          <Ionicons name="bookmark-outline" size={20} color="white" style={styles.bookmarkIcon} />
-          <FavoriteButton routeId={id} />
+          {/* <Ionicons name="bookmark-outline" size={20} color="white" style={styles.bookmarkIcon} /> */}
+          <FavoriteButton routeId={Number(id)} style={styles.bookmarkIcon}/>
         </View>
         {/* <Button size="sm" mt="2" colorScheme={isFavorite ? "red" : "blue"} onPress={handleFavoriteToggle}>
           {isFavorite ? "Remove from Favorites" : "Add to Favorites"}

@@ -14,7 +14,7 @@ export default function ScreenContainer({
   children,
   style,
   variant = "center",
-  topOffset = 70,
+  topOffset = 0,
 }: ScreenContainerProps) {
   const insets = useSafeAreaInsets();
 

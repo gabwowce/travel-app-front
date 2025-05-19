@@ -40,7 +40,7 @@ export default function FlexContainer({
   px,
   py,
   pt,
-  pb = wp("5%"),
+  pb ,
   pl,
   pr,
 }: FlexContainerProps) {

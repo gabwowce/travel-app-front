@@ -1,4 +1,16 @@
 // app/_layout.tsx
+import { BackHandler, Platform } from 'react-native';
+
+// RN ≥ 0.72 nebėra removeEventListener ⇒ pridedam tylų stub'ą
+if (!(BackHandler as any).removeEventListener) {
+  Object.defineProperty(BackHandler, 'removeEventListener', {
+    value: () => {},
+    writable: false,
+    configurable: true,
+  });
+}
+
+
 import React, { useState, useEffect } from 'react';
 import { Stack, Slot } from 'expo-router';
 import { Provider as ReduxProvider, useSelector, useDispatch } from 'react-redux';
@@ -50,8 +62,12 @@ function MainNavigation() {
 
   useEffect(() => {
     (async () => {
-      const token = await SecureStore.getItemAsync('token');  
-      const user  = await SecureStore.getItemAsync('user');
+      let token = await SecureStore.getItemAsync('token');  
+      let user  = await SecureStore.getItemAsync('user');
+       if (!token || !user) {
+        token = await AsyncStorage.getItem('token');
+        user = await AsyncStorage.getItem('user');
+      }
       if (token && user) {
         dispatch(setCredentials({ token, user: JSON.parse(user) }));
       }

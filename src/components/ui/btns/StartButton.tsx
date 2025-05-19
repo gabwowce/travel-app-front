@@ -1,3 +1,4 @@
+// components/ui/btns/StartButton.tsx
 import React from 'react';
 import { Pressable } from 'react-native';
 import { Icon, Box } from 'native-base';
@@ -5,10 +6,10 @@ import { Ionicons } from '@expo/vector-icons';
 
 type Props = {
   onPress: () => void;
-  iconName?: string; // ← galima pasirinkti ikonėlę, pvz. „close“
+  iconName?: string; // pvz. "map", "play"
 };
 
-export default function BackButton({ onPress, iconName = "chevron-back" }: Props) {
+export default function StartButton({ onPress, iconName = "map" }: Props) {
   return (
     <Box>
       <Pressable
@@ -24,7 +25,7 @@ export default function BackButton({ onPress, iconName = "chevron-back" }: Props
         }}
         android_ripple={{ color: "#E0E0E0", borderless: true }}
       >
-        <Icon as={Ionicons} name={iconName} size="lg" color="#181818" />
+        <Icon as={Ionicons} name={iconName} size="lg" color="#0C2736" />
       </Pressable>
     </Box>
   );

@@ -13,7 +13,7 @@ export const registerSchema = Yup.object({
     .required('Email is required'),
 
   password: Yup.string()
-    .min(6, 'Password must be at least 6 characters long')
+    .min(8, 'Password must be at least 8 characters long')
     .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
     .matches(/[0-9]/, 'Password must contain at least one number')
     .required('Password is required'),

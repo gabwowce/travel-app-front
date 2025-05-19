@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { ScrollView, Keyboard, TouchableWithoutFeedback, TextInput, Button, View, Text } from "react-native";
+import { ScrollView, Keyboard, TouchableWithoutFeedback, TextInput, View, Text } from "react-native";
 import { useGetRoutesQuery } from "@/src/store/travelApi";
 import { routesFilterSchema } from "@/src/validation/routesFilterSchema";
 import { Formik } from "formik";
 import * as Yup from "yup";
+import Button from "@/src/components/ui/btns/Button";
 
 export const routesFilterInitial = {
   country_id: null,
@@ -65,7 +66,7 @@ export default function FilterScreen() {
                 onChangeText={handleChange("search")}
               />
 
-              <Button title="Apply Filters" onPress={handleSubmit as any} />
+              <Button label="Apply Filters" onPress={handleSubmit as any} />
             </>
           )}
         </Formik>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Background } from "@/src/components/BGWrapper";
 import { TourCard } from "@/src/components/tour/TourCard";
 import {
@@ -9,27 +9,29 @@ import {
   HStack,
   Spinner,
   Pressable,
+  Wrap,
 } from "native-base";
 import {
   useGetFeaturedRoutesQuery,   // 🔹 sugeneruoti hook’ai
   useGetCategoriesQuery,
+  useGetCurrentUserQuery,
 } from "@/src/store/travelApi";
 import type { Route } from "@/src/api/generated/models/Route";
 import type { Category } from "@/src/api/generated/models/Category";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
-import useBreakpoint from "@/src/hooks/useBreakpoint";
 import { useRouter } from "expo-router";
 import SectionHeader from "@/src/components/ui/SectionHeader";
-import {travelApi} from "@/src/store/travelApi";
-import { useSearchParams } from "@/src/hooks/useFilters";
-import { generateEndpointDefinition } from './../../../node_modules/@rtk-query/codegen-openapi/src/codegen';
-import { setFiltersForKey } from "@/src/utils/searchParamsStore";
+import { Button } from "native-base";
+import { Ionicons } from "@expo/vector-icons";
+import { mergeFiltersForKey } from "@/src/data/features/filters/filtersSlice";
+import { useAppDispatch } from "@/src/data/hooks";
+import RandomRouteButton from "@/src/components/ui/RandomRouteButton";
 
 const VINGIO_IMG = require("../../../src/assets/images/vingio-parkas.png");
 
 export default function Home() {
   const router = useRouter();
-
+  
   /* ─────────── ROUTES & CATEGORIES PER RTK Query ─────────── */
 const {
   data: featuredRoutesResponse,       // be numatytos reikšmės!
@@ -46,21 +48,27 @@ const featuredRoutes = featuredRoutesResponse?.data ?? [];
 
   const categories = categoriesResponse?.data ?? []; 
 
-  /* ─────────── UI helperiai ─────────── */
-  const { heightBreakpoint } = useBreakpoint();
-  const paddingTop = heightBreakpoint === "short" ? wp("10%") : wp("17%");
 
   /* ─────────── Navigacija ─────────── */
- const handleCategoryPress = (cat: Category) => {
-  const key = "results";                      // VISI naudokim vieną raktą
-  setFiltersForKey(key, { categoryId: cat.id });
+  const dispatch = useAppDispatch();
+const handleCategoryPress = (cat: Category) => {
+  const key = "results";
+  const filtersObj = { categoryId: cat.id };
 
-  /* navigate → jei jau atidarytas Results, pereis prie jo, 
-     jei dar ne – įpush’ins */
-  router.navigate(`/results/${key}`);
+  // ➊ į Redux
+  dispatch(mergeFiltersForKey({ key, filters: filtersObj }));
+
+  // ➋ per URL (?filters=…)
+  router.navigate({
+    pathname: `/results/${key}`,
+    params: { filters: JSON.stringify(filtersObj) },
+  });
 };
+const [expanded, setExpanded] = useState(true);
+const visibleCategories = expanded ? categories : categories.slice(0, 3);
 
-
+const { data: userData } = useGetCurrentUserQuery();
+const userName = userData?.data?.name?.split(" ")[0] ?? "keliautojau";
   return (
     <Background>
       <ScrollView
@@ -69,44 +77,18 @@ const featuredRoutes = featuredRoutesResponse?.data ?? [];
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: wp("10%") }}
       >
-        <Box flex={1} pt={paddingTop}>
+        <Box flex={1} pt={20}>
           {/* ─── HEADER ─── */}
-          <VStack pl={wp("3%")} pb={wp("1%")}>
-            <Text variant="header1">Explore the</Text>
-            <Text variant="header1Bold">Beautiful world!</Text>
+          <VStack pl={5} pb={wp("1%")}>
+              <Box>
+                <Text variant="header1" >Explore the</Text>
+                <Text variant="header1Bold" mt={-4}>
+                  Beautiful world!
+                </Text>
+              </Box>
+            
           </VStack>
 
-          {/* ─── CATEGORIES ─── */}
-          <SectionHeader title="Categories" />
-
-          {categoriesLoading ? (
-            <Box alignItems="center" py="15px">
-              <Spinner size="sm" />
-            </Box>
-          ) : (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <HStack space={3} px={wp("3%")}>
-                {categories.map((cat) => (
-                  <Pressable
-                    key={cat.id}
-                    onPress={() => handleCategoryPress(cat)}
-                  >
-                    <Box
-                      px={4}
-                      py={2}
-                      borderRadius="full"
-                      bg="primary.100"
-                      _pressed={{ bg: "primary.200" }}
-                    >
-                      <Text fontSize="sm" fontWeight="bold" color="primary.800">
-                        {cat.name}
-                      </Text>
-                    </Box>
-                  </Pressable>
-                ))}
-              </HStack>
-            </ScrollView>
-          )}
 
           {/* ─── FEATURED ROUTES ─── */}
           <SectionHeader title="Featured tours" topPadding />
@@ -116,13 +98,13 @@ const featuredRoutes = featuredRoutesResponse?.data ?? [];
               <Spinner size="lg" color="primary.500" />
             </Box>
           ) : routesError ? (
-            <Text color="red.500" px={wp("3%")}>
+            <Text color="red.500" px={5}>
               Failed to load tours. Please try again.
              
             </Text>
           ) : (featuredRoutes as Route[]).length > 0 ? (
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <HStack space={4} px={wp("3%")}>
+              <HStack space={4} px={5}>
                 {featuredRoutes.map((route) => (
                   <TourCard
                     key={route.id}
@@ -138,8 +120,56 @@ const featuredRoutes = featuredRoutesResponse?.data ?? [];
               </HStack>
             </ScrollView>
           ) : (
-            <Text px={wp("3%")}>No featured routes available.</Text>
+            <Text px={5}>No featured routes available.</Text>
           )}
+
+          {/* ─── CATEGORIES ─── */}
+         <SectionHeader pt={4} title="Categories" />
+
+        <VStack px={5} space={3}>
+          <Wrap direction="row" justify="flex-start" spacing={3}>
+            {visibleCategories.map((cat) => (
+              <Pressable key={cat.id} onPress={() => handleCategoryPress(cat)}>
+                <Box
+                  px={4}
+                  py={2}
+                  m={1}
+                  borderRadius="full"
+                  bg="primary.100"
+                  maxW={wp("40%")}  // apriboja plotį, kad wrap’intų
+                  _pressed={{ bg: "primary.200" }}
+                >
+                  <Text
+                    fontSize="sm"
+                    fontWeight="bold"
+                    color="primary.800"
+                    textAlign="center"
+                  >
+                    {cat.name}
+                  </Text>
+                </Box>
+              </Pressable>
+            ))}
+          </Wrap>
+
+          {/* {categories.length > 3 && (
+            <Pressable onPress={() => setExpanded((prev) => !prev)}>
+              <Text
+                fontSize="sm"
+                fontWeight="medium"
+                color="primary.600"
+                textAlign="center"
+                mt={1}
+              >
+                {expanded ? "Show less" : "Show more"}
+              </Text>
+            </Pressable>
+          )} */}
+        </VStack>
+
+
+
+          <RandomRouteButton/>
         </Box>
       </ScrollView>
     </Background>

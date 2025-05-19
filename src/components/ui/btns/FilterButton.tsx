@@ -1,16 +1,20 @@
+import React from "react";
+import { router } from "expo-router";
+import CircleButton from "./CircleButton"; // <- path pasitikrink
 
-import { IconButton, Icon } from "native-base";
-import { Ionicons } from "@expo/vector-icons";
-import { router, useSegments } from "expo-router";
+type Props = {
+  routeKey: string;
+};
 
-export default function FilterButton({ routeKey }: { routeKey: string }) {
-    console.log("-->routeKey: " + routeKey);
+export default function FilterCircleButton({ routeKey }: Props) {
   return (
-    <IconButton
-      icon={<Icon as={Ionicons} name="options-outline" size="lg" />}
-      _pressed={{ opacity: 0.7 }}
+    <CircleButton
+      variant="filter"
       onPress={() =>
-        router.push({ pathname: "/(app)/(modals)/filters", params: { from: routeKey } })
+        router.push({
+          pathname: "/(app)/(modals)/filters",
+          params: { from: routeKey },
+        })
       }
     />
   );

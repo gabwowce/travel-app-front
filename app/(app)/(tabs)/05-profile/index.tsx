@@ -11,7 +11,7 @@ import {
   ScrollView,
 } from "native-base";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { useAppSelector, useAppDispatch } from "@/src/data/hooks";
 import { logout } from "@/src/data/features/auth/authThunks";
 import {
@@ -27,12 +27,13 @@ import FlexContainer from "@/src/components/layout/FlexContainer";
 
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import { useGetUserProfileQuery, useLogoutUserMutation, useGetCurrentUserQuery  } from '@/src/store/travelApi';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import CircleButton from "@/src/components/ui/btns/CircleButton";
 
 
 export default function ProfileScreen() {
   const dispatch = useAppDispatch();
-  // const user = useAppSelector(state => state.auth.user);
-  // const loading = useAppSelector(state => state.auth.loading);
+  
   const router = useRouter();
 
   const {
@@ -55,18 +56,27 @@ export default function ProfileScreen() {
     }
   };
 
-  const handleLogout = () => {
-    dispatch(logout());
-    router.push("/(auth)");
-  };
-  
+ const handleLogout = async () => {
+  try {
+    await logoutUser().unwrap(); // API logout
+  } catch (e) {
+    console.warn("Logout failed or was already invalid:", e);
+  }
 
-  // useEffect(() => {
-  //   if (!user) {
-  //     dispatch(fetchUserProfile());
-  //   }
-  // }, [user, dispatch]);
-  
+  await AsyncStorage.removeItem("token");
+  await AsyncStorage.removeItem("user");
+
+  dispatch({ type: "auth/logout" }); // jeigu turi redux slice, kuris saugo state
+  router.replace("/(auth)");
+};
+
+
+useFocusEffect(
+  React.useCallback(() => {
+    refetch();
+  }, [refetch])
+);
+
 
   if (loading || !user) {
     return <LoadingScreen />;
@@ -112,72 +122,80 @@ export default function ProfileScreen() {
   const initial = user.name?.charAt(0)?.toUpperCase() ?? "?";
 
   return(
-<ScrollView style={{ backgroundColor: "#FFF" }} keyboardShouldPersistTaps="handled">
-  <FlexContainer gap={16} >
-    <Header
-      title="Profile"
-      rightIcon={
-        <IconButton
-          icon={<AntDesign name="edit" size={24} color="black" />}
-          onPress={() => router.push("/05-profile/editProfile")}
-        />
-      }
-    />
+            <FlexContainer>
+              <Header
+                title="Profile"
+                rightIcon={
+                  <CircleButton
+                    variant="edit"
+                    onPress={() => router.push("/05-profile/editProfile")}
+                  />
+                }
+              />
 
-    {/* Profilio info (avatar, vardas, el.paštas) */}
-    <VStack alignItems="center" mb={hp("1%")}>
-      <Avatar size="xl" source={{ uri: "https://via.placeholder.com/150" }}>
-        {initial}
-      </Avatar>
     
-      <Heading mt={hp("4%")} fontSize="lg">{user?.name}</Heading>
-      <Text color="gray.500">{user?.email}</Text>
+              <ScrollView keyboardShouldPersistTaps="handled">
+                 <VStack space={4} mt={6} px={5}>
+                    <VStack alignItems="center">
+                      <Avatar size="xl" source={{ uri: "https://via.placeholder.com/150" }}>
+                        {initial}
+                      </Avatar>
+                    
+                      <Heading mt={hp("4%")} fontSize="lg">{user?.name}</Heading>
+                      
+                      <Text color="gray.500">{user?.email}</Text>
+                    </VStack>
+                    <Divider my={4} />
     
-      {profile?.bio && (
-        <Text mt={2} fontStyle="italic" textAlign="center" maxW="80%">
-          {profile.bio}
-        </Text>
-      )}
-    
-      {profile?.location && (
-        <Text mt={1} color="gray.500">
-          📍 {profile.location}
-        </Text>
-      )}
-    
-      {profile?.website && (
-        <Text
-          mt={1}
-          color="blue.500"
-          textDecorationLine="underline"
-          onPress={() => Linking.openURL(profile.website)}
-        >
-          {profile.website}
-        </Text>
-      )}
-    </VStack>
+                    {profile?.bio && (
+                        <Text mt={2} fontStyle="italic" textAlign="center" maxW="80%">
+                          {profile.bio}
+                        </Text>
+                      )}
+                    
+                      {profile?.location && (
+                        <Text mt={1} color="gray.500">
+                          📍 {profile.location}
+                        </Text>
+                      )}
+                    
+                      {profile?.website && (
+                        <Text
+                          mt={1}
+                          color="blue.500"
+                          textDecorationLine="underline"
+                          onPress={() => Linking.openURL(profile.website)}
+                        >
+                          {profile.website}
+                        </Text>
+                      )}
+                </VStack>
 
+                <VStack  pb={5}>
 
-    {/* Meniu sekcijos */}
-    {menuItems.map((section, index) => (
-      <VStack key={index} space={hp("2%")}>
-        <Text style={styles.itemsTitle} fontSize="md" fontWeight="bold">{section.title}</Text>
-        {section.options.map((item, idx) => (
-          <TouchableOpacity key={idx} style={styles.listItem} onPress={item.action || (() => {})}>
-            <HStack alignItems="center">
-              <MaterialIcons name={item.icon as any} size={24} color={item.color || "black"} />
-              <Text ml={3} style={{ color: item.color || "black" }}>{item.title}</Text>
-            </HStack>
-            {section.title !== "Account Management" && (
-              <MaterialIcons name="keyboard-arrow-right" size={24} color="gray" />
-            )}
-          </TouchableOpacity>
-        ))}
-      </VStack>
-    ))}
-  </FlexContainer>
-</ScrollView>
+                  {/* Meniu sekcijos */}
+                {menuItems.map((section, index) => (
+                  <VStack key={index} space={hp("2%")}>
+                    <Text style={styles.itemsTitle} fontSize="md" fontWeight="bold">{section.title}</Text>
+                    {section.options.map((item, idx) => (
+                      <TouchableOpacity key={idx} style={styles.listItem} onPress={item.action || (() => {})}>
+                        <HStack alignItems="center">
+                          <MaterialIcons name={item.icon as any} size={24} color={item.color || "black"} />
+                          <Text ml={3} style={{ color: item.color || "black" }}>{item.title}</Text>
+                        </HStack>
+                        {section.title !== "Account Management" && (
+                          <MaterialIcons name="keyboard-arrow-right" size={24} color="gray" />
+                        )}
+                      </TouchableOpacity>
+                    ))}
+                  </VStack>
+                ))}
 
+                </VStack>
+                
+                
+              </ScrollView>
+            </FlexContainer>
   );
 }
 

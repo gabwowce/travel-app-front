@@ -2,6 +2,13 @@ import { extendTheme } from "native-base";
 
 // Sukuriame custom NativeBase temą
 const theme = extendTheme({
+  breakpoints: {
+    xs: 0,     // telefonas portretiškai
+    sm: 360,   // didesnis telefonas
+    md: 480,   // planšetė portretiškai
+    lg: 768,   // planšetė / web ~768 px
+    xl: 1024,  // desktop
+  },
   colors: {
     primary: {
       50: "#F9FAFB",
@@ -84,8 +91,17 @@ const theme = extendTheme({
           fontSize: "15px",
           fontWeight: "bold",
         },
+        bodyBoldsm: {
+          fontSize: "14px",
+          fontWeight: "bold",
+        },
         bodyGray: {
           fontSize: "15px",
+          fontWeight: "400",
+          color: "rgba(0,0,0,0.5)", // Pusiau permatomas pilkas
+        },
+         bodyGraysm: {
+          fontSize: "13px",
           fontWeight: "400",
           color: "rgba(0,0,0,0.5)", // Pusiau permatomas pilkas
         },

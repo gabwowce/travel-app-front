@@ -7,12 +7,14 @@ import {
   useAddRouteToFavoritesMutation,
   useRemoveRouteFromFavoritesMutation,
 } from '@/src/store/travelApi';
+import { StyleProp, ViewStyle } from 'react-native';
 
 type Props = {
   routeId: number;
+  style: StyleProp<ViewStyle>;
 };
 
-export default function FavoriteButton({ routeId }: Props) {
+export default function FavoriteButton({ routeId, style }: Props) {
   const {
   data: favorites,
   isLoading: favLoading,
@@ -28,11 +30,8 @@ export default function FavoriteButton({ routeId }: Props) {
   const isFavorited =
   favSuccess && favorites?.data?.some((fav) => String(fav.id) === String(routeId));
 
-  console.log('➡️ routeId-->:' + routeId);
-console.log('➡️ User is favorites?????:' + isFavorited);
-
   const toggleFavorite = async () => {
-    await refetch();
+    
     try {
       if (isFavorited) {
         await removeFromFavorites({ route: routeId }).unwrap();
@@ -42,15 +41,16 @@ console.log('➡️ User is favorites?????:' + isFavorited);
     } catch (err) {
       console.error('Favorite toggle error', err);
     }
+    await refetch();
   };
 
   return (
-    <IconButton
+    <IconButton style={style}
       icon={
         <MaterialIcons
-          name={isFavorited ? 'favorite' : 'favorite-border'}
+          name={isFavorited ? 'bookmark' : 'bookmark-border'}
           size={24}
-          color={isFavorited ? 'red' : 'gray'}
+          color={isFavorited ? 'white' : 'white'}
         />
       }
       onPress={toggleFavorite}

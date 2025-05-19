@@ -98,7 +98,7 @@ const TourBottomSheet = forwardRef<BottomSheet, Props>(({ points, userLocation, 
             title={`About`}
             onBackPress={() => localRef.current?.snapToIndex(1)}
             onPressClose={onBack}
-            disableSafeArea
+            // disableSafeArea
           />
         )
       ) : isFullScreen && (
@@ -112,7 +112,7 @@ const TourBottomSheet = forwardRef<BottomSheet, Props>(({ points, userLocation, 
             }
           }}
           onPressClose={onBack}
-          disableSafeArea
+          // disableSafeArea
         />
       )}
 

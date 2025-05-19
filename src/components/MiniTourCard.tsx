@@ -1,75 +1,133 @@
+// components/MiniTourCard.tsx
 import React from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
-import { router } from "expo-router";          // ⬅️ expo-router import
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  useWindowDimensions,
+  Platform,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { Route } from "@/src/data/features/routes/routesThunks";
-const VINGIO_IMG = require("../assets/images/traku-pilis.jpg");
+import ImageViewer from "../components/ImageViewer";
+import { Text } from "native-base";
 
-interface TourCardProps {
+
+import { useBreakpointValue } from 'native-base';
+
+interface MiniTourCardProps {
   tour: Route;
-  onPress?: () => void;   // paliekame, jei kartais norėtumėte perrašyti elgesį
+  onPress?: () => void;
 }
 
-const MiniTourCard: React.FC<TourCardProps> = ({ tour, onPress }) => {
-  const handlePress = onPress
-    ? onPress
-    : () =>
-        router.push({
-          pathname: "/tour/[id]",
-          params: { id: tour.id },  // ← perduodame id
-        });
+// Fallback img kol kas
+const VINGIO_IMG = require("../assets/images/traku-pilis.jpg");
+
+export const MiniTourCard: React.FC<MiniTourCardProps> = ({ tour, onPress }) => {
+  const { width: screenW } = useWindowDimensions();
+  const cardW = useBreakpointValue({
+    base: screenW * 0.9,  // xs-sm: viena kortelė per visą plotį
+    sm:   screenW * 0.4, // ~2 kortelės vienoje eilėje
+    md:   screenW * 0.28, // ~3 kortelės
+    lg:   screenW * 0.26, // ~4 kortelės
+  });
+  const handlePress =
+    onPress ??
+    (() =>
+      router.push({
+        pathname: "/routes/[id]",
+        params: { id: tour.id },
+      }));
 
   return (
-    <TouchableOpacity style={styles.card} onPress={handlePress}>
-      {tour.media?.length > 0 && (
-        <Image source={VINGIO_IMG} style={styles.cardImage} resizeMode="cover" />
-      )}
-      <View style={styles.cardContent}>
-        <Text style={styles.cardTitle}>{tour.name}</Text>
-        <Text style={styles.cardLocation}>
-          📍 {tour.city?.name}, {tour.city?.country?.name}
-        </Text>
-        <Text style={styles.cardRating}>
-          ⭐ {tour.ratings_avg_rating ? tour.ratings_avg_rating.toFixed(1) : "N/A"}
-        </Text>
-      </View>
-    </TouchableOpacity>
+    /* Išorinis sluoksnis ⇒ meta-šešėlis ir radius */
+    <View style={[styles.shadowWrapper, { width: cardW }]}>
+      {/* Vidinis sluoksnis ⇒ viskas inside + overflow:hidden */}
+      <TouchableOpacity style={styles.card} onPress={handlePress} activeOpacity={0.9}>
+        {/* -------- Nuotrauka -------- */}
+        <View style={styles.imageContainer}>
+          <View style={styles.imageWrapper}>
+            <ImageViewer imgSource={VINGIO_IMG} />
+          </View>
+        </View>
+
+        {/* -------- Tekstas -------- */}
+        <View style={styles.textContainer}>
+          <Text variant="bodyBoldsm" numberOfLines={1}>
+            {tour.name}
+          </Text>
+
+          <View style={styles.infoRow}>
+            <Ionicons name="location-outline" size={14} color="gray" />
+            <Text variant="bodyGraysm" ml={1} numberOfLines={1}>
+              {tour.city?.name}, {tour.city?.country?.name}
+            </Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Ionicons name="star" size={13} color="#FACC15" />
+            <Text variant="bodyGraysm" ml={1}>
+              {tour.ratings_avg_rating ? tour.ratings_avg_rating.toFixed(1) : "N/A"}
+            </Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    </View>
   );
 };
 
+const SHADOW = {
+  shadowColor: "#000",
+  shadowOpacity: 0.08,
+  shadowOffset: { width: 0, height: 4 },
+  shadowRadius: 12,
+  // Android
+  elevation: 4,
+};
+
 const styles = StyleSheet.create({
+  /* išorinis wrapperis – neprarandame šešėlio su overflow:hidden */
+  shadowWrapper: {    
+    margin: 0,
+    marginBottom: 20,
+    borderRadius: 24,
+    ...SHADOW,
+  },
+  /* vidinis kortelės turinys */
   card: {
-    flex: 1,
-    backgroundColor: "#fff",
+    borderRadius: 24,
+    backgroundColor: "#FFFFFF",
     overflow: "hidden",
-    marginBottom: 15,
-    marginHorizontal: 5,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
   },
-  cardImage: {
+  imageContainer: {
+    position: "relative",
+    padding: 14,
+  },
+  imageWrapper: {
     width: "100%",
-    height: 120,
+    aspectRatio: 16 / 11,
+    borderRadius: 12,
+    overflow: "hidden",
   },
-  cardContent: {
-    padding: 10,
+  ratingBadge: {
+    position: "absolute",
+    top: 24,
+    left: 24,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.35)",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 12,
   },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: "600",
+  textContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
-  cardLocation: {
-    fontSize: 14,
-    color: "gray",
-  },
-  cardRating: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#ff8c00",
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
   },
 });
 

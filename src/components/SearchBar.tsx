@@ -2,17 +2,21 @@ import React from "react";
 import { View, TextInput, StyleSheet, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
+import { VStack } from "native-base";
 
 interface SearchBarProps {
   placeholder?: string;
   value: string;
   onChangeText: (text: string) => void;
   onClear?: () => void;
+  onEndEditing?: () => void;
 }
 
-export default function SearchBar({ placeholder, value, onChangeText, onClear }: SearchBarProps) {
+export default function SearchBar({ placeholder, value, onChangeText, onClear, onEndEditing }: SearchBarProps) {
   return (
-    <View style={styles.container}>
+    <VStack mt={6} space={3}>
+
+ <View style={styles.container}>
       {/* 🔍 Search ikona */}
       <Ionicons name="search-outline" size={20} color="gray" style={styles.iconLeft} />
 
@@ -23,6 +27,7 @@ export default function SearchBar({ placeholder, value, onChangeText, onClear }:
         value={value}
         onChangeText={onChangeText}
         placeholderTextColor="gray"
+        onEndEditing={onEndEditing}
       />
 
       {/* ❌ Išvalymo mygtukas */}
@@ -32,6 +37,8 @@ export default function SearchBar({ placeholder, value, onChangeText, onClear }:
         </Pressable>
       )}
     </View>
+    </VStack>
+   
   );
 }
 

@@ -25,7 +25,7 @@ export default function ForgotPasswordScreen() {
 
   return (
     <KeyboardWrapper>
-     <FlexContainer gap={16} px={wp("3%")}>
+     <ScreenContainer variant="top">
         <Header onBackPress={() => router.back()} transparent />
 
         <Text variant="header1" style={styles.title}>
@@ -48,7 +48,7 @@ export default function ForgotPasswordScreen() {
 
         {/* Slaptažodžio atstatymo mygtukas */}
         <Button label="Reset Password" onPress={handleResetPassword} />
-      </FlexContainer>
+      </ScreenContainer>
     </KeyboardWrapper>
   );
 }

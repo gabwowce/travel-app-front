@@ -49,10 +49,10 @@ export default function SelectedTourPointDetails({ point, userLocation }: Props)
       </TouchableOpacity>
 
       <View style={styles.buttons}>
-        <TouchableOpacity style={styles.button}>
+        {/* <TouchableOpacity style={styles.button}>
           <Ionicons name="bookmark-outline" size={20} color="#666" />
           <Text style={styles.buttonText}>Save</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <TouchableOpacity style={styles.button} onPress={handleShare}>
           <Ionicons name="share-social-outline" size={20} color="#666" />

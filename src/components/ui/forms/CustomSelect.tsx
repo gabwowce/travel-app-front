@@ -1,6 +1,7 @@
-// src/components/ui/form/CustomSelect.tsx
 import React from "react";
-import { Select, Text } from "native-base";
+import { Box, Select, Text } from "native-base";
+import { Ionicons } from "@expo/vector-icons";
+import { StyleSheet } from "react-native";
 
 interface CustomSelectProps {
   label?: string;
@@ -8,7 +9,7 @@ interface CustomSelectProps {
   selectedValue: string | undefined;
   onValueChange: (value: string) => void;
   options: { label: string; value: string }[];
-  isDisabled?: boolean; // 👈 PADARYTI OPTIONAL
+  isDisabled?: boolean;
 }
 
 export default function CustomSelect({
@@ -17,21 +18,40 @@ export default function CustomSelect({
   selectedValue,
   onValueChange,
   options,
-  isDisabled = false, // 👈 DEFAULT FALSE
+  isDisabled = false,
 }: CustomSelectProps) {
   return (
     <>
       {label && <Text mb={1}>{label}</Text>}
       <Select
-        selectedValue={selectedValue}
-        placeholder={placeholder ?? "Select option"}
-        onValueChange={onValueChange}
-        isDisabled={isDisabled} // 👈 PRITAIKOM ČIA
-      >
-        {options.map((opt) => (
-          <Select.Item key={opt.value} label={opt.label} value={opt.value} />
-        ))}
-      </Select>
+  selectedValue={selectedValue}
+  placeholder={placeholder ?? "Select option"}
+  onValueChange={onValueChange}
+  isDisabled={isDisabled}
+  style={styles.selectStyle}
+  borderColor="gray.300"
+  fontSize="sm"
+  dropdownIcon={
+    <Box mr={4}>
+      <Ionicons name="chevron-down" size={16} color="#6b7280" />
+    </Box>
+  }
+  _selectedItem={{
+    bg: "primary.100",
+    endIcon: <Ionicons name="checkmark" size={18} color="#3b82f6" />,
+  }}
+>
+  {options.map((opt) => (
+    <Select.Item key={opt.value} label={opt.label} value={opt.value} />
+  ))}
+</Select>
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  selectStyle: {
+    borderRadius: 24,
+  },
+
+});

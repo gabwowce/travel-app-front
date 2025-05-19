@@ -2,10 +2,9 @@ import React from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { Text } from "native-base";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import BackButton from "./ui/btns/BackButton";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
+import CircleButton from "./ui/btns/CircleButton";
 
 interface HeaderProps {
   title?: string;
@@ -29,26 +28,31 @@ export default function Header({ title, onBackPress, onPressClose, transparent =
 
           paddingHorizontal: wp("3%"),
           backgroundColor: transparent ? "transparent" : "#FFFCF9",
-          borderWidth: 1,
-          borderColor: "rgba(0,0,0,0.1)", // ✨ subtle border
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 8,
-          elevation: 4, // for Android
+          ...(transparent
+            ? {} // jei transparent – nieko papildomai
+            : {
+                borderWidth: 1,
+                borderColor: "rgba(0,0,0,0)",
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 8,
+                elevation: 4,
+              }),
+
 
         }
       ]}
     >
       <View style={styles.sideIconContainer}>
-        {onBackPress ? <BackButton onPress={onBackPress} /> : <View style={styles.backButtonPlaceholder} />}
+        {onBackPress ? <CircleButton variant="back" onPress={onBackPress} /> : <View style={styles.backButtonPlaceholder} />}
       </View>
 
       {title && <Text variant="header2Bold" style={styles.title}>{title}</Text>}
 
       <View style={styles.sideIconContainer}>
         {onPressClose ? (
-          <BackButton onPress={onPressClose} iconName="close"/>
+          <CircleButton variant="back" onPress={onPressClose} iconName="close"/>
         ) : rightIcon ? (
           rightIcon
         ) : (
@@ -61,8 +65,8 @@ export default function Header({ title, onBackPress, onPressClose, transparent =
 
 const styles = StyleSheet.create({
   headerContainer: {
-    borderBottomLeftRadius: 16,
-    borderBottomRightRadius: 16,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
     // paddingHorizontal: 20,
     // paddingVertical: 20,
     flexDirection: "row",
@@ -71,6 +75,7 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     height: 120,
+    paddingBottom:10
   },
   title: {
     flex: 1, 

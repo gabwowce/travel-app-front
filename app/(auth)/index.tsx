@@ -1,43 +1,33 @@
-// LoginScreen.tsx
 import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { Text } from "native-base";
 import Button from "@/src/components/ui/btns/Button";
-import { Link, useRouter } from "expo-router";
-
-import {
-  useLoginUserMutation,          // ← sugeneruotas hook’as
-} from "@/src/store/travelApi";
+import { useRouter } from "expo-router";
+import * as SecureStore from "expo-secure-store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Formik } from "formik";
 
 import CustomInput from "@/src/components/ui/input/CustomInput";
 import KeyboardWrapper from "@/src/components/KeyboardWrapper";
 import ScreenContainer from "@/src/components/ScreenContainer";
+import { loginSchema } from "@/src/validation/loginSchema";
 
-export default function LoginScreen() {
-  const [email,    setEmail]    = useState("");
-  const [password, setPassword] = useState("");
-  const router = useRouter();
+import { useLoginUserMutation } from "@/src/store/travelApi";
 
-  /* --- RTK Query --- */
-  const [login, { isLoading, error, reset }] = useLoginUserMutation();
-
-  /* --- Padeda rodyti backend’o klaidas --- */
-  const apiErrors = (error as any)?.data?.errors ?? {};      // { email: ['msg'], password: [...] }
-  const general   = (error as any)?.data?.message;           // pvz. “Invalid credentials”
-
- const handleLogin = async () => {
-  try {
-    await login({                    // ← argumentas
-      loginRequest: { email, password }
-    }).unwrap();                     // sėkmės atveju
-    router.push("/(app)/(tabs)/home");
-  } catch {
-    /* error jau laikomas hook’o state */
-  }
+const persistAuth = async (token: string, user: any) => {
+  await SecureStore.setItemAsync("token", token);
+  await SecureStore.setItemAsync("user", JSON.stringify(user));
+  await AsyncStorage.setItem("token", token);
+  await AsyncStorage.setItem("user", JSON.stringify(user));
 };
 
+export default function LoginScreen() {
+  const router = useRouter();
+  const [login, { isLoading, error, reset }] = useLoginUserMutation();
 
-  /* Navigacija į registraciją – pakanka „reset()“, kad nuvalytume klaidų būseną */
+  const apiErrors = (error as any)?.data?.errors ?? {};
+  const general = (error as any)?.data?.message;
+
   const gotoRegister = () => {
     reset();
     router.push("/register");
@@ -51,44 +41,65 @@ export default function LoginScreen() {
           <Text variant="bodyGray">Please sign in to continue</Text>
         </View>
 
-        <CustomInput
-          label="Email"
-          placeholder="Email"
-          autoCapitalize="none"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-          error={apiErrors.email?.[0]}
-        />
-        <CustomInput
-          label="Password"
-          placeholder="Enter your password"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-          error={apiErrors.password?.[0]}
-          onForgotPassword={() => router.push("/(auth)/forgotPassword")}
-        />
+        <Formik
+          initialValues={{ email: "", password: "" }}
+          validationSchema={loginSchema}
+          onSubmit={async (values, { setErrors }) => {
+            try {
+              const res = await login({ loginRequest: values }).unwrap();
+              const { token, user } = res.data;
 
-        {general && (
-          <Text style={{ color: "red", textAlign: "center", paddingBottom: 20 }}>
-            {general}
-          </Text>
-        )}
+              await persistAuth(token, user);
+              router.push("/(app)/(tabs)/home");
+            } catch (err: any) {
+              const backendErrors = err?.data?.errors;
+              if (backendErrors) setErrors(backendErrors);
+            }
+          }}
+        >
+          {({
+            values,
+            errors,
+            touched,
+            handleChange,
+            handleSubmit,
+          }) => (
+            <>
+              <CustomInput
+                label="Email"
+                placeholder="Email"
+                autoCapitalize="none"
+                keyboardType="email-address"
+                value={values.email}
+                onChangeText={handleChange("email")}
+                error={touched.email && errors.email ? errors.email : undefined}
+              />
+              <CustomInput
+                label="Password"
+                placeholder="Enter your password"
+                secureTextEntry
+                value={values.password}
+                onChangeText={handleChange("password")}
+                error={touched.password && errors.password ? errors.password : undefined}
+                onForgotPassword={() => router.push("/(auth)/forgotPassword")}
+              />
 
-        <Button
-          label={isLoading ? "Signing in..." : "Sign in"}
-          onPress={handleLogin}
-        />
+              {general && (
+                <Text style={styles.generalError}>
+                  {general}
+                </Text>
+              )}
+
+              <Button
+                label={isLoading ? "Signing in..." : "Sign in"}
+                onPress={() => handleSubmit()}
+              />
+            </>
+          )}
+        </Formik>
 
         <Text onPress={gotoRegister} style={styles.link}>
           Don't have an account? Register
-        </Text>
-        <Text
-          onPress={() => router.push("/(legal)/privacy")}
-          style={[styles.link, { textDecorationLine: "underline" }]}
-        >
-          Privacy & Terms
         </Text>
       </ScreenContainer>
     </KeyboardWrapper>
@@ -98,4 +109,9 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   text: { alignItems: "center", marginBottom: 20 },
   link: { textAlign: "center", marginTop: 20 },
+  generalError: {
+    color: "red",
+    textAlign: "center",
+    paddingBottom: 20,
+  },
 });

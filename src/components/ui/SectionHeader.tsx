@@ -28,9 +28,9 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
   return (
     <Text
       variant="header2Bold"
-      pl={wp("3%")}
-      pt={topPadding ? wp("4%") : undefined}
-      pb={wp("2%")}
+      pl={5}
+      pt={topPadding ? 4 : undefined}
+      pb={5}
       {...textProps}
     >
       {title}

@@ -1,113 +1,154 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useCallback, useState, useEffect } from "react";
 import {
   Box,
   Text,
-  FlatList,
+  VStack,
   Spinner,
-  ScrollView,
-  IconButton,
-} from 'native-base';
-import {TouchableWithoutFeedback, Keyboard} from "react-native"
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { skipToken } from '@reduxjs/toolkit/query';
-import { useRouter } from 'expo-router';
-import { AntDesign, MaterialIcons } from "@expo/vector-icons";
+} from "native-base";
+import { TouchableWithoutFeedback, Keyboard } from "react-native";
+import { widthPercentageToDP as wp } from "react-native-responsive-screen";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import debounce from "lodash.debounce";
+import { FlashList } from "@shopify/flash-list";
 
-import Header from '@/src/components/Header';
-import SearchBar from '@/src/components/SearchBar';
-import MiniTourCard from '@/src/components/MiniTourCard';
-import FlexContainer from '@/src/components/layout/FlexContainer';
+import Header from "@/src/components/Header";
+import SearchBar from "@/src/components/SearchBar";
+import MiniTourCard from "@/src/components/MiniTourCard";
+import FlexContainer from "@/src/components/layout/FlexContainer";
+import FilterCircleButton from "@/src/components/ui/btns/FilterButton";
+import FilterChips from "@/src/components/ui/FilterChips";
 
-import { useAppDispatch, useAppSelector } from '@/src/data/hooks';
-import { clearFilters } from '@/src/data/features/filters/filtersSlice';
-import { useGetRoutesQuery } from '@/src/store/travelApi';
+import {
+  useLazyGetRoutesQuery,
+} from "@/src/store/travelApi";
+
+import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
+import { RouteFilters } from "@/src/data/features/types/routeFilters";
+import {
+  clearFilters,
+  mergeFiltersForKey,
+} from "@/src/data/features/filters/filtersSlice";
+import ResponsiveTourList from "@/src/components/tour/ResponsiveTourList";
 
 export default function SearchScreen() {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const { key: rawKey } = useLocalSearchParams<{ key: string | string[] }>();
+  const routeKey = Array.isArray(rawKey) ? rawKey.join("/") : rawKey;
 
-  /* --- local search state --- */
-  const [searchTerm, setSearchTerm] = useState('');
+  const filters: RouteFilters =
+    useAppSelector(
+      (st) => (st.filters as Record<string, RouteFilters | undefined>)[routeKey]
+    ) ?? {};
 
-  /* --- global filters --- */
-  const { filters } = useAppSelector((st) => st.filters);
+  const [localSearch, setLocalSearch] = useState(filters.search ?? "");
+  useEffect(() => {
+    setLocalSearch(filters.search ?? "");
+  }, [filters.search]);
 
-  /* --- compose query params for RTK Query --- */
-  const queryParams = useMemo(() => {
-    if (searchTerm.length < 3 && !filters) return skipToken;
+  const searchTerm = filters.search ?? "";
 
-    return {
-      ...(searchTerm.length >= 3 ? { search: searchTerm } : {}),
-      ...(filters ?? {}),
-    };
-  }, [searchTerm, filters]);
+  const onSearchSubmit = () => {
+    const trimmed = localSearch.trim();
+    dispatch(
+      mergeFiltersForKey({
+        key: routeKey,
+        filters: {
+          search: trimmed.length >= 3 ? trimmed : undefined,
+        },
+      })
+    );
+  };
 
-  /* --- RTK Query hook --- */
-  const {
-    data: routeRes,
-    isLoading,
-    isFetching,
-    isError,
-  } = useGetRoutesQuery(queryParams, { refetchOnFocus: true });
+  const onSearchChange = useCallback(
+    debounce((t: string) => {
+      dispatch(
+        mergeFiltersForKey({
+          key: routeKey,
+          filters: { search: t.trim() || undefined },
+        })
+      );
+    }, 300),
+    [dispatch, routeKey]
+  );
+
+  const hasOtherFilters = Object.keys({ ...filters, search: undefined }).some(
+    (k) => (filters as any)[k] !== undefined
+  );
+  const hasSearchOrFilters = searchTerm.length >= 3 || hasOtherFilters;
+
+  const handleClearFilters = () => {
+    dispatch(clearFilters({ key: routeKey }));
+  };
+
+  const [
+    triggerRoutes,
+    { data: routeRes, isFetching, isError },
+  ] = useLazyGetRoutesQuery();
 
   const routes = routeRes?.data ?? [];
-  const isEmptyResults = !isLoading && !routes.length;
+
+  useEffect(() => {
+    if (hasSearchOrFilters) {
+      triggerRoutes({ ...filters, limit: 50, sort: "rating_desc" });
+    }
+  }, [filters]);
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <ScrollView keyboardShouldPersistTaps="handled" style={{ backgroundColor: '#FFF' }}>
-        <FlexContainer gap={16}>
-          <Header
-            title="Search"
-          />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <FlexContainer>
+        <Header
+          title="Search"
+          onBackPress={() => router.back()}
+          rightIcon={<FilterCircleButton routeKey={routeKey} />}
+        />
 
-          <SearchBar
+      <SearchBar
             placeholder="Search Tours"
-            value={searchTerm}
-            onChangeText={setSearchTerm}
-            onClear={() => setSearchTerm('')}
+            value={localSearch}
+            onChangeText={(t) => {
+              setLocalSearch(t);
+              onSearchChange(t);
+            }}
+            onClear={() => {
+              setLocalSearch("");
+              dispatch(mergeFiltersForKey({ key: routeKey, filters: { search: undefined } }));
+            }}
+            onEndEditing={onSearchSubmit}
           />
 
-          {/* Informacinė juosta arba spinneris */}
-          {searchTerm.length < 3 && !filters ? (
-            <Text color="gray.400" textAlign="center">
-              Type to search...
-            </Text>
-          ) : isLoading ? (
-            <Box alignItems="center" py="20px">
-              <Spinner size="lg" color="primary.500" />
-            </Box>
-          ) : isError ? (
-            <Text color="red.500" textAlign="center">
-              Error loading routes.
-            </Text>
-          ) : isEmptyResults ? (
-            <Text color="gray.500" textAlign="center">
-              No results found.
-            </Text>
-          ) : (
-            <FlatList
-              data={routes}
-              keyExtractor={(item) => item.id.toString()}
-              numColumns={2}
-              columnWrapperStyle={{ justifyContent: 'space-between', gap: wp('1%') }}
-              contentContainerStyle={{ gap: wp('1%'), marginHorizontal: wp('3%') }}
-              renderItem={({ item }) => <MiniTourCard tour={item} />}
-              scrollEnabled={false}
-            />
-          )}
+        {hasSearchOrFilters ? (
+          <>
 
-          {/* „Clear filters“ mygtukas */}
-          {filters && (
-            <Text
-              style={{ textAlign: 'center', color: 'blue' }}
-              onPress={() => dispatch(clearFilters())}
-            >
-              Clear filters ✕
-            </Text>
-          )}
-        </FlexContainer>
-      </ScrollView>
+
+            {isFetching ? (
+              <Spinner mt={8} />
+            ) : isError ? (
+              <Text mt={8} color="red.500" textAlign="center">
+                Failed to load routes
+              </Text>
+            ) : routes.length === 0 ? (
+              <Text mt={8} color="gray.500" textAlign="center">
+                No results found.
+              </Text>
+            ) : (
+
+               <ResponsiveTourList
+                    data={routes}
+                    isFetching={isFetching}
+        
+  
+                    filters={filters}
+                    onClearFilters={() => dispatch(clearFilters({ key: routeKey }))}
+                  />
+            )}
+          </>
+        ) : (
+          <Text textAlign="center" mt={10} color="gray.400" px={6}>
+            Type at least 3 letters or apply filters to start searching…
+          </Text>
+        )}
+      </FlexContainer>
     </TouchableWithoutFeedback>
   );
 }
