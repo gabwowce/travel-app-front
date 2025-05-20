@@ -21,6 +21,7 @@ import CircleButton from "@/src/components/ui/btns/CircleButton";
 import FavoriteButton from "@/src/components/ui/btns/FavoriteButton";
 import { useGetRouteByIdQuery, useGetRoutePlacesQuery } from "@/src/store/travelApi";
 import { TourPoint } from "./map";
+import Spinner from "@/src/components/ui/Spinner";
 
 const fakePoints: TourPoint[] = [
   {
@@ -166,11 +167,7 @@ export default function RouteInfoScreen() {
   } = useGetRoutePlacesQuery(routeId, { skip: !routeId });
 
   if (routeLoading || !selectedRoute) {
-    return (
-      <Box flex={1} justifyContent="center" alignItems="center">
-        <Spinner size="lg" />
-      </Box>
-    );
+    return <Spinner/>;
   }
 
   const {
