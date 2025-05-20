@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useLocalSearchParams } from "expo-router";
-import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
 import { Box, Spinner } from "native-base";
 import Map from "@/src/components/map/map";
-import { fetchRoutePlaces } from "@/src/data/features/routes/routesThunks";
+import { useGetRoutePlacesQuery } from "@/src/store/travelApi";
 
 export interface TourPoint {
   id: string;
@@ -20,59 +19,26 @@ export interface TourPoint {
 
 export default function RouteMapScreen() {
   const { id, fake, routeName } = useLocalSearchParams();
-const routeId = Array.isArray(id) ? parseInt(id[0]) : parseInt(id ?? "");
-const fakeData = fake ? JSON.parse(decodeURIComponent(fake as string)) : null;
-useEffect(() => {
+
+  const routeId = Array.isArray(id) ? parseInt(id[0], 10) : parseInt(id ?? "", 10);
+  const fakeData: TourPoint[] | null = fake
+    ? JSON.parse(decodeURIComponent(fake as string))
+    : null;
+
+  // Jei turim fake duomenis – rodom juos
   if (fakeData) {
-    setPoints(fakeData);
-    return; // praleidžiam fetchinimą
+    return <Map title={`${routeName}`} points={fakeData} />;
   }
 
-  if (routeId) {
-    dispatch(fetchRoutePlaces(routeId))
-      .unwrap()
-      .then((places) => {
-        const mapped = places.map((p: any) => ({
-          id: String(p.id),
-          title: p.name,
-          coords: {
-            latitude: parseFloat(p.latitude),
-            longitude: parseFloat(p.longitude),
-          },
-          url: p.media?.[0]?.url ?? "",
-          address: p.address ?? "",
-          description: p.description ?? "",
-        }));
-        setPoints(mapped);
-      });
-  }
-}, [routeId]);
-  const dispatch = useAppDispatch();
-  const [points, setPoints] = useState<TourPoint[]>([]);
-  const loading = useAppSelector((s) => s.routes.loading);
+  // Naudojam travelApi, kad gauti tikrus taškus
+  const {
+    data: places,
+    isLoading,
+    isError,
+  } = useGetRoutePlacesQuery(routeId, { skip: !routeId });
 
-  useEffect(() => {
-    if (routeId) {
-      dispatch(fetchRoutePlaces(routeId))
-        .unwrap()
-        .then((places: any[]) => {
-          const mapped = places.map((p) => ({
-            id: String(p.id),
-            title: p.name,
-            coords: {
-              latitude: parseFloat(p.latitude),
-              longitude: parseFloat(p.longitude),
-            },
-            url: p.media?.[0]?.url ?? "",
-            address: p.address ?? "",
-            description: p.description ?? "",
-          }));
-          setPoints(mapped);
-        });
-    }
-  }, [routeId]);
-
-  if (loading && points.length === 0) {
+  // Rodom spinner, kol gaunam duomenis
+  if (isLoading || !places) {
     return (
       <Box flex={1} justifyContent="center" alignItems="center">
         <Spinner size="lg" />
@@ -80,5 +46,19 @@ useEffect(() => {
     );
   }
 
-  return <Map title={`${routeName}`} points={fakeData} />;
+  // Transformuojam į TourPoint[]
+  const points: TourPoint[] = places.map((p: any) => ({
+    id: String(p.id),
+    title: p.name,
+    coords: {
+      latitude: parseFloat(p.latitude),
+      longitude: parseFloat(p.longitude),
+    },
+    url: p.media?.[0]?.url ?? "",
+    address: p.address ?? "",
+    description: p.description ?? "",
+    category: p.category?.slug ?? undefined,
+  }));
+
+  return <Map title={`${routeName}`} points={points} />;
 }
