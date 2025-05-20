@@ -37,8 +37,7 @@ export default function LoginScreen() {
           validationSchema={loginSchema}
           onSubmit={async (values, { setErrors }) => {
             try {
-              const res = await login({ loginRequest: values }).unwrap();
-              const { token, user } = res.data;
+              await login({ loginRequest: values }).unwrap();
               router.push("/(app)/(tabs)/home");
             } catch (err: any) {
               const backendErrors = err?.data?.errors;
