@@ -12,7 +12,7 @@ import {
   Wrap,
 } from "native-base";
 import {
-  useGetFeaturedRoutesQuery,   // 🔹 sugeneruoti hook’ai
+  useGetFeaturedRoutesQuery,  
   useGetCategoriesQuery,
   useGetCurrentUserQuery,
 } from "@/src/store/travelApi";
@@ -34,7 +34,7 @@ export default function Home() {
   
   /* ─────────── ROUTES & CATEGORIES PER RTK Query ─────────── */
 const {
-  data: featuredRoutesResponse,       // be numatytos reikšmės!
+  data: featuredRoutesResponse,      
   isLoading: routesLoading,
   error: routesError,
 } = useGetFeaturedRoutesQuery({ limit: 6 });
@@ -55,10 +55,9 @@ const handleCategoryPress = (cat: Category) => {
   const key = "results";
   const filtersObj = { categoryId: cat.id };
 
-  // ➊ į Redux
   dispatch(mergeFiltersForKey({ key, filters: filtersObj }));
 
-  // ➋ per URL (?filters=…)
+
   router.navigate({
     pathname: `/results/${key}`,
     params: { filters: JSON.stringify(filtersObj) },
@@ -136,7 +135,7 @@ const userName = userData?.data?.name?.split(" ")[0] ?? "keliautojau";
                   m={1}
                   borderRadius="full"
                   bg="primary.100"
-                  maxW={wp("40%")}  // apriboja plotį, kad wrap’intų
+                  maxW={wp("40%")} 
                   _pressed={{ bg: "primary.200" }}
                 >
                   <Text
