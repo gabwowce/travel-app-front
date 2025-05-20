@@ -1,18 +1,48 @@
-// src/data/features/auth/authSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { UserResponse } from '@/src/api/generated/models/UserResponse';
-import { useAppSelector } from '../../hooks';
 
-type AuthState = { token: string|null; user: UserResponse|null; };
-const initialState: AuthState = { token: null, user: null };
+type AuthState = {
+  token: string | null;
+  user: any | null;
+  isAuthenticated: boolean;
+  loading: boolean;
+  errors: Record<string, string> | null;
+};
+
+const initialState: AuthState = {
+  token: null,
+  user: null,
+  isAuthenticated: false,
+  loading: false,
+  errors: null,
+};
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setCredentials: (s, a: PayloadAction<AuthState>) => Object.assign(s, a.payload),
-    clearAuth:      (s) => { s.token = null; s.user = null; },
+    setCredentials: (state, action: PayloadAction<{ token: string; user: any }>) => {
+      state.token = action.payload.token;
+      state.user = action.payload.user;
+      state.isAuthenticated = true;
+      state.errors = null;
+    },
+    clearAuth: (state) => {
+      state.token = null;
+      state.user = null;
+      state.isAuthenticated = false;
+      state.errors = null;
+    },
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.loading = action.payload;
+    },
+    setErrors: (state, action: PayloadAction<Record<string, string>>) => {
+      state.errors = action.payload;
+    },
+    clearErrors: (state) => {
+      state.errors = null;
+    },
   },
 });
-export const { setCredentials, clearAuth } = authSlice.actions;
+
+export const { setCredentials, clearAuth, setLoading, setErrors, clearErrors } = authSlice.actions;
 export default authSlice.reducer;
