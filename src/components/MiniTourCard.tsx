@@ -12,7 +12,7 @@ import { router } from "expo-router";
 import { Route } from "@/src/data/features/routes/routesThunks";
 import ImageViewer from "../components/ImageViewer";
 import { Text } from "native-base";
-
+import { IMAGES } from "@/src/config/images";
 
 import { useBreakpointValue } from 'native-base';
 
@@ -20,9 +20,6 @@ interface MiniTourCardProps {
   tour: Route;
   onPress?: () => void;
 }
-
-// Fallback img kol kas
-const VINGIO_IMG = require("../assets/images/traku-pilis.jpg");
 
 export const MiniTourCard: React.FC<MiniTourCardProps> = ({ tour, onPress }) => {
   const { width: screenW } = useWindowDimensions();
@@ -48,7 +45,7 @@ export const MiniTourCard: React.FC<MiniTourCardProps> = ({ tour, onPress }) => 
         {/* -------- Nuotrauka -------- */}
         <View style={styles.imageContainer}>
           <View style={styles.imageWrapper}>
-            <ImageViewer imgSource={VINGIO_IMG} />
+            <ImageViewer imgSource={IMAGES.VINGIO_PARKAS} />
           </View>
         </View>
 
