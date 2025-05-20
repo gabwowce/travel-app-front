@@ -27,7 +27,7 @@ import FlexContainer from "@/src/components/layout/FlexContainer";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import { useGetUserProfileQuery, useLogoutUserMutation, useGetCurrentUserQuery  } from '@/src/store/travelApi';
 import CircleButton from "@/src/components/ui/btns/CircleButton";
-
+import ProfileMenu from "@/src/components/profile/ProfileMenu";
 
 export default function ProfileScreen() {
   const dispatch = useAppDispatch();
@@ -165,27 +165,7 @@ useFocusEffect(
                       )}
                 </VStack>
 
-                <VStack  pb={5}>
-
-                  {/* Meniu sekcijos */}
-                {menuItems.map((section, index) => (
-                  <VStack key={index} space={hp("2%")}>
-                    <Text style={styles.itemsTitle} fontSize="md" fontWeight="bold">{section.title}</Text>
-                    {section.options.map((item, idx) => (
-                      <TouchableOpacity key={idx} style={styles.listItem} onPress={item.action || (() => {})}>
-                        <HStack alignItems="center">
-                          <MaterialIcons name={item.icon as any} size={24} color={item.color || "black"} />
-                          <Text ml={3} style={{ color: item.color || "black" }}>{item.title}</Text>
-                        </HStack>
-                        {section.title !== "Account Management" && (
-                          <MaterialIcons name="keyboard-arrow-right" size={24} color="gray" />
-                        )}
-                      </TouchableOpacity>
-                    ))}
-                  </VStack>
-                ))}
-
-                </VStack>
+                <ProfileMenu menuItems={menuItems} />
                 
                 
               </ScrollView>
