@@ -3,14 +3,13 @@ import {
   Box,
   Text,
   VStack,
-  Spinner,
 } from "native-base";
 import { TouchableWithoutFeedback, Keyboard } from "react-native";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import debounce from "lodash.debounce";
 import { FlashList } from "@shopify/flash-list";
-
+import Spinner from "@/src/components/ui/Spinner";
 import Header from "@/src/components/Header";
 import SearchBar from "@/src/components/SearchBar";
 import MiniTourCard from "@/src/components/MiniTourCard";
