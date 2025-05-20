@@ -26,8 +26,7 @@ import { mergeFiltersForKey } from "@/src/data/features/filters/filtersSlice";
 import { useAppDispatch } from "@/src/data/hooks";
 import RandomRouteButton from "@/src/components/ui/RandomRouteButton";
 import Spinner from "@/src/components/ui/Spinner";
-
-const VINGIO_IMG = require("../../../src/assets/images/vingio-parkas.png");
+import { IMAGES } from "@/src/config/images";
 
 export default function Home() {
   const router = useRouter();
@@ -106,7 +105,7 @@ const userName = userData?.data?.name?.split(" ")[0] ?? "keliautojau";
                   <TourCard
                     key={route.id}
                     id={String(route.id)}
-                    image={VINGIO_IMG /* TODO: route.media[0] */}
+                    image={IMAGES.VINGIO_PARKAS /* TODO: route.media[0] */}
                     title={route.name ?? "Unnamed"}
                     rating={(route as any).ratings_avg_rating ?? 0}
                     location={`${route.city?.name ?? "Unknown"}, ${
