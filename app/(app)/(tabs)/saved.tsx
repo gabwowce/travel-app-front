@@ -1,6 +1,6 @@
 // app/(app)/saved/index.tsx
 import React, { useState, useMemo } from "react";
-import { Box, Text, VStack, Spinner } from "native-base";
+import { Box, Text, VStack } from "native-base";
 import { TouchableWithoutFeedback, Keyboard } from "react-native";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 
