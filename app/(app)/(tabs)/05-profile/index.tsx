@@ -13,7 +13,6 @@ import {
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useAppSelector, useAppDispatch } from "@/src/data/hooks";
-import { logout } from "@/src/data/features/auth/authThunks";
 import {
   TouchableOpacity,
   StyleSheet,
@@ -27,7 +26,6 @@ import FlexContainer from "@/src/components/layout/FlexContainer";
 
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import { useGetUserProfileQuery, useLogoutUserMutation, useGetCurrentUserQuery  } from '@/src/store/travelApi';
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import CircleButton from "@/src/components/ui/btns/CircleButton";
 
 
@@ -56,17 +54,13 @@ export default function ProfileScreen() {
     }
   };
 
- const handleLogout = async () => {
+const handleLogout = async () => {
   try {
-    await logoutUser().unwrap(); // API logout
+    await logoutUser().unwrap(); 
   } catch (e) {
     console.warn("Logout failed or was already invalid:", e);
   }
 
-  await AsyncStorage.removeItem("token");
-  await AsyncStorage.removeItem("user");
-
-  dispatch({ type: "auth/logout" }); // jeigu turi redux slice, kuris saugo state
   router.replace("/(auth)");
 };
 
