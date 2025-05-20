@@ -1,44 +1,21 @@
 import React from "react";
-import {
-  Box,
-  Image,
-  ScrollView,
-  VStack,
-  HStack,
-  Text,
-  Badge,
-  Icon,
-} from "native-base";
-import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { useLocalSearchParams, router } from "expo-router";
-import { StyleSheet } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
+import { Box, Image, VStack, HStack, Text, Badge, Icon } from "native-base";
+import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 
-import Header from "@/src/components/Header";
-import Button from "@/src/components/ui/btns/Button";
-import FlexContainer from "@/src/components/layout/FlexContainer";
-import CircleButton from "@/src/components/ui/btns/CircleButton";
-import FavoriteButton from "@/src/components/ui/btns/FavoriteButton";
 import { useGetRouteByIdQuery, useGetRoutePlacesQuery } from "@/src/store/travelApi";
-import { TourPoint } from "./map";
-import Spinner from "@/src/components/ui/Spinner";
 import { FAKE_POINTS } from "@/src/config/fakeData";
 import { IMAGES } from "@/src/config/images";
+import { AppRoutes } from "@/src/config/routes";
 
-const StatChip = ({ icon, label }: { icon: string; label: string }) => (
-  <HStack
-    alignItems="center"
-    bg="primary.100"
-    _dark={{ bg: "primary.800" }}
-    px="3"
-    py="1"
-    rounded="md"
-    mr="2"
-    mb="2"
-  >
-    <Icon as={FontAwesome} name={icon} size="xs" mr="1" />
-    <Text fontSize="xs">{label}</Text>
-  </HStack>
-);
+import FlexContainer from "@/src/components/layout/FlexContainer";
+import Header from "@/src/components/Header";
+import Button from "@/src/components/ui/btns/Button";
+import CircleButton from "@/src/components/ui/btns/CircleButton";
+import FavoriteButton from "@/src/components/ui/btns/FavoriteButton";
+import StatChip from "@/src/components/ui/StatChip";
+import Spinner from "@/src/components/ui/Spinner";
 
 export default function RouteInfoScreen() {
   const { id } = useLocalSearchParams();
@@ -47,16 +24,12 @@ export default function RouteInfoScreen() {
   const {
     data: selectedRoute,
     isLoading: routeLoading,
-    isError,
   } = useGetRouteByIdQuery(routeId, { skip: !routeId });
 
-  const {
-    data: routePlaces,
-    isLoading: placesLoading,
-  } = useGetRoutePlacesQuery(routeId, { skip: !routeId });
+  const { isLoading: placesLoading } = useGetRoutePlacesQuery(routeId, { skip: !routeId });
 
   if (routeLoading || !selectedRoute) {
-    return <Spinner/>;
+    return <Spinner />;
   }
 
   const {
@@ -71,58 +44,28 @@ export default function RouteInfoScreen() {
     categories,
   } = selectedRoute;
 
+  const navigateToMap = () => {
+    router.push({
+      pathname: AppRoutes.routeMap(routeId),
+      params: {
+        id: String(routeId),
+        fake: encodeURIComponent(JSON.stringify(FAKE_POINTS)),
+        routeName: String(name),
+      },
+    });
+  };
+
   return (
     <FlexContainer>
-      <Header
-        title={`${name}`}
-        onBackPress={() => router.back()}
-        rightIcon={
-          <CircleButton
-            variant="start"
-            onPress={() =>
-              router.push({
-                pathname: "/(app)/routes/[id]/map",
-                params: {
-                  id: String(routeId),
-                  fake: encodeURIComponent(JSON.stringify(fakePoints)),
-                  routeName: String(name),
-                },
-              })
-            }
-          />
-        }
-      />
+      <Header title={name} onBackPress={() => router.back()} rightIcon={<CircleButton variant="start" onPress={navigateToMap} />} />
 
       <ScrollView keyboardShouldPersistTaps="handled">
         <VStack space={4} mt={6}>
-          <Box position="relative" mt={-8}>
-            <Image
-              alt={name}
-              source={IMAGES.VINGIO_PARKAS}
-              width="100%"
-              height={260}
-            />
+          <Box style={styles.imageContainer}>
+            <Image alt={name} source={IMAGES.VINGIO_PARKAS} style={styles.image} />
             <FavoriteButton routeId={routeId} style={styles.bookmarkIcon} />
-            <Box
-              position="absolute"
-              left={0}
-              right={0}
-              bottom={0}
-              h="40%"
-              bg={{
-                linearGradient: {
-                  colors: ["transparent", "rgba(0,0,0,0.6)"],
-                  start: [0, 0],
-                  end: [0, 1],
-                },
-              }}
-              px="4"
-              pb="3"
-              justifyContent="flex-end"
-            >
-              <Text color="white" fontSize="2xl" fontWeight="bold">
-                {name}
-              </Text>
+            <Box style={styles.imageOverlay}>
+              <Text style={styles.title}>{name}</Text>
               <HStack alignItems="center">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Icon
@@ -133,16 +76,13 @@ export default function RouteInfoScreen() {
                     size="sm"
                   />
                 ))}
-                <Text color="warmGray.200" ml="2" fontSize="sm">
-                  {ratings_avg_rating.toFixed(1)}
-                </Text>
+                <Text style={styles.ratingText}>{ratings_avg_rating.toFixed(1)}</Text>
               </HStack>
             </Box>
           </Box>
         </VStack>
 
         <VStack space="4" px="4" pt="4" pb="10">
-          {/* Statistika */}
           <HStack flexWrap="wrap">
             <StatChip icon="map-marker" label={`${distance.toFixed(1)} km`} />
             <StatChip icon="area-chart" label={`${elevation_gain} m ↑`} />
@@ -150,7 +90,6 @@ export default function RouteInfoScreen() {
             <StatChip icon="clock-o" label={estimated_time} />
           </HStack>
 
-          {/* Kategorijos */}
           <HStack flexWrap="wrap">
             {categories?.map((c: any) => (
               <Badge
@@ -165,24 +104,13 @@ export default function RouteInfoScreen() {
             ))}
           </HStack>
 
-          {/* Aprašymas */}
           <Text fontSize="sm" lineHeight="lg">
             {description}
           </Text>
 
-          {/* Start button */}
           <Button
             pb={15}
-            onPress={() =>
-              router.push({
-                pathname: "/(app)/routes/[id]/map",
-                params: {
-                  id: String(routeId),
-                  fake: encodeURIComponent(JSON.stringify(FAKE_POINTS)),
-                  routeName: String(name),
-                },
-              })
-            }
+            onPress={navigateToMap}
             leftIcon={<Icon as={MaterialIcons} name="map" size="sm" color="white" />}
           >
             Start
@@ -194,6 +122,34 @@ export default function RouteInfoScreen() {
 }
 
 const styles = StyleSheet.create({
+  imageContainer: {
+    position: "relative",
+    marginTop: -32,
+  },
+  image: {
+    width: "100%",
+    height: 260,
+  },
+  imageOverlay: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: "40%",
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+    justifyContent: "flex-end",
+  },
+  title: {
+    color: "white",
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  ratingText: {
+    color: "#E5E7EB",
+    marginLeft: 8,
+    fontSize: 14,
+  },
   bookmarkIcon: {
     position: "absolute",
     top: 24,
