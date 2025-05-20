@@ -7,7 +7,6 @@ import {
   ScrollView,
   VStack,
   HStack,
-  Spinner,
   Pressable,
   Wrap,
 } from "native-base";
@@ -26,6 +25,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { mergeFiltersForKey } from "@/src/data/features/filters/filtersSlice";
 import { useAppDispatch } from "@/src/data/hooks";
 import RandomRouteButton from "@/src/components/ui/RandomRouteButton";
+import Spinner from "@/src/components/ui/Spinner";
 
 const VINGIO_IMG = require("../../../src/assets/images/vingio-parkas.png");
 
@@ -93,9 +93,7 @@ const userName = userData?.data?.name?.split(" ")[0] ?? "keliautojau";
           <SectionHeader title="Featured tours" topPadding />
 
           {routesLoading ? (
-            <Box alignItems="center" py="20px">
-              <Spinner size="lg" color="primary.500" />
-            </Box>
+            <Spinner />
           ) : routesError ? (
             <Text color="red.500" px={5}>
               Failed to load tours. Please try again.
