@@ -6,7 +6,6 @@ import {
   Heading,
   Text,
   ScrollView,
-  Spinner,
   Box,
   Divider,
 } from 'native-base';
@@ -17,7 +16,7 @@ import Header from '@/src/components/Header';
 import ScreenContainer from '@/src/components/ScreenContainer';
 import CustomInput from '@/src/components/ui/input/CustomInput';
 import Button from '@/src/components/ui/btns/Button';
-
+import Spinner from "@/src/components/ui/Spinner";
 import { editProfileSchema } from "@/src/validation/editProfileSchema";
 
 import {
@@ -45,11 +44,8 @@ export default function EditProfileScreen() {
 
 
   if (loading)
-    return (
-      <Box flex={1} justifyContent="center" alignItems="center">
-        <Spinner size="lg" />
-      </Box>
-    );
+    return <Spinner />
+             
 
   if (isError || !user)
     return (
