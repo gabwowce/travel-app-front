@@ -28,16 +28,6 @@ import {
 } from '@/src/store/travelApi';
 import FlexContainer from '@/src/components/layout/FlexContainer';
 
-/* ────────────────────── Yup schema ────────────────────── */
-// const passwordSchema = Yup.object({
-//   password: Yup.string()
-//     .min(6, 'Password must be at least 6 characters')
-//     .required('New password is required'),
-//   password_confirmation: Yup.string()
-//     .oneOf([Yup.ref('password')], 'Passwords do not match')
-//     .required('Please confirm the password'),
-// });
-
 /* ───────────────────  Component  ──────────────────────── */
 export default function ChangePasswordScreen() {
   const toast = useToast();
@@ -90,7 +80,7 @@ export default function ChangePasswordScreen() {
           } catch (err: any) {
             const details = err?.data?.errors;
             if (details) {
-              console.log('⚠️ Server validation errors:', details);
+              console.log('Server validation errors:', details);
               setErrors(details);
             } else {
               setStatus({ error: 'Something went wrong' });
