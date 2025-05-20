@@ -1,8 +1,9 @@
 import React from "react";
 import { useLocalSearchParams } from "expo-router";
-import { Box, Spinner } from "native-base";
+import { Box } from "native-base";
 import Map from "@/src/components/map/map";
 import { useGetRoutePlacesQuery } from "@/src/store/travelApi";
+import Spinner from "@/src/components/ui/Spinner";
 
 export interface TourPoint {
   id: string;
@@ -39,11 +40,7 @@ export default function RouteMapScreen() {
 
   // Rodom spinner, kol gaunam duomenis
   if (isLoading || !places) {
-    return (
-      <Box flex={1} justifyContent="center" alignItems="center">
-        <Spinner size="lg" />
-      </Box>
-    );
+    return <Spinner/>
   }
 
   // Transformuojam į TourPoint[]
