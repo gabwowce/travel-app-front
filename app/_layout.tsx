@@ -60,20 +60,10 @@ function MainNavigation() {
   const [showSplash, setShowSplash] = useState(true);
   const [login, { isLoading }] = useLoginUserMutation();
 
-  useEffect(() => {
-    (async () => {
-      let token = await SecureStore.getItemAsync('token');  
-      let user  = await SecureStore.getItemAsync('user');
-       if (!token || !user) {
-        token = await AsyncStorage.getItem('token');
-        user = await AsyncStorage.getItem('user');
-      }
-      if (token && user) {
-        dispatch(setCredentials({ token, user: JSON.parse(user) }));
-      }
-      setReady(true);
-    })();
-  }, []);
+ useEffect(() => {
+  dispatch(initAuth()); // 🔁 tikrina tokeną automatiškai
+}, []);
+
 
   useEffect(() => {
     setTimeout(() => setShowSplash(false), 2000);
