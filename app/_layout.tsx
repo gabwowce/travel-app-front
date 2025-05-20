@@ -53,30 +53,12 @@ export default function RootLayout() {
 }
 
 function MainNavigation() {
-  const dispatch = useAppDispatch();
+  const ready = useInitAuth(); // ← vienintelė auth inicijavimo vieta
   const isAuthenticated = useAppSelector((state) => !!state.auth.token);
 
-  const [ready, setReady] = useState(false);
-  const [showSplash, setShowSplash] = useState(true);
-  const [login, { isLoading }] = useLoginUserMutation();
-
- useEffect(() => {
-  dispatch(initAuth()); // 🔁 tikrina tokeną automatiškai
-}, []);
-
-
-  useEffect(() => {
-    setTimeout(() => setShowSplash(false), 2000);
-  }, []);
-
-    if (showSplash || isLoading) {
-    return <Splash onFinish={() => setShowSplash(false)} />;
-  }
-
   if (!ready) {
-    return <Splash onFinish={() => setReady(true)} />;
+    return <Splash />;
   }
-
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
