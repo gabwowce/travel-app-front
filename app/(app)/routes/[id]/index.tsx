@@ -7,7 +7,6 @@ import {
   HStack,
   Text,
   Badge,
-  Spinner,
   Icon,
 } from "native-base";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
