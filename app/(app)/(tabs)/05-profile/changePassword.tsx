@@ -5,7 +5,6 @@ import {
   Heading,
   Text,
   Divider,
-  Spinner,
   Box,
   ScrollView,
   Avatar,
@@ -20,7 +19,7 @@ import CustomInput from '@/src/components/ui/input/CustomInput';
 import Button from '@/src/components/ui/btns/Button';
 import {passwordSchema} from "@/src/validation/passwordSchema";
 import { useToast } from 'native-base';
-
+import Spinner from "@/src/components/ui/Spinner";
 
 import {
   useGetUserProfileQuery,
@@ -39,11 +38,7 @@ export default function ChangePasswordScreen() {
     useUpdateUserProfileMutation();
 
   if (isLoading)
-    return (
-      <Box flex={1} justifyContent="center" alignItems="center">
-        <Spinner size="lg" />
-      </Box>
-    );
+    return <Spinner />
   if (!user)
     return (
       <Text textAlign="center" mt={8}>
