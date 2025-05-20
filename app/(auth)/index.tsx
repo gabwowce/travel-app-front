@@ -3,8 +3,6 @@ import { View, StyleSheet } from "react-native";
 import { Text } from "native-base";
 import Button from "@/src/components/ui/btns/Button";
 import { useRouter } from "expo-router";
-import * as SecureStore from "expo-secure-store";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Formik } from "formik";
 
 import CustomInput from "@/src/components/ui/input/CustomInput";
@@ -13,13 +11,6 @@ import ScreenContainer from "@/src/components/ScreenContainer";
 import { loginSchema } from "@/src/validation/loginSchema";
 
 import { useLoginUserMutation } from "@/src/store/travelApi";
-
-const persistAuth = async (token: string, user: any) => {
-  await SecureStore.setItemAsync("token", token);
-  await SecureStore.setItemAsync("user", JSON.stringify(user));
-  await AsyncStorage.setItem("token", token);
-  await AsyncStorage.setItem("user", JSON.stringify(user));
-};
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -48,8 +39,6 @@ export default function LoginScreen() {
             try {
               const res = await login({ loginRequest: values }).unwrap();
               const { token, user } = res.data;
-
-              await persistAuth(token, user);
               router.push("/(app)/(tabs)/home");
             } catch (err: any) {
               const backendErrors = err?.data?.errors;
