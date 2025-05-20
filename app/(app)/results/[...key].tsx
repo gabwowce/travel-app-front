@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { router, useLocalSearchParams } from "expo-router";
-import { Box, HStack, SimpleGrid, Spinner, Text, VStack } from "native-base";
+import { Box, HStack, SimpleGrid, Text, VStack } from "native-base";
 import { FlashList } from "@shopify/flash-list";
 import Header from "@/src/components/Header";
 import FilterCircleButton from "@/src/components/ui/btns/FilterButton";
@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
 import FilterChips from "@/src/components/ui/FilterChips";
 import { clearFilters } from "@/src/data/features/filters/filtersSlice";
 import ResponsiveTourList from "@/src/components/tour/ResponsiveTourList";
+import Spinner from "@/src/components/ui/Spinner";
 
 export default function ResultsScreen() {
   /* params & filters */
@@ -46,7 +47,7 @@ export default function ResultsScreen() {
 
   /* UI states */
   if (isLoading) return (
-    <FlexContainer><Header title="Tours" onBackPress={router.back} /><Spinner mt={10}/></FlexContainer>
+    <FlexContainer><Header title="Tours" onBackPress={router.back} /><Spinner/></FlexContainer>
   );
   if (error) return (
     <FlexContainer><Header title="Tours" onBackPress={router.back}/>
