@@ -3,12 +3,6 @@ import { View, StyleSheet } from "react-native";
 import { Checkbox, Text } from "native-base";
 import Button from "@/src/components/ui/btns/Button";
 import { useRouter } from "expo-router";
-import { useDispatch } from "react-redux";
-import * as SecureStore from 'expo-secure-store';
-
-import { AppDispatch } from "@/src/data/store";
-import { useAppSelector } from "@/src/data/hooks";
-import { setCredentials } from "@/src/data/features/auth/authSlice";
 
 import CustomInput from "@/src/components/ui/input/CustomInput";
 import KeyboardWrapper from "@/src/components/KeyboardWrapper";
@@ -20,7 +14,6 @@ import { useRegisterUserMutation } from "@/src/store/travelApi";
 export default function RegisterScreen() {
   const [agreed, setAgreed] = useState(false);
   const router = useRouter();
-  const dispatch = useDispatch<AppDispatch>();
   const [register, { isLoading }] = useRegisterUserMutation();
 
   return (
@@ -46,17 +39,7 @@ export default function RegisterScreen() {
             }
 
             try {
-              const result = await register({ registerRequest: values }).unwrap();
-
-           dispatch(setCredentials({
-            user: result.data?.user ?? null,
-            token: result.data?.token ?? '',
-          }));
-
-
-              await SecureStore.setItemAsync("token", result.data?.token ?? '');
-              await SecureStore.setItemAsync("user", JSON.stringify(result.data?.user ?? null));
-
+              await register({ registerRequest: values }).unwrap();
               router.push("/(app)/(tabs)/home");
             } catch (err: any) {
               const details = err?.data?.errors;
