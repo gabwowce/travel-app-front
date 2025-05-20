@@ -24,7 +24,7 @@ import {
   useGetUserProfileQuery,
   useUpdateUserProfileMutation,
 } from '@/src/store/travelApi';
-import type { User, UserUpdateRequest } from '@/src/store/travelApi'; // <- įsitikink, kad importuoji `User`
+import type { User, UserUpdateRequest } from '@/src/store/travelApi'; 
 import FlexContainer from '@/src/components/layout/FlexContainer';
 import CircleButton from '@/src/components/ui/btns/CircleButton';
 
