@@ -10,7 +10,18 @@ const injectedRtkApi = api.injectEndpoints({
         method: "POST",
         body: queryArg.registerRequest,
       }),
-    }), // ✅ ← šitas kablelis būtinas tarp endpoint’ų!
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+    try {
+      const { data } = await queryFulfilled;
+      const token = data.data?.token ?? '';
+      const user = data.data?.user ?? null;
+
+      dispatch(setCredentials({ token, user }));
+      await SecureStore.setItemAsync('token', token);
+      await SecureStore.setItemAsync('user', JSON.stringify(user));
+    } catch {}
+  },
+    }),
 
     loginUser: build.mutation<LoginUserApiResponse, LoginUserApiArg>({
       query: (arg) => ({
