@@ -4,14 +4,16 @@ import { FlashList } from "@shopify/flash-list";
 import MiniTourCard from "@/src/components/MiniTourCard";
 import SearchBar from "@/src/components/SearchBar";
 import { ColumnItem } from "../getItemStyle";
+import { Route } from "@/src/store/travelApi";
 
-interface Props {
-  data: any[];
-  isFetching?: boolean;
+type Props = {
+  data: Route[];
+  isFetching: boolean;
   searchTerm: string;
-  setSearchTerm: (t: string) => void;
-  ListEmptyComponent: React.ReactElement;
-}
+  setSearchTerm: (v: string) => void;
+  ListHeaderComponent?: React.ReactNode;
+  ListEmptyComponent?: React.ReactNode;
+};
 
 export default function ResponsiveTourListStatic({
   data,
@@ -22,7 +24,8 @@ export default function ResponsiveTourListStatic({
 }: Props) {
   const numColumns = useBreakpointValue({ base: 1, sm: 2, md: 3, lg: 3 }) ?? 1;
 
-  const getKey = (item: any, index: number) => `tour-${item?.id ?? "idx"}-${index}`;
+  const getKey = (item: any, index: number) =>
+    `tour-${item?.id ?? "idx"}-${index}`;
 
   return (
     <FlashList
@@ -34,19 +37,19 @@ export default function ResponsiveTourListStatic({
       columnWrapperStyle={{ justifyContent: "center" }}
       ListHeaderComponent={
         <SearchBar
-            placeholder="Search favorites"
-            value={searchTerm}
-            onChangeText={setSearchTerm}
-            onClear={() => setSearchTerm("")}
-          />
+          placeholder="Search favorites"
+          value={searchTerm}
+          onChangeText={setSearchTerm}
+          onClear={() => setSearchTerm("")}
+        />
       }
       ListFooterComponent={isFetching ? <Spinner my={4} /> : null}
       ListEmptyComponent={ListEmptyComponent}
       contentContainerStyle={{ paddingBottom: 32 }}
       renderItem={({ item, index }) => (
         <ColumnItem index={index} numColumns={numColumns}>
-                  <MiniTourCard tour={item} />
-                </ColumnItem>
+          <MiniTourCard tour={item} />
+        </ColumnItem>
       )}
     />
   );

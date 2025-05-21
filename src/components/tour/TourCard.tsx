@@ -11,6 +11,7 @@ import { useWindowDimensions } from "react-native";
 import { useBreakpointValue } from "native-base";
 
 import FavoriteButton from '@/src/components/ui/btns/FavoriteButton';
+import RatingText from "../ui/RatingText";
 
 interface TourCardProps {
   id: string; 
@@ -80,7 +81,7 @@ export function TourCard({ id, image, title, rating, location }: TourCardProps) 
             <Text variant="bodyBold">{title}</Text>
             <View style={styles.infoRow}>
               <Ionicons name="star" size={16} color="#FACC15" />
-              <Text variant="bodyGray">{rating.toFixed(1)}</Text>
+              <RatingText value={rating} variant="bodyGray" />
             </View>
           </View>
           <View style={styles.infoRow}>

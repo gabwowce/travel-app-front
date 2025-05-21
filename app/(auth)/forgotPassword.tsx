@@ -1,14 +1,12 @@
 import React, { useState } from "react";
-import { View, StyleSheet } from "react-native";
-import { Text, IconButton, ArrowBackIcon } from "native-base";
+import { StyleSheet } from "react-native";
+import { Text } from "native-base";
 import { useRouter } from "expo-router";
 import CustomInput from "@/src/components/ui/input/CustomInput";
 import Button from "@/src/components/ui/btns/Button";
 import KeyboardWrapper from "@/src/components/KeyboardWrapper";
 import Header from "@/src/components/Header";
 import ScreenContainer from "@/src/components/ScreenContainer";
-import FlexContainer from "@/src/components/layout/FlexContainer";
-import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState("");
@@ -25,7 +23,7 @@ export default function ForgotPasswordScreen() {
 
   return (
     <KeyboardWrapper>
-     <ScreenContainer variant="top">
+      <ScreenContainer variant="top">
         <Header onBackPress={() => router.back()} transparent />
 
         <Text variant="header1" style={styles.title}>

@@ -20,6 +20,8 @@ export default function CustomInput({
   error,
   secureTextEntry,
   onForgotPassword,
+  multiline = false,
+  numberOfLines = 1,
   ...props
 }: Props) {
   const theme = useTheme();
@@ -27,16 +29,22 @@ export default function CustomInput({
 
   const shouldShowToggle = !!secureTextEntry;
 
-
   return (
     <View style={styles.container}>
       {label && <Text style={styles.label}>{label}</Text>}
 
       <View style={styles.inputWrapper}>
         <TextInput
-          style={[styles.input, error && styles.inputError]}
+          style={[
+            styles.input,
+            multiline && styles.textArea,
+            error && styles.inputError,
+          ]}
           placeholderTextColor={theme.colors.gray[400]}
           secureTextEntry={shouldShowToggle && !isPasswordVisible}
+          multiline={multiline}
+          numberOfLines={numberOfLines}
+          textAlignVertical={multiline ? "top" : "center"}
           {...props}
         />
 
@@ -59,7 +67,7 @@ export default function CustomInput({
       {secureTextEntry && onForgotPassword && (
         <TouchableOpacity onPress={onForgotPassword}>
           <Text style={styles.forgotPassword} color="primary.500">
-            Forget Password?
+            Forgot Password?
           </Text>
         </TouchableOpacity>
       )}
@@ -72,15 +80,10 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     width: "100%",
   },
-   inputWrapper: {
+  inputWrapper: {
     flexDirection: "row",
     alignItems: "center",
     position: "relative",
-  },
-  eyeIcon: {
-    position: "absolute",
-    right: 12,
-    padding: 4,
   },
   label: {
     fontSize: 14,
@@ -89,16 +92,20 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   input: {
-    backgroundColor: "#eaeaea",
+    backgroundColor: "#f0f0f0",
     borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 18,
+    paddingHorizontal: 14,
+    paddingVertical: 16,
     width: "100%",
-    borderWidth: 1,                // 👈 pridėta
-  borderColor: "#eaeaea",
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+    fontSize: 15,
+  },
+  textArea: {
+    minHeight: 100,
+    paddingVertical: 12,
   },
   inputError: {
-    borderWidth: 1,
     borderColor: "red",
   },
   error: {
@@ -106,10 +113,15 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontSize: 12,
   },
-  
+  eyeIcon: {
+    position: "absolute",
+    right: 12,
+    padding: 4,
+  },
   forgotPassword: {
     textAlign: "right",
     marginTop: 6,
     fontSize: 13,
+    color: "#0C2736",
   },
 });

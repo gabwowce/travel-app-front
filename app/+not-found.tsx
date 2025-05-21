@@ -1,23 +1,48 @@
+import { AppRoutes } from "@/src/config/routes";
 import { Stack, useRouter } from "expo-router";
-import { Box, Center, Button, Text } from "native-base";
+import { Box, Center, Button, Text, VStack, Image } from "native-base";
 
 export default function NotFoundScreen() {
-  const router = useRouter(); // ✅ Naudojame expo-router navigaciją
+  const router = useRouter();
 
   return (
-
-    
     <>
-      <Stack.Screen options={{ title: "Oops! Not Found!" }} />
-      <Center flex={1} bg="white">
-        <Box alignItems="center">
-          <Text variant="header2Bold">Not Found 404</Text>
-          <Button mt={4} colorScheme="primary" onPress={() => router.push("/(app)/(tabs)/home")}>
+      <Stack.Screen options={{ title: "Oops!" }} />
+      <Center flex={1} bg="#F9FAFB" px={5}>
+        <VStack space={6} alignItems="center">
+          {/* Emoji arba iliustracija */}
+          <Text fontSize="6xl">🧭</Text>
+
+          {/* Antraštė */}
+          <Text fontSize="3xl" fontWeight="bold" color="coolGray.800">
+            404 – Page not found
+          </Text>
+
+          {/* Aprašymas */}
+          <Text
+            fontSize="md"
+            textAlign="center"
+            color="coolGray.500"
+            maxW="80%"
+          >
+            Looks like you’ve taken a wrong turn. Let’s get you back on the
+            trail!
+          </Text>
+
+          {/* Mygtukas */}
+          <Button
+            bg="primary.500"
+            _pressed={{ bg: "primary.600" }}
+            _text={{ color: "white" }}
+            size="lg"
+            borderRadius="full"
+            px={8}
+            onPress={() => router.replace(AppRoutes.HOME)}
+          >
             Go Home
           </Button>
-        </Box>
+        </VStack>
       </Center>
     </>
   );
 }
-

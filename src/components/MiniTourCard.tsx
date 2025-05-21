@@ -9,25 +9,29 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { Route } from "@/src/data/features/routes/routesThunks";
+import { Route } from "@/src/store/travelApi";
 import ImageViewer from "../components/ImageViewer";
 import { Text } from "native-base";
 import { IMAGES } from "@/src/config/images";
 
-import { useBreakpointValue } from 'native-base';
+import { useBreakpointValue } from "native-base";
+import RatingText from "./ui/RatingText";
 
 interface MiniTourCardProps {
   tour: Route;
   onPress?: () => void;
 }
 
-export const MiniTourCard: React.FC<MiniTourCardProps> = ({ tour, onPress }) => {
+export const MiniTourCard: React.FC<MiniTourCardProps> = ({
+  tour,
+  onPress,
+}) => {
   const { width: screenW } = useWindowDimensions();
   const cardW = useBreakpointValue({
-    base: screenW * 0.9,  // xs-sm: viena kortelė per visą plotį
-    sm:   screenW * 0.4, // ~2 kortelės vienoje eilėje
-    md:   screenW * 0.28, // ~3 kortelės
-    lg:   screenW * 0.26, // ~4 kortelės
+    base: screenW * 0.9, // xs-sm: viena kortelė per visą plotį
+    sm: screenW * 0.4, // ~2 kortelės vienoje eilėje
+    md: screenW * 0.28, // ~3 kortelės
+    lg: screenW * 0.26, // ~4 kortelės
   });
   const handlePress =
     onPress ??
@@ -41,11 +45,15 @@ export const MiniTourCard: React.FC<MiniTourCardProps> = ({ tour, onPress }) => 
     /* Išorinis sluoksnis ⇒ meta-šešėlis ir radius */
     <View style={[styles.shadowWrapper, { width: cardW }]}>
       {/* Vidinis sluoksnis ⇒ viskas inside + overflow:hidden */}
-      <TouchableOpacity style={styles.card} onPress={handlePress} activeOpacity={0.9}>
+      <TouchableOpacity
+        style={styles.card}
+        onPress={handlePress}
+        activeOpacity={0.9}
+      >
         {/* -------- Nuotrauka -------- */}
         <View style={styles.imageContainer}>
           <View style={styles.imageWrapper}>
-            <ImageViewer imgSource={IMAGES.VINGIO_PARKAS} />
+            <ImageViewer imgSource={IMAGES.TRAKU_PILIS} />
           </View>
         </View>
 
@@ -63,9 +71,7 @@ export const MiniTourCard: React.FC<MiniTourCardProps> = ({ tour, onPress }) => 
           </View>
           <View style={styles.infoRow}>
             <Ionicons name="star" size={13} color="#FACC15" />
-            <Text variant="bodyGraysm" ml={1}>
-              {tour.ratings_avg_rating ? tour.ratings_avg_rating.toFixed(1) : "N/A"}
-            </Text>
+            <RatingText value={tour.ratings_avg_rating} variant="bodyGraysm" />
           </View>
         </View>
       </TouchableOpacity>
@@ -84,7 +90,7 @@ const SHADOW = {
 
 const styles = StyleSheet.create({
   /* išorinis wrapperis – neprarandame šešėlio su overflow:hidden */
-  shadowWrapper: {    
+  shadowWrapper: {
     margin: 0,
     marginBottom: 20,
     borderRadius: 24,

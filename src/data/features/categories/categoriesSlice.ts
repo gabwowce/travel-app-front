@@ -1,8 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchCategories, fetchCategoryById, fetchCategoryRoutes } from "./categoriesThunks";
+import {
+  fetchCategories,
+  fetchCategoryById,
+  fetchCategoryRoutes,
+} from "./categoriesThunks";
 import { createCommonReducers } from "@/src/utils/extraReducers";
 import type { Category } from "@/src/api/generated/models/Category";
-import type { Route } from "@/src/api/generated/models/Route";
+import type { Route } from "@/src/store/travelApi";
 
 interface CategoriesState {
   categories: Category[];
@@ -26,7 +30,6 @@ const categoriesSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     // Bendri pending/fulfilled/rejected handleriai
-    
 
     // Specifinis data handling
     builder
@@ -39,10 +42,10 @@ const categoriesSlice = createSlice({
       .addCase(fetchCategoryRoutes.fulfilled, (state, action) => {
         state.categoryRoutes = action.payload || [];
       });
-      createCommonReducers(
-        [fetchCategories, fetchCategoryById, fetchCategoryRoutes],
-        "categories"
-      )(builder);
+    createCommonReducers(
+      [fetchCategories, fetchCategoryById, fetchCategoryRoutes],
+      "categories"
+    )(builder);
   },
 });
 

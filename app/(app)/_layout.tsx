@@ -7,7 +7,7 @@ export default function AppLayout() {
     <QueryClientProvider client={queryClient}>
       <Stack
         screenOptions={{
-          headerShown: false, 
+          headerShown: false,
         }}
       >
         {/* Your tabs as the base route */}
@@ -17,8 +17,6 @@ export default function AppLayout() {
         <Stack.Screen name="(modals)" options={{ headerShown: false }} />
         <Stack.Screen name="routes/[id]" options={{ headerShown: false }} />
       </Stack>
-
     </QueryClientProvider>
-    
   );
 }

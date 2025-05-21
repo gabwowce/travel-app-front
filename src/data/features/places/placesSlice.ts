@@ -9,7 +9,7 @@ import {
 } from "./placesThunks";
 import { createCommonReducers } from "@/src/utils/extraReducers";
 import type { Place } from "@/src/api/generated/models/Place";
-import type { Route } from "@/src/api/generated/models/Route";
+import type { Route } from "@/src/store/travelApi";
 
 interface PlacesState {
   places: Place[];
@@ -39,8 +39,6 @@ const placesSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    
-
     builder
       // Fetch all places
       .addCase(fetchPlaces.fulfilled, (state, action) => {
@@ -60,7 +58,7 @@ const placesSlice = createSlice({
 
       // Update place
       .addCase(updatePlace.fulfilled, (state, action) => {
-        state.places = state.places.map(place =>
+        state.places = state.places.map((place) =>
           place.id === action.payload.id ? action.payload : place
         );
         if (state.selectedPlace?.id === action.payload.id) {
@@ -83,17 +81,17 @@ const placesSlice = createSlice({
         state.placeRoutes = action.payload ?? [];
       });
 
-      createCommonReducers(
-        [
-          fetchPlaces,
-          fetchPlaceById,
-          createPlace,
-          updatePlace,
-          deletePlace,
-          fetchPlaceRoutes,
-        ],
-        "places"
-      )(builder);
+    createCommonReducers(
+      [
+        fetchPlaces,
+        fetchPlaceById,
+        createPlace,
+        updatePlace,
+        deletePlace,
+        fetchPlaceRoutes,
+      ],
+      "places"
+    )(builder);
   },
 });
 

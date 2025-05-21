@@ -1,5 +1,5 @@
 // screens/ChangePasswordScreen.tsx
-import React from 'react';
+import React from "react";
 import {
   VStack,
   Heading,
@@ -8,24 +8,24 @@ import {
   Box,
   ScrollView,
   Avatar,
-} from 'native-base';
-import { useRouter } from 'expo-router';
-import { Formik } from 'formik';
-import * as Yup from 'yup';
+} from "native-base";
+import { useRouter } from "expo-router";
+import { Formik } from "formik";
+import * as Yup from "yup";
 
-import ScreenContainer from '@/src/components/ScreenContainer';
-import Header from '@/src/components/Header';
-import CustomInput from '@/src/components/ui/input/CustomInput';
-import Button from '@/src/components/ui/btns/Button';
-import {passwordSchema} from "@/src/validation/passwordSchema";
-import { useToast } from 'native-base';
+import ScreenContainer from "@/src/components/ScreenContainer";
+import Header from "@/src/components/Header";
+import CustomInput from "@/src/components/ui/input/CustomInput";
+import Button from "@/src/components/ui/btns/Button";
+import { passwordSchema } from "@/src/validation/passwordSchema";
+import { useToast } from "native-base";
 import Spinner from "@/src/components/ui/Spinner";
 
 import {
   useGetUserProfileQuery,
   useUpdateUserProfileMutation,
-} from '@/src/store/travelApi';
-import FlexContainer from '@/src/components/layout/FlexContainer';
+} from "@/src/store/travelApi";
+import FlexContainer from "@/src/components/layout/FlexContainer";
 
 /* ───────────────────  Component  ──────────────────────── */
 export default function ChangePasswordScreen() {
@@ -34,11 +34,9 @@ export default function ChangePasswordScreen() {
 
   const { data: response, isLoading } = useGetUserProfileQuery();
   const user = response?.data;
-  const [updateProfile, { isLoading: saving }] =
-    useUpdateUserProfileMutation();
+  const [updateProfile, { isLoading: saving }] = useUpdateUserProfileMutation();
 
-  if (isLoading)
-    return <Spinner />
+  if (isLoading) return <Spinner />;
   if (!user)
     return (
       <Text textAlign="center" mt={8}>
@@ -50,38 +48,37 @@ export default function ChangePasswordScreen() {
     <Formik
       initialValues={{
         // current_password: '',
-        password: '',
-        password_confirmation: '',
+        password: "",
+        password_confirmation: "",
       }}
       validationSchema={passwordSchema}
-     onSubmit={async (values, { setErrors, resetForm, setStatus }) => {
-          setStatus(null);
-          try {
-            await updateProfile({ userUpdateRequest: values }).unwrap();
-            setStatus({ success: true });
-            resetForm();
+      onSubmit={async (values, { setErrors, resetForm, setStatus }) => {
+        setStatus(null);
+        try {
+          await updateProfile({ userUpdateRequest: values }).unwrap();
+          setStatus({ success: true });
+          resetForm();
 
-            toast.show({
-              title: "Password updated",
-              description: "Your password has been changed successfully.",
-              status: "success", 
-              placement: "top",
-            } as any);
+          toast.show({
+            title: "Password updated",
+            description: "Your password has been changed successfully.",
+            status: "success",
+            placement: "top",
+          } as any);
 
-            setTimeout(() => {
-              router.back(); // grįžtam po 1s (kad matytų toast'ą)
-            }, 1000);
-
-          } catch (err: any) {
-            const details = err?.data?.errors;
-            if (details) {
-              console.log('Server validation errors:', details);
-              setErrors(details);
-            } else {
-              setStatus({ error: 'Something went wrong' });
-            }
+          setTimeout(() => {
+            router.back(); // grįžtam po 1s (kad matytų toast'ą)
+          }, 1000);
+        } catch (err: any) {
+          const details = err?.data?.errors;
+          if (details) {
+            console.log("Server validation errors:", details);
+            setErrors(details);
+          } else {
+            setStatus({ error: "Something went wrong" });
           }
-        }}
+        }
+      }}
     >
       {({
         values,
@@ -101,7 +98,7 @@ export default function ChangePasswordScreen() {
             rightIcon={
               dirty && isValid ? (
                 <Text onPress={() => handleSubmit()} color="blue.500">
-                  {saving ? 'Saving...' : 'Save'}
+                  {saving ? "Saving..." : "Save"}
                 </Text>
               ) : null
             }
@@ -109,22 +106,19 @@ export default function ChangePasswordScreen() {
 
           <ScrollView keyboardShouldPersistTaps="handled">
             <VStack px={5} space={4}>
-               <VStack alignItems="center" mt={5} space={4}>
-                <Avatar size="xl" source={{ uri: 'https://via.placeholder.com/150' }}>
+              <VStack alignItems="center" mt={5} space={4}>
+                <Avatar
+                  size="xl"
+                  source={{ uri: "https://via.placeholder.com/150" }}
+                >
                   {user.name?.charAt(0).toUpperCase()}
                 </Avatar>
                 <Heading fontSize="lg">{user.name}</Heading>
-
               </VStack>
 
               <Divider my={4} />
 
-              <Text
-                mb={4}
-                fontSize="sm"
-                textAlign="center"
-                color="gray.500"
-              >
+              <Text mb={4} fontSize="sm" textAlign="center" color="gray.500">
                 Enter a new password below.
               </Text>
 
@@ -151,8 +145,8 @@ export default function ChangePasswordScreen() {
                 secureTextEntry
                 placeholder="Enter new password"
                 value={values.password}
-                onBlur={handleBlur('password')}
-                onChangeText={handleChange('password')}
+                onBlur={handleBlur("password")}
+                onChangeText={handleChange("password")}
                 error={
                   touched.password && errors.password
                     ? errors.password
@@ -165,15 +159,14 @@ export default function ChangePasswordScreen() {
                 secureTextEntry
                 placeholder="Confirm new password"
                 value={values.password_confirmation}
-                onBlur={handleBlur('password_confirmation')}
-                onChangeText={handleChange('password_confirmation')}
+                onBlur={handleBlur("password_confirmation")}
+                onChangeText={handleChange("password_confirmation")}
                 error={
                   touched.password_confirmation && errors.password_confirmation
                     ? errors.password_confirmation
                     : undefined
                 }
               />
-
 
               {status?.error && (
                 <Text color="red.500" textAlign="center">
@@ -188,7 +181,7 @@ export default function ChangePasswordScreen() {
               {/* Extra button for small devices */}
               {dirty && isValid && (
                 <Button
-                  label={saving ? 'Saving...' : 'Save'}
+                  label={saving ? "Saving..." : "Save"}
                   onPress={() => handleSubmit()}
                 />
               )}

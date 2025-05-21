@@ -2,33 +2,46 @@ import React from "react";
 import { useLocalSearchParams, router } from "expo-router";
 import { ScrollView, StyleSheet } from "react-native";
 import { Box, Image, VStack, HStack, Text, Badge, Icon } from "native-base";
-import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
-
-import { useGetRouteByIdQuery, useGetRoutePlacesQuery } from "@/src/store/travelApi";
+import { MaterialIcons } from "@expo/vector-icons";
+import {
+  useGetRouteByIdQuery,
+  useGetRoutePlacesQuery,
+} from "@/src/store/travelApi";
 import { FAKE_POINTS } from "@/src/config/fakeData";
 import { IMAGES } from "@/src/config/images";
-import { AppRoutes } from "@/src/config/routes";
-
 import FlexContainer from "@/src/components/layout/FlexContainer";
 import Header from "@/src/components/Header";
 import Button from "@/src/components/ui/btns/Button";
 import CircleButton from "@/src/components/ui/btns/CircleButton";
 import FavoriteButton from "@/src/components/ui/btns/FavoriteButton";
-import StatChip from "@/src/components/ui/StatChip";
 import Spinner from "@/src/components/ui/Spinner";
+import RatingStars from "@/src/components/ui/RatingStars";
+import RouteStatsRow from "@/src/components/ui/RouteStatsRow";
+import CategoryBadges from "@/src/components/ui/CategoryBadges";
 
 export default function RouteInfoScreen() {
   const { id } = useLocalSearchParams();
-  const routeId = Array.isArray(id) ? parseInt(id[0], 10) : parseInt(id ?? "", 10);
+  const routeId = Array.isArray(id)
+    ? parseInt(id[0], 10)
+    : parseInt(id ?? "", 10);
 
-  const {
-    data: selectedRoute,
-    isLoading: routeLoading,
-  } = useGetRouteByIdQuery(routeId, { skip: !routeId });
+  const { data: selectedRoute, isLoading: routeLoading } = useGetRouteByIdQuery(
+    { route: String(routeId) },
+    { skip: !routeId }
+  );
 
-  const { isLoading: placesLoading } = useGetRoutePlacesQuery(routeId, { skip: !routeId });
+  const { isLoading: placesLoading } = useGetRoutePlacesQuery(
+    { route: String(routeId) },
+    { skip: !routeId }
+  );
 
   if (routeLoading || !selectedRoute) {
+    return <Spinner />;
+  }
+
+  const route = selectedRoute?.data;
+
+  if (routeLoading || !route) {
     return <Spinner />;
   }
 
@@ -36,17 +49,16 @@ export default function RouteInfoScreen() {
     name,
     description,
     distance,
-    elevation_gain,
+    elevation,
     difficulty,
     estimated_time,
     ratings_avg_rating,
     media,
     categories,
-  } = selectedRoute;
-
+  } = route;
   const navigateToMap = () => {
     router.push({
-      pathname: AppRoutes.routeMap(routeId),
+      pathname: "/routes/[id]/map",
       params: {
         id: String(routeId),
         fake: encodeURIComponent(JSON.stringify(FAKE_POINTS)),
@@ -57,52 +69,37 @@ export default function RouteInfoScreen() {
 
   return (
     <FlexContainer>
-      <Header title={name} onBackPress={() => router.back()} rightIcon={<CircleButton variant="start" onPress={navigateToMap} />} />
+      <Header
+        title={name}
+        onBackPress={() => router.back()}
+        rightIcon={<CircleButton variant="start" onPress={navigateToMap} />}
+      />
 
       <ScrollView keyboardShouldPersistTaps="handled">
         <VStack space={4} mt={6}>
           <Box style={styles.imageContainer}>
-            <Image alt={name} source={IMAGES.VINGIO_PARKAS} style={styles.image} />
+            <Image
+              alt={name}
+              source={IMAGES.VINGIO_PARKAS}
+              style={styles.image}
+            />
             <FavoriteButton routeId={routeId} style={styles.bookmarkIcon} />
             <Box style={styles.imageOverlay}>
               <Text style={styles.title}>{name}</Text>
-              <HStack alignItems="center">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Icon
-                    key={i}
-                    as={FontAwesome}
-                    name={i + 1 <= Math.round(ratings_avg_rating) ? "star" : "star-o"}
-                    color="yellow.400"
-                    size="sm"
-                  />
-                ))}
-                <Text style={styles.ratingText}>{ratings_avg_rating.toFixed(1)}</Text>
-              </HStack>
+              <RatingStars value={ratings_avg_rating} />
             </Box>
           </Box>
         </VStack>
 
         <VStack space="4" px="4" pt="4" pb="10">
-          <HStack flexWrap="wrap">
-            <StatChip icon="map-marker" label={`${distance.toFixed(1)} km`} />
-            <StatChip icon="area-chart" label={`${elevation_gain} m ↑`} />
-            <StatChip icon="road" label={difficulty} />
-            <StatChip icon="clock-o" label={estimated_time} />
-          </HStack>
+          <RouteStatsRow
+            distance={distance}
+            elevation={elevation}
+            difficulty={difficulty}
+            estimated_time={estimated_time}
+          />
 
-          <HStack flexWrap="wrap">
-            {categories?.map((c: any) => (
-              <Badge
-                key={c.id}
-                bg={c.color ?? "primary.500"}
-                _text={{ color: "white", fontSize: "xs" }}
-                mr="2"
-                mb="2"
-              >
-                {c.name}
-              </Badge>
-            ))}
-          </HStack>
+          <CategoryBadges categories={categories} />
 
           <Text fontSize="sm" lineHeight="lg">
             {description}
@@ -111,7 +108,9 @@ export default function RouteInfoScreen() {
           <Button
             pb={15}
             onPress={navigateToMap}
-            leftIcon={<Icon as={MaterialIcons} name="map" size="sm" color="white" />}
+            leftIcon={
+              <Icon as={MaterialIcons} name="map" size="sm" color="white" />
+            }
           >
             Start
           </Button>

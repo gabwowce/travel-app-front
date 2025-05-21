@@ -1,5 +1,5 @@
 // screens/EditProfileScreen.tsx
-import React from 'react';
+import React from "react";
 import {
   Avatar,
   VStack,
@@ -8,24 +8,24 @@ import {
   ScrollView,
   Box,
   Divider,
-} from 'native-base';
-import { useRouter } from 'expo-router';
-import { Formik, FormikErrors } from 'formik';
+} from "native-base";
+import { useRouter } from "expo-router";
+import { Formik, FormikErrors } from "formik";
 
-import Header from '@/src/components/Header';
-import ScreenContainer from '@/src/components/ScreenContainer';
-import CustomInput from '@/src/components/ui/input/CustomInput';
-import Button from '@/src/components/ui/btns/Button';
+import Header from "@/src/components/Header";
+import ScreenContainer from "@/src/components/ScreenContainer";
+import CustomInput from "@/src/components/ui/input/CustomInput";
+import Button from "@/src/components/ui/btns/Button";
 import Spinner from "@/src/components/ui/Spinner";
 import { editProfileSchema } from "@/src/validation/editProfileSchema";
 
 import {
   useGetUserProfileQuery,
   useUpdateUserProfileMutation,
-} from '@/src/store/travelApi';
-import type { User, UserUpdateRequest } from '@/src/store/travelApi'; 
-import FlexContainer from '@/src/components/layout/FlexContainer';
-import CircleButton from '@/src/components/ui/btns/CircleButton';
+} from "@/src/store/travelApi";
+import type { User, UserUpdateRequest } from "@/src/store/travelApi";
+import FlexContainer from "@/src/components/layout/FlexContainer";
+import CircleButton from "@/src/components/ui/btns/CircleButton";
 
 export default function EditProfileScreen() {
   const router = useRouter();
@@ -34,7 +34,7 @@ export default function EditProfileScreen() {
     data: response,
     isLoading: loading,
     isError,
-    refetch
+    refetch,
   } = useGetUserProfileQuery();
 
   const user = response?.data;
@@ -42,10 +42,7 @@ export default function EditProfileScreen() {
   const [updateProfile, { isLoading: isSaving }] =
     useUpdateUserProfileMutation();
 
-
-  if (loading)
-    return <Spinner />
-             
+  if (loading) return <Spinner />;
 
   if (isError || !user)
     return (
@@ -79,7 +76,7 @@ export default function EditProfileScreen() {
           if (details) setErrors(details as FormikErrors<User>);
         }
       }}
-      >
+    >
       {({
         values,
         errors,
@@ -90,7 +87,7 @@ export default function EditProfileScreen() {
         dirty,
       }) => (
         <FlexContainer>
-         <Header
+          <Header
             title="Edit Profile"
             onBackPress={() => router.back()}
             rightIcon={
@@ -104,59 +101,57 @@ export default function EditProfileScreen() {
             }
           />
 
-
           <ScrollView keyboardShouldPersistTaps="handled">
-             <VStack space={4} mt={6} px={5}>
-            <VStack alignItems="center">
-              <Avatar size="xl" source={{ uri: 'https://via.placeholder.com/150' }}>
-                {values.name?.charAt(0).toUpperCase()}
-              </Avatar>
-              <Heading size="md" pt={4}>{values.name}</Heading>
-            </VStack>
-            <Divider my={4} />
+            <VStack space={4} mt={6} px={5}>
+              <VStack alignItems="center">
+                <Avatar
+                  size="xl"
+                  source={{ uri: "https://via.placeholder.com/150" }}
+                >
+                  {values.name?.charAt(0).toUpperCase()}
+                </Avatar>
+                <Heading size="md" pt={4}>
+                  {values.name}
+                </Heading>
+              </VStack>
+              <Divider my={4} />
 
-              <Text
-                mb={4}
-                fontSize="sm"
-                textAlign="center"
-                color="gray.500"
-              >
+              <Text mb={4} fontSize="sm" textAlign="center" color="gray.500">
                 Update your profile info below.
               </Text>
-           
+
               <CustomInput
                 label="Full Name"
-                value={values.name || ''}
-                onChangeText={handleChange('name')}
+                value={values.name || ""}
+                onChangeText={handleChange("name")}
                 error={touched.name && errors.name ? errors.name : undefined}
               />
 
               <CustomInput
                 label="Location"
                 placeholder="Enter location"
-                value={values.profile?.location || ''}
-                onChangeText={handleChange('profile.location')}/>
-
+                value={values.profile?.location || ""}
+                onChangeText={handleChange("profile.location")}
+              />
 
               <CustomInput
                 label="Bio"
-                placeholder="Enter bio"
-                value={values.profile?.bio || ''}
-                onChangeText={handleChange('profile.bio')}
-                
+                multiline
+                numberOfLines={6}
+                value={values.profile?.bio || ""}
+                onChangeText={handleChange("profile.bio")}
               />
 
               <CustomInput
                 label="Website"
                 placeholder="Enter website"
-                value={values.profile?.website || ''}
-                onChangeText={handleChange('profile.website')}
-                
+                value={values.profile?.website || ""}
+                onChangeText={handleChange("profile.website")}
               />
 
               {dirty && isValid && (
                 <Button
-                  label={isSaving ? 'Saving...' : 'Save'}
+                  label={isSaving ? "Saving..." : "Save"}
                   onPress={() => handleSubmit()}
                 />
               )}

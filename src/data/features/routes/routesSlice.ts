@@ -2,10 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   fetchRoutes,
   fetchFeaturedRoutes,
-  fetchRouteById
+  fetchRouteById,
 } from "./routesThunks";
 import { createCommonReducers } from "@/src/utils/extraReducers";
-import type { Route } from "@/src/api/generated/models/Route";
+import type { Route } from "@/src/store/travelApi";
 
 interface RoutesState {
   routes: Route[];
@@ -38,8 +38,6 @@ const routesSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-
-
     builder
       .addCase(fetchRoutes.fulfilled, (state, action) => {
         state.routes = action.payload || [];
@@ -52,12 +50,12 @@ const routesSlice = createSlice({
 
       .addCase(fetchRouteById.fulfilled, (state, action) => {
         state.selectedRoute = action.payload;
-      })
+      });
 
-      createCommonReducers(
-        [fetchRoutes, fetchFeaturedRoutes, fetchRouteById],
-        "routes"
-      )(builder);
+    createCommonReducers(
+      [fetchRoutes, fetchFeaturedRoutes, fetchRouteById],
+      "routes"
+    )(builder);
   },
 });
 

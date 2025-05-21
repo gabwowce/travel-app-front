@@ -10,7 +10,7 @@ interface Section {
     title: string;
     icon: string;
     color?: string;
-    action: () => void;
+    action?: () => void; // leidžiame undefined
   }[];
 }
 
@@ -27,7 +27,7 @@ export default function ProfileMenu({ menuItems }: { menuItems: Section[] }) {
               key={idx}
               icon={item.icon}
               title={item.title}
-              onPress={item.action}
+              onPress={item.action ?? (() => {})}
               color={item.color}
               showArrow={section.title !== "Account Management"}
             />

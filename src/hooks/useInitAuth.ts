@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { useDispatch } from 'react-redux';
 import { setCredentials, clearAuth } from '@/src/data/features/auth/authSlice';
-import { useLazyGetCurrentUserQuery } from '@/src/store/travelApi';
+import { useLazyGetCurrentUserQuery } from "@/src/hooks/LazyHooks";
 
 export function useInitAuth() {
   const [ready, setReady] = useState(false);

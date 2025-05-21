@@ -9,12 +9,13 @@ import KeyboardWrapper from "@/src/components/KeyboardWrapper";
 import ScreenContainer from "@/src/components/ScreenContainer";
 import { Formik } from "formik";
 import { registerSchema } from "@/src/validation/registerSchema";
-import { useRegisterUserMutation } from "@/src/store/travelApi";
+import { useAuthActions } from "@/src/hooks/useAuthActions";
+import { AppRoutes } from "@/src/config/routes";
 
 export default function RegisterScreen() {
   const [agreed, setAgreed] = useState(false);
   const router = useRouter();
-  const [register, { isLoading }] = useRegisterUserMutation();
+  const { register } = useAuthActions();
 
   return (
     <KeyboardWrapper>
@@ -39,8 +40,8 @@ export default function RegisterScreen() {
             }
 
             try {
-              await register({ registerRequest: values }).unwrap();
-              router.push("/(app)/(tabs)/home");
+              await register({ registerRequest: values });
+              router.push(AppRoutes.HOME);
             } catch (err: any) {
               const details = err?.data?.errors;
               if (details) setErrors(details);
@@ -54,8 +55,6 @@ export default function RegisterScreen() {
             handleSubmit,
             errors,
             touched,
-            isValid,
-            dirty,
           }) => (
             <>
               <CustomInput
@@ -83,7 +82,11 @@ export default function RegisterScreen() {
                 onChangeText={handleChange("password")}
                 onBlur={handleBlur("password")}
                 secureTextEntry
-                error={touched.password && errors.password ? errors.password : undefined}
+                error={
+                  touched.password && errors.password
+                    ? errors.password
+                    : undefined
+                }
               />
               <CustomInput
                 label="Confirm Password"
@@ -99,12 +102,22 @@ export default function RegisterScreen() {
                 }
               />
 
-              <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 10 }}>
-                <Checkbox isChecked={agreed} onChange={setAgreed} value="agree" />
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginVertical: 10,
+                }}
+              >
+                <Checkbox
+                  isChecked={agreed}
+                  onChange={setAgreed}
+                  value="agree"
+                />
                 <Text ml={2}>
                   I agree to the{" "}
                   <Text
-                    onPress={() => router.push("/(legal)/privacy")}
+                    onPress={() => router.push(AppRoutes.PRIVACY_POLICY)}
                     style={{ textDecorationLine: "underline" }}
                   >
                     Privacy & Terms
@@ -112,11 +125,7 @@ export default function RegisterScreen() {
                 </Text>
               </View>
 
-              <Button
-                label={isLoading ? "Creating account..." : "Register"}
-                onPress={() => handleSubmit()}
-                isDisabled={!dirty || !isValid}
-              />
+              <Button label={"Register"} onPress={() => handleSubmit()} />
             </>
           )}
         </Formik>

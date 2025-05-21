@@ -1,72 +1,43 @@
-import React, { useState } from "react";
 import { Background } from "@/src/components/BGWrapper";
-import { TourCard } from "@/src/components/tour/TourCard";
-import {
-  Box,
-  Text,
-  ScrollView,
-  VStack,
-  HStack,
-  Pressable,
-  Wrap,
-} from "native-base";
-import {
-  useGetFeaturedRoutesQuery,  
-  useGetCategoriesQuery,
-  useGetCurrentUserQuery,
-} from "@/src/store/travelApi";
-import type { Route } from "@/src/api/generated/models/Route";
+import SectionHeader from "@/src/components/ui/SectionHeader";
+import CategoryGrid from "@/src/components/ui/CategoryGrid";
+import FeaturedRoutesRow from "@/src/components/ui/FeaturedRoutesRow";
+import RandomRouteButton from "@/src/components/ui/RandomRouteButton";
+import { Box, ScrollView, Text, VStack } from "native-base";
+import { useAppDispatch } from "@/src/data/hooks";
+import { mergeFiltersForKey } from "@/src/data/features/filters/filtersSlice";
+import { useRouter } from "expo-router";
+import { useHomeData } from "@/src/hooks/useHomeData";
 import type { Category } from "@/src/api/generated/models/Category";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
-import { useRouter } from "expo-router";
-import SectionHeader from "@/src/components/ui/SectionHeader";
-import { Button } from "native-base";
-import { Ionicons } from "@expo/vector-icons";
-import { mergeFiltersForKey } from "@/src/data/features/filters/filtersSlice";
-import { useAppDispatch } from "@/src/data/hooks";
-import RandomRouteButton from "@/src/components/ui/RandomRouteButton";
-import Spinner from "@/src/components/ui/Spinner";
-import { IMAGES } from "@/src/config/images";
 
 export default function Home() {
   const router = useRouter();
-  
-  /* ─────────── ROUTES & CATEGORIES PER RTK Query ─────────── */
-const {
-  data: featuredRoutesResponse,      
-  isLoading: routesLoading,
-  error: routesError,
-} = useGetFeaturedRoutesQuery({ limit: 6 });
-
-const featuredRoutes = featuredRoutesResponse?.data ?? [];
+  const dispatch = useAppDispatch();
 
   const {
-    data: categoriesResponse,
-    isLoading: categoriesLoading,
-  } = useGetCategoriesQuery();
+    featuredRoutes,
+    routesLoading,
+    routesError,
+    visibleCategories,
+    userName,
+  } = useHomeData();
 
-  const categories = categoriesResponse?.data ?? []; 
+  const handleCategoryPress = (cat: Category) => {
+    const key = "results";
+    const filtersObj = { categoryId: cat.id };
 
+    dispatch(mergeFiltersForKey({ key, filters: filtersObj }));
 
-  /* ─────────── Navigacija ─────────── */
-  const dispatch = useAppDispatch();
-const handleCategoryPress = (cat: Category) => {
-  const key = "results";
-  const filtersObj = { categoryId: cat.id };
+    router.navigate({
+      pathname: "/(app)/results/[...key]",
+      params: {
+        key: [key],
+        filters: JSON.stringify(filtersObj),
+      },
+    });
+  };
 
-  dispatch(mergeFiltersForKey({ key, filters: filtersObj }));
-
-
-  router.navigate({
-    pathname: `/results/${key}`,
-    params: { filters: JSON.stringify(filtersObj) },
-  });
-};
-const [expanded, setExpanded] = useState(true);
-const visibleCategories = expanded ? categories : categories.slice(0, 3);
-
-const { data: userData } = useGetCurrentUserQuery();
-const userName = userData?.data?.name?.split(" ")[0] ?? "keliautojau";
   return (
     <Background>
       <ScrollView
@@ -76,96 +47,30 @@ const userName = userData?.data?.name?.split(" ")[0] ?? "keliautojau";
         contentContainerStyle={{ paddingBottom: wp("10%") }}
       >
         <Box flex={1} pt={20}>
-          {/* ─── HEADER ─── */}
+          {/* Header */}
           <VStack pl={5} pb={wp("1%")}>
-              <Box>
-                <Text variant="header1" >Explore the</Text>
-                <Text variant="header1Bold" mt={-4}>
-                  Beautiful world!
-                </Text>
-              </Box>
-            
+            <Text variant="header1">Explore the</Text>
+            <Text variant="header1Bold" mt={-4}>
+              Beautiful world!
+            </Text>
           </VStack>
 
-
-          {/* ─── FEATURED ROUTES ─── */}
           <SectionHeader title="Featured tours" topPadding />
+          <FeaturedRoutesRow
+            routes={featuredRoutes as import("@/src/store/travelApi").Route[]}
+            loading={routesLoading}
+            error={routesError}
+          />
 
-          {routesLoading ? (
-            <Spinner />
-          ) : routesError ? (
-            <Text color="red.500" px={5}>
-              Failed to load tours. Please try again.
-             
-            </Text>
-          ) : (featuredRoutes as Route[]).length > 0 ? (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <HStack space={4} px={5}>
-                {featuredRoutes.map((route) => (
-                  <TourCard
-                    key={route.id}
-                    id={String(route.id)}
-                    image={IMAGES.VINGIO_PARKAS /* TODO: route.media[0] */}
-                    title={route.name ?? "Unnamed"}
-                    rating={(route as any).ratings_avg_rating ?? 0}
-                    location={`${route.city?.name ?? "Unknown"}, ${
-                      route.city?.country?.name ?? "Unknown"
-                    }`}
-                  />
-                ))}
-              </HStack>
-            </ScrollView>
-          ) : (
-            <Text px={5}>No featured routes available.</Text>
-          )}
+          <SectionHeader pt={4} title="Categories" />
+          <VStack px={5} space={3}>
+            <CategoryGrid
+              categories={visibleCategories}
+              onPress={handleCategoryPress}
+            />
+          </VStack>
 
-          {/* ─── CATEGORIES ─── */}
-         <SectionHeader pt={4} title="Categories" />
-
-        <VStack px={5} space={3}>
-          <Wrap direction="row" justify="flex-start" spacing={3}>
-            {visibleCategories.map((cat) => (
-              <Pressable key={cat.id} onPress={() => handleCategoryPress(cat)}>
-                <Box
-                  px={4}
-                  py={2}
-                  m={1}
-                  borderRadius="full"
-                  bg="primary.100"
-                  maxW={wp("40%")} 
-                  _pressed={{ bg: "primary.200" }}
-                >
-                  <Text
-                    fontSize="sm"
-                    fontWeight="bold"
-                    color="primary.800"
-                    textAlign="center"
-                  >
-                    {cat.name}
-                  </Text>
-                </Box>
-              </Pressable>
-            ))}
-          </Wrap>
-
-          {/* {categories.length > 3 && (
-            <Pressable onPress={() => setExpanded((prev) => !prev)}>
-              <Text
-                fontSize="sm"
-                fontWeight="medium"
-                color="primary.600"
-                textAlign="center"
-                mt={1}
-              >
-                {expanded ? "Show less" : "Show more"}
-              </Text>
-            </Pressable>
-          )} */}
-        </VStack>
-
-
-
-          <RandomRouteButton/>
+          <RandomRouteButton />
         </Box>
       </ScrollView>
     </Background>

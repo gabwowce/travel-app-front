@@ -1,8 +1,6 @@
-// src/config/routes.ts
-
 export const AppRoutes = {
   // Auth
-  LOGIN: "/(auth)/index",
+  LOGIN: "/(auth)",
   REGISTER: "/register",
   FORGOT_PASSWORD: "/(auth)/forgotPassword",
 
@@ -23,8 +21,8 @@ export const AppRoutes = {
 
   // Routes
   routeDetails: (id: string | number) => `/(app)/routes/${id}`,
-  routeMap: (id: string | number) => `/(app)/routes/${id}/map`,
+  routeMap: (id: string | number) => `/routes/${id}/map`,
 
-  // Other utility
-  root: "/", // Index redirect if needed
-};
+  // Utility
+  root: "/",
+} as const; // ← svarbiausia dalis

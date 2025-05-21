@@ -17,8 +17,8 @@ export default function ResultsScreen() {
   /* params & filters */
   const { key: rawKey } = useLocalSearchParams<{ key: string | string[] }>();
   const routeKey = Array.isArray(rawKey) ? rawKey.join("/") : rawKey;
-  const filters  = useAppSelector(st => (st.filters as any)[routeKey] ?? {});
-  const token    = useAppSelector(st => st.auth?.token) as string | undefined;
+  const filters = useAppSelector((st) => (st.filters as any)[routeKey] ?? {});
+  const token = useAppSelector((st) => st.auth?.token) as string | undefined;
 
   /* TanStack Query infinite */
   const {
@@ -31,54 +31,59 @@ export default function ResultsScreen() {
   } = useRoutesInfinite(
     {
       category_id: filters.categoryId,
-      city_id:     filters.cityId,
-      country_id:  filters.countryId,
-      search:      filters.search,
+      city_id: filters.cityId,
+      country_id: filters.countryId,
+      search: filters.search,
     },
     token
   );
 
   const routes = useMemo(
-    () => data?.pages.flatMap(p => p.data) ?? [],
+    () => data?.pages.flatMap((p) => p.data) ?? [],
     [data?.pages]
   );
 
   const dispatch = useAppDispatch();
 
   /* UI states */
-  if (isLoading) return (
-    <FlexContainer><Header title="Tours" onBackPress={router.back} /><Spinner/></FlexContainer>
-  );
-  if (error) return (
-    <FlexContainer><Header title="Tours" onBackPress={router.back}/>
-      <Text color="red.500" mt={10} textAlign="center">Failed to load tours</Text>
-    </FlexContainer>
-  );
+  if (isLoading)
+    return (
+      <FlexContainer>
+        <Header title="Tours" onBackPress={router.back} />
+        <Spinner />
+      </FlexContainer>
+    );
+  if (error)
+    return (
+      <FlexContainer>
+        <Header title="Tours" onBackPress={router.back} />
+        <Text color="red.500" mt={10} textAlign="center">
+          Failed to load tours
+        </Text>
+      </FlexContainer>
+    );
 
   /* Normal render */
   return (
-    <FlexContainer >
+    <FlexContainer>
       <Header
         title="Tours"
         onBackPress={() => {
           dispatch(clearFilters({ key: routeKey }));
           router.back();
         }}
-        rightIcon={<FilterCircleButton routeKey={routeKey}/>}
+        rightIcon={<FilterCircleButton routeKey={routeKey} />}
       />
-      
-    <ResponsiveTourList
-      data={routes}
-      isFetching={isFetchingNextPage}
-      hasNextPage={hasNextPage}
-      isFetchingNextPage={isFetchingNextPage}
-      onEndReached={fetchNextPage}
-      filters={filters}
-      onClearFilters={() => dispatch(clearFilters({ key: routeKey }))}
-    />
-    
 
-
+      <ResponsiveTourList
+        data={routes}
+        isFetching={isFetchingNextPage}
+        hasNextPage={hasNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+        onEndReached={fetchNextPage}
+        filters={filters}
+        onClearFilters={() => dispatch(clearFilters({ key: routeKey }))}
+      />
     </FlexContainer>
   );
 }

@@ -1,27 +1,29 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Text } from "native-base";
-import Button from "@/src/components/ui/btns/Button";
 import { useRouter } from "expo-router";
 import { Formik } from "formik";
 
+import Button from "@/src/components/ui/btns/Button";
 import CustomInput from "@/src/components/ui/input/CustomInput";
 import KeyboardWrapper from "@/src/components/KeyboardWrapper";
 import ScreenContainer from "@/src/components/ScreenContainer";
 import { loginSchema } from "@/src/validation/loginSchema";
-
 import { useLoginUserMutation } from "@/src/store/travelApi";
+import { useAuthActions } from "@/src/hooks/useAuthActions";
+import { AppRoutes } from "@/src/config/routes";
 
 export default function LoginScreen() {
   const router = useRouter();
-  const [login, { isLoading, error, reset }] = useLoginUserMutation();
+  const { login } = useAuthActions();
+  const [loginUser, { isLoading, error, reset }] = useLoginUserMutation();
 
   const apiErrors = (error as any)?.data?.errors ?? {};
   const general = (error as any)?.data?.message;
 
   const gotoRegister = () => {
     reset();
-    router.push("/register");
+    router.push(AppRoutes.REGISTER);
   };
 
   return (
@@ -37,21 +39,15 @@ export default function LoginScreen() {
           validationSchema={loginSchema}
           onSubmit={async (values, { setErrors }) => {
             try {
-              await login({ loginRequest: values }).unwrap();
-              router.push("/(app)/(tabs)/home");
+              await login({ loginRequest: values });
+              router.push(AppRoutes.HOME);
             } catch (err: any) {
               const backendErrors = err?.data?.errors;
               if (backendErrors) setErrors(backendErrors);
             }
           }}
         >
-          {({
-            values,
-            errors,
-            touched,
-            handleChange,
-            handleSubmit,
-          }) => (
+          {({ values, errors, touched, handleChange, handleSubmit }) => (
             <>
               <CustomInput
                 label="Email"
@@ -68,15 +64,15 @@ export default function LoginScreen() {
                 secureTextEntry
                 value={values.password}
                 onChangeText={handleChange("password")}
-                error={touched.password && errors.password ? errors.password : undefined}
-                onForgotPassword={() => router.push("/(auth)/forgotPassword")}
+                error={
+                  touched.password && errors.password
+                    ? errors.password
+                    : undefined
+                }
+                onForgotPassword={() => router.push(AppRoutes.FORGOT_PASSWORD)}
               />
 
-              {general && (
-                <Text style={styles.generalError}>
-                  {general}
-                </Text>
-              )}
+              {general && <Text style={styles.generalError}>{general}</Text>}
 
               <Button
                 label={isLoading ? "Signing in..." : "Sign in"}
