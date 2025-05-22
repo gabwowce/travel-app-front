@@ -15,7 +15,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Įdiegia Expo ir EAS CLI globaliai
       - run: npm install --global expo eas-cli
 
       # Įdiegia tavo priklausomybes (įskaitant expo-router)
