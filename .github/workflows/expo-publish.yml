@@ -1,0 +1,23 @@
+name: Expo Publish (automatic)
+
+on:
+  push:
+    branches: [feature/rtk-query-refactor]   # arba jūsų pagrindinė šaka
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Įdiegia Expo CLI + EAS ir automatiškai prisijungia su EXPO_TOKEN
+      - uses: expo/expo-github-action@v9            # ⬅ oficiali integracija
+        with:
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      # Įrašo priklausomybes (Node 18 pagal nutylėjimą)
+      - run: npm ci
+
+      # Publikuoja naują atnaujinimą į expo.dev
+      - run: expo publish --non-interactive
