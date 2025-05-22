@@ -16,7 +16,10 @@ jobs:
         with:
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - run: npm ci
-      - run: npx expo install     
-      - run: npx expo login --token ${{ secrets.EXPO_TOKEN }}
-      - run: npx expo publish --non-interactive
+      - name: Install, login & publish
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          npm ci
+          expo login --token "$EXPO_TOKEN"
+          expo publish --non-interactive
