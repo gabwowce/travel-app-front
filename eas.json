@@ -15,10 +15,5 @@
         "buildType": "apk"
       }
     }
-  },
-  "update": {
-    "preview": {
-      "channel": "preview"
-    }
   }
 }
