@@ -2,6 +2,7 @@
   "expo": {
     "name": "Elatray",
     "slug": "elatray",
+    "runtimeVersion": "1.0.0",
     "version": "1.0.0",
     "orientation": "default",
     "icon": "./src/assets/logo/logo-v1.png",
