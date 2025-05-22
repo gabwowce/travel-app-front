@@ -2,15 +2,14 @@ import React, { useEffect } from 'react';
 import { Box, Center, Image, Text, VStack } from "native-base";
 
 interface SplashProps {
-  onFinish: () => void;
+  onFinish?: () => void;
 }
 
-export default function Splash({ onFinish }: SplashProps) {
+export default function Splash({ onFinish }: Props) {
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (onFinish) onFinish();
-    }, 3000);
-
+      onFinish?.(); // kviečiam tik jei yra
+    }, 1000);
     return () => clearTimeout(timer);
   }, []);
 
