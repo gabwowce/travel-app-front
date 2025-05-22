@@ -8,9 +8,6 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: travel-app-front
 
     env:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
@@ -18,8 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Įdiegia Expo ir EAS CLI globaliai
       - run: npm install --global expo eas-cli
 
+      # Įdiegia tavo priklausomybes (įskaitant expo-router)
       - run: npm ci
 
+      # Publikuoja preview šakai (gausi QR kodą)
       - run: eas update --branch preview --auto --non-interactive
