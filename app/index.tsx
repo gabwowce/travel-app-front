@@ -1,14 +1,12 @@
 // app/index.tsx
-//import { Redirect } from 'expo-router';
-//import { useAppSelector } from '@/src/data/hooks';
+import { Redirect } from 'expo-router';
+import { useAppSelector } from '@/src/data/hooks';
 
-//export default function Index() {
- // const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
- // const onboardingDone = true; // arba imk iš globalios būsenos jei reikia
+export default function Index() {
+  // Tokį flagą jau turi₍iš authSlice₎
+  const isAuthenticated = useAppSelector(state => !!state.auth.token);
 
- // if (!isAuthenticated) {
- //   return <Redirect href="/(auth)" />;
- // }
-
-//  return <Redirect href="/(app)/(tabs)/home" />;
-//}
+  return (
+    <Redirect href={isAuthenticated ? '/(app)/(tabs)/home' : '/(auth)/login'} />
+  );
+}
