@@ -2,7 +2,7 @@ name: Expo Preview (EAS Update)
 
 on:
   push:
-    branches: [feature/rtk-query-refactor]   # arba "**" jei norite visų šakų
+    branches: [feature/rtk-query-refactor]
   workflow_dispatch:
 
 jobs:
