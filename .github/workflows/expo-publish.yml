@@ -12,17 +12,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # <-- Įdiegiam Expo CLI + EAS ir prisijungiam
       - uses: expo/expo-github-action@v8
         with:
           token:        ${{ secrets.EXPO_TOKEN }}
-          expo-version: latest          # 🟢 svarbu!
-          eas-version:  latest          # (nebūtina, bet naudinga)
+          expo-version: latest        
+          eas-version:  latest
 
       - name: Publish to Expo
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
-          # „expo login“ jau padarytas pačiame action’e,
-          # todėl galima eiti tiesiai prie publish
           expo publish --non-interactive
