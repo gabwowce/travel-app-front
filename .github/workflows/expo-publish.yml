@@ -1,4 +1,4 @@
-name: Expo Preview (EAS Update)
+name: Expo Publish (EAS Update)
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  preview:
+  publish:
     runs-on: ubuntu-latest
     env:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
@@ -14,15 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # ⬇️  Naujas (Node 20 tinka) Expo + EAS CLI
       - run: npm install --global expo eas-cli
 
-      # Prisijungiame prie paskyros
-      - run: expo login --token "$EXPO_TOKEN"
-
-      # 🔑  (jei dar nesat padarę) susiejame repo su EAS projekto ID
-      # - run: eas init --id <jūsų-projekto-id> --non-interactive
-
-      # Publikuojam „preview“ šaką (galite rinktis kitą vardą)
       - run: eas update --branch preview --auto --non-interactive \
               --message "CI update $(date +'%Y-%m-%d %H:%M')"
