@@ -16,5 +16,4 @@ jobs:
 
       - run: npm install --global expo eas-cli
 
-      - run: eas update --branch preview --auto --non-interactive \
-              --message "CI update $(date +'%Y-%m-%d %H:%M')"
+      - run: eas update --branch preview --auto --non-interactive
