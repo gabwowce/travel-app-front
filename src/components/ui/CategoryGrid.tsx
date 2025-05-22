@@ -19,10 +19,10 @@ export default function CategoryGrid({
               py={2}
               m={1}
               borderRadius="full"
-              bg={isPressed ? "primary.200" : "primary.100"}
+              bg={isPressed ? "primary.200" : "#FFFCF9"}
               maxW={wp("40%")}
               transform={[{ scale: isPressed ? 0.98 : 1 }]}
-              shadow={isPressed ? 4 : 2}
+              shadow={isPressed ? 1 : 0}
             >
               <Text
                 fontSize="sm"

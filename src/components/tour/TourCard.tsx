@@ -100,10 +100,9 @@ export function TourCard({
 const SHADOW = {
   shadowColor: "#000",
   shadowOpacity: 0.08,
-  shadowOffset: { width: 0, height: 4 },
-  shadowRadius: 12,
-  // Android
-  elevation: 4,
+  shadowOffset: { width: 1, height: 2 },
+  shadowRadius: 2,
+  elevation: 4, // Android
 };
 
 const styles = StyleSheet.create({
@@ -112,7 +111,7 @@ const styles = StyleSheet.create({
     width: "auto",
     borderRadius: 24,
     backgroundColor: "#FFFCF9",
-    overflow: "hidden",
+
     alignSelf: "flex-start",
     ...SHADOW,
   },
