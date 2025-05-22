@@ -4,72 +4,76 @@ import { Ionicons } from "@expo/vector-icons";
 import ImageViewer from "../ImageViewer";
 import { useRouter } from "expo-router"; // Navigacijai
 
-
 import { Box, Text, Image, Button } from "native-base";
 import { useAppDispatch } from "@/src/data/hooks";
 import { useWindowDimensions } from "react-native";
 import { useBreakpointValue } from "native-base";
 
-import FavoriteButton from '@/src/components/ui/btns/FavoriteButton';
+import FavoriteButton from "@/src/components/ui/btns/FavoriteButton";
 import RatingText from "../ui/RatingText";
 
 interface TourCardProps {
-  id: string; 
+  id: string;
   image: any;
   title: string;
   rating: number;
   location: string;
 }
 
-export function TourCard({ id, image, title, rating, location }: TourCardProps) {
+export function TourCard({
+  id,
+  image,
+  title,
+  rating,
+  location,
+}: TourCardProps) {
   const router = useRouter();
   const { width: screenW } = useWindowDimensions();
   const cardW = useBreakpointValue({
-    base: 0.9 * screenW,  // xs-sm: beveik visas ekranas
-    sm:   0.6 * screenW,  // ~2 kortelės
-    md:   0.4 * screenW,  // ~3 kortelės
-    lg:   0.3 * screenW,  // ~4 kortelės
-    xl:   0.25 * screenW, // ~5 kortelių
+    base: 0.9 * screenW, // xs-sm: beveik visas ekranas
+    sm: 0.6 * screenW, // ~2 kortelės
+    md: 0.4 * screenW, // ~3 kortelės
+    lg: 0.3 * screenW, // ~4 kortelės
+    xl: 0.25 * screenW, // ~5 kortelių
   });
 
   // skirtingas nuotraukos santykis (jei reikia)
   const imgRatio = useBreakpointValue({
     base: 4 / 3,
-    sm:   4 / 3,
-    md:   16 / 11,
-    lg:   16 / 9,
+    sm: 4 / 3,
+    md: 16 / 11,
+    lg: 16 / 9,
   });
 
   return (
-      <TouchableOpacity
-        onPress={() =>
-          router.push({
-            pathname: "/routes/[id]",
-            params: {
-              id,
-              title,
-              image: image.uri,
-              rating: rating.toString(),
-              location,
-            },
-          })
-        }
-      >
-
+    <TouchableOpacity
+      onPress={() =>
+        router.push({
+          pathname: "/routes/[id]",
+          params: {
+            id,
+            title,
+            image: image.uri,
+            rating: rating.toString(),
+            location,
+          },
+        })
+      }
+    >
       <View style={[styles.card, { width: cardW }]}>
-
         {/* Nuotrauka su bookmark ikona */}
         <View style={styles.imageContainer}>
           <View
             style={[
               styles.imageWrapper,
-              {width: "100%",},{ aspectRatio: imgRatio }
+              { width: "100%" },
+              { aspectRatio: imgRatio },
             ]}
           >
             <ImageViewer imgSource={image} />
           </View>
           {/* <Ionicons name="bookmark-outline" size={20} color="white" style={styles.bookmarkIcon} /> */}
-          <FavoriteButton routeId={Number(id)} style={styles.bookmarkIcon}/>
+          <FavoriteButton routeId={Number(id)} style={styles.bookmarkIcon} />
         </View>
         {/* <Button size="sm" mt="2" colorScheme={isFavorite ? "red" : "blue"} onPress={handleFavoriteToggle}>
           {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
@@ -93,22 +97,28 @@ export function TourCard({ id, image, title, rating, location }: TourCardProps) 
     </TouchableOpacity>
   );
 }
+const SHADOW = {
+  shadowColor: "#000",
+  shadowOpacity: 0.08,
+  shadowOffset: { width: 0, height: 4 },
+  shadowRadius: 12,
+  // Android
+  elevation: 4,
+};
 
 const styles = StyleSheet.create({
   card: {
+    margin: 5,
     width: "auto",
     borderRadius: 24,
     backgroundColor: "#FFFCF9",
     overflow: "hidden",
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 10,
-    alignSelf: "flex-start"
+    alignSelf: "flex-start",
+    ...SHADOW,
   },
   imageContainer: {
     position: "relative",
-    padding: 14
+    padding: 14,
   },
   bookmarkIcon: {
     position: "absolute",

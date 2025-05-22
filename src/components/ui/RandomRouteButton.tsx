@@ -9,7 +9,7 @@ export default function RandomRouteButton() {
   const router = useRouter();
 
   // Gaunam visus turus (arba daug jų – pagal poreikį)
-  const { data, isLoading } = useGetRoutesQuery({ limit: 100});
+  const { data, isLoading } = useGetRoutesQuery({ limit: 100 });
   const routes = data?.data ?? [];
 
   const handleRandomRoute = () => {
@@ -39,7 +39,8 @@ export default function RandomRouteButton() {
       </HStack>
 
       <Text textAlign="center" fontSize="sm" px={4} color="gray.600">
-        Get a randomly selected tour – a perfect choice when you're not sure where to go.
+        Get a randomly selected tour – a perfect choice when you're not sure
+        where to go.
       </Text>
 
       <Button
@@ -48,6 +49,13 @@ export default function RandomRouteButton() {
         borderRadius="full"
         onPress={handleRandomRoute}
         isDisabled={!routes.length}
+        style={{
+          shadowColor: "#000",
+          shadowOpacity: 0.08,
+          shadowOffset: { width: 0, height: 4 },
+          shadowRadius: 12,
+          elevation: 4,
+        }}
       >
         Surprise me
       </Button>
