@@ -19,9 +19,10 @@ type ColumnItemProps = ViewProps & {
   children: React.ReactNode;
   index: number;
   numColumns: number;
+  accessible?: boolean;
 };
-export const ColumnItem = ({ children, index, numColumns, ...rest }: ColumnItemProps) => (
-    <View style={StyleSheet.flatten([getItemStyle(index, numColumns),rest.style])} {...rest}>
+export const ColumnItem = ({ children, index, numColumns,accessible= false, ...rest }: ColumnItemProps) => (
+    <View accessible={false} importantForAccessibility="no" style={StyleSheet.flatten([getItemStyle(index, numColumns),rest.style])} {...rest}>
       {children}
     </View>
 );

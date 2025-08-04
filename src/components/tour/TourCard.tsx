@@ -18,6 +18,7 @@ interface TourCardProps {
   title: string;
   rating: number;
   location: string;
+  accessibilityLabel?: string;
 }
 
 export function TourCard({
@@ -26,6 +27,7 @@ export function TourCard({
   title,
   rating,
   location,
+  accessibilityLabel
 }: TourCardProps) {
   const router = useRouter();
   const { width: screenW } = useWindowDimensions();
@@ -47,6 +49,11 @@ export function TourCard({
 
   return (
     <TouchableOpacity
+     accessibilityRole="button"
+  accessibilityLabel={
+    accessibilityLabel ??
+    `Open tour: ${title}, located in ${location}, rating ${rating} stars`
+  }
       onPress={() =>
         router.push({
           pathname: "/routes/[id]",
@@ -84,12 +91,14 @@ export function TourCard({
           <View style={styles.infoRow2}>
             <Text variant="bodyBold">{title}</Text>
             <View style={styles.infoRow}>
-              <Ionicons name="star" size={16} color="#FACC15" />
-              <RatingText value={rating} variant="bodyGray" />
+              <Ionicons name="star" size={16} color="#FACC15" importantForAccessibility="no"
+  accessibilityElementsHidden/>
+              <RatingText value={rating} variant="bodyGray"  accessibilityLabel={`Rating: ${rating} stars`}/>
             </View>
           </View>
           <View style={styles.infoRow}>
-            <Ionicons name="location-outline" size={16} color="gray" />
+            <Ionicons name="location-outline" size={16} color="gray" importantForAccessibility="no"
+  accessibilityElementsHidden />
             <Text variant="bodyGray">{location}</Text>
           </View>
         </View>

@@ -19,7 +19,7 @@ export default function ProfileMenu({ menuItems }: { menuItems: Section[] }) {
     <VStack pb={5}>
       {menuItems.map((section, index) => (
         <VStack key={index} space={hp("2%")}>
-          <Text style={styles.itemsTitle} fontSize="md" fontWeight="bold">
+          <Text style={styles.itemsTitle} fontSize="md" fontWeight="bold" accessibilityRole="header">
             {section.title}
           </Text>
           {section.options.map((item, idx) => (

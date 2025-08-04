@@ -1,30 +1,36 @@
 import React, { useEffect } from 'react';
-import { Box, Center, Image, Text, VStack } from "native-base";
+import { AccessibilityInfo, Box, Center, Image, Text, VStack } from "native-base";
 
 interface SplashProps {
   onFinish?: () => void;
 }
 
-export default function Splash({ onFinish }: SplashProps) {
+export default function SplashScreen({ onFinish }: SplashProps) {
   useEffect(() => {
-    const timer = setTimeout(() => {
-      onFinish?.(); // kviečiam tik jei yra
-    }, 1000);
+    let timer: NodeJS.Timeout;
+
+    // ⏱️ Duodame kiek ilgesnį laiką, jei veikia VoiceOver/TalkBack
+    AccessibilityInfo.isScreenReaderEnabled().then((enabled) => {
+      timer = setTimeout(() => onFinish?.(), enabled ? 2000 : 1000);
+    });
+
     return () => clearTimeout(timer);
-  }, []);
+  }, [onFinish]);
 
   return (
     <Box flex={1} bg="#FFFFFF">
       <Center flex={1}>
         <VStack space={4} alignItems="center">
-          <Image
+          <Image 
+            importantForAccessibility="no"
+            accessibilityElementsHidden
             source={require('@/src/assets/logo/logo-v1.png')}
             alt="Logo"
             width={150}
             height={150}
             resizeMode="contain"
           />
-          <Text fontSize="3xl" fontWeight="bold" color="black">
+          <Text fontSize="3xl" fontWeight="bold" color="black" accessibilityRole="header">
             Elatray
           </Text>
         </VStack>

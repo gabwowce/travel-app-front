@@ -16,6 +16,7 @@ import Header from "../Header";
 import TourBottomSheet from "../tour/TourBottomSheet";
 import { getMarkerIcon } from "../tour/getMarkerIconByCategory";
 import { Platform } from "react-native";
+import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
 
 interface MapProps {
   title: string;
@@ -36,6 +37,7 @@ export interface TourPoint {
 }
 
 export default function Map({ title, points }: MapProps) {
+  useAnnounceForAccessibility(`Map screen opened. Showing route: ${title}`);
   const bottomSheetRef = useRef<any>(null);
   const navigation = useNavigation();
   const mapRef = useRef<MapView>(null);
@@ -47,6 +49,7 @@ export default function Map({ title, points }: MapProps) {
 
   const handleSelectPoint = (point: TourPoint) => {
     setSelectedPoint(point);
+    useAnnounceForAccessibility(`Selected: ${point.title}. ${point.description}`)
     mapRef.current?.animateToRegion(
       {
         latitude: point.coords.latitude - 0.001,
@@ -107,6 +110,8 @@ export default function Map({ title, points }: MapProps) {
         style={styles.map}
         showsUserLocation
         showsCompass
+        accessible={false}
+  importantForAccessibility="no"
       >
         {points.map((point) => {
           const { name, color } = getMarkerIcon(point.category);
@@ -118,6 +123,7 @@ export default function Map({ title, points }: MapProps) {
               coordinate={point.coords}
               anchor={{ x: 0.5, y: 1 }} // <- rodo į markerio apačią (taip kaip Waze)
               onPress={() => handleSelectPoint(point)}
+               accessibilityLabel={`Point of interest: ${point.title}, category: ${point.category ?? 'location'}`}
             >
               <View
                 style={[

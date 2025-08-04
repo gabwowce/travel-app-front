@@ -12,7 +12,8 @@ export default function CategoryGrid({
   return (
     <Wrap direction="row" justify="flex-start">
       {categories.map((cat) => (
-        <Pressable key={cat.id} onPress={() => onPress(cat)}>
+        <Pressable accessibilityRole="button"
+  accessibilityLabel={`Category: ${cat.name}`} focusable key={cat.id} onPress={() => onPress(cat)}>
           {({ isPressed }) => (
             <Box
               px={4}
@@ -29,6 +30,7 @@ export default function CategoryGrid({
                 fontWeight="bold"
                 color="primary.800"
                 textAlign="center"
+                numberOfLines={1}
               >
                 {cat.name}
               </Text>

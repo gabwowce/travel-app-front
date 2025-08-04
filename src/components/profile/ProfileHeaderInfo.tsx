@@ -6,14 +6,15 @@ export default function ProfileHeaderInfo({ user }: { user: any }) {
 
   return (
     <VStack alignItems="center">
-      <Avatar size="xl" source={{ uri: "https://via.placeholder.com/150" }}>
+      <Avatar size="xl" source={{ uri: "https://via.placeholder.com/150" }}
+      accessibilityLabel={`Profile avatar of ${user?.name ?? "unknown user"}`}>
         {initial}
       </Avatar>
 
-      <Heading mt={hp("4%")} fontSize="lg">
+      <Heading mt={hp("4%")} fontSize="lg" accessibilityRole="header">
         {user?.name}
       </Heading>
-      <Text color="gray.500">{user?.email}</Text>
+      <Text color="gray.500" accessibilityLabel={`Email address: ${user?.email}`}>{user?.email}</Text>
     </VStack>
   );
 }

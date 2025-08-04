@@ -29,6 +29,8 @@ export default function ResponsiveTourListStatic({
 
   return (
     <FlashList
+    accessible
+  accessibilityLabel="List of favorite tours"
       data={data}
       numColumns={numColumns}
       estimatedItemSize={220}
@@ -43,7 +45,8 @@ export default function ResponsiveTourListStatic({
           onClear={() => setSearchTerm("")}
         />
       }
-      ListFooterComponent={isFetching ? <Spinner my={4} /> : null}
+      ListFooterComponent={isFetching ? <Spinner my={4} accessibilityRole="progressbar"
+  accessibilityLabel="Loading favorite tours" /> : null}
       ListEmptyComponent={ListEmptyComponent}
       contentContainerStyle={{ paddingBottom: 32 }}
       renderItem={({ item, index }) => (

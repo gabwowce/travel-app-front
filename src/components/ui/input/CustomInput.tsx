@@ -13,6 +13,7 @@ type Props = TextInputProps & {
   label?: string;
   error?: string;
   onForgotPassword?: () => void;
+  accessibilityLabel?: string;
 };
 
 export default function CustomInput({
@@ -20,6 +21,7 @@ export default function CustomInput({
   error,
   secureTextEntry,
   onForgotPassword,
+  accessibilityLabel,
   multiline = false,
   numberOfLines = 1,
   ...props
@@ -35,6 +37,14 @@ export default function CustomInput({
 
       <View style={styles.inputWrapper}>
         <TextInput
+        accessible
+  accessibilityLabel={accessibilityLabel ?? label ?? props.placeholder}
+  accessibilityHint={props.placeholder}
+  accessibilityRole="textbox"
+  accessibilityState={{
+    disabled: props.editable === false,
+    invalid: !!error,
+  }}
           style={[
             styles.input,
             multiline && styles.textArea,

@@ -11,10 +11,11 @@ export default function NotFoundScreen() {
       <Center flex={1} bg="#F9FAFB" px={5}>
         <VStack space={6} alignItems="center">
           {/* Emoji arba iliustracija */}
-          <Text fontSize="6xl">🧭</Text>
+          <Text fontSize="6xl" importantForAccessibility="no"
+            accessibilityElementsHidden>🧭</Text>
 
           {/* Antraštė */}
-          <Text fontSize="3xl" fontWeight="bold" color="coolGray.800">
+          <Text fontSize="3xl" fontWeight="bold" color="coolGray.800" accessibilityRole="header">
             404 – Page not found
           </Text>
 
@@ -31,6 +32,9 @@ export default function NotFoundScreen() {
 
           {/* Mygtukas */}
           <Button
+          accessibilityRole="button"
+            accessibilityLabel="Go to home screen"
+            accessibilityHint="Navigates back to the main page"
             bg="primary.500"
             _pressed={{ bg: "primary.600" }}
             _text={{ color: "white" }}

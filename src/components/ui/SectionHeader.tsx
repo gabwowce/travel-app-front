@@ -27,6 +27,8 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
 }) => {
   return (
     <Text
+     accessibilityRole="header"
+  accessibilityLabel={title}
       variant="header2Bold"
       pl={5}
       pt={topPadding ? 4 : undefined}

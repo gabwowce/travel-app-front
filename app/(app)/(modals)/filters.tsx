@@ -6,7 +6,7 @@ import Header from "@/src/components/Header";
 import FilterForm from "@/src/components/ui/forms/FilterForm";
 import CircleButton from "@/src/components/ui/btns/CircleButton";
 import { mergeFiltersForKey } from "@/src/data/features/filters/filtersSlice";
-
+import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
 import { useFiltersModalData } from "@/src/hooks/useFiltersModalData";
 
 export default function FiltersModal() {
@@ -21,23 +21,24 @@ export default function FiltersModal() {
     dispatch,
   } = useFiltersModalData();
     const navigation = useNavigation();
-
+useAnnounceForAccessibility("Filters modal opened. Use the form to refine your search.");
   const handleSubmit = (values: typeof initial) => {
     dispatch(mergeFiltersForKey({ key: from, filters: values }));
     router.back();
   };
 
-    useLayoutEffect(()=>{
-    navigation.setOptions({
-      headerRight:()=>{
-        <CircleButton
-            variant="apply"
-            label="Apply"
-            onPress={() => formRef.current?.handleSubmit()}
-          />
-      }
-    })
-  })
+useLayoutEffect(() => {
+  navigation.setOptions({
+    headerRight: () => (
+      <CircleButton
+        variant="apply"
+        label="Apply"
+        accessibilityLabel="Apply filters"
+        onPress={() => formRef.current?.handleSubmit()}
+      />
+    ),
+  });
+}, [navigation, formRef]);
 
   return (
     <Box flex={1} bg="white">

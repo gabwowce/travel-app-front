@@ -12,7 +12,7 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 import theme from "@/src/config/theme";
 import { store } from "@/src/data/store";
-import Splash from "@/src/components/screens/splash";
+import SplashScreen from "@/src/components/screens/splash";
 import ErrorScreen from "@/src/components/screens/error";
 import { useAppInitializer } from "@/src/hooks/useAppInitializer";
 import AppNavigator from "@/src/navigation/AppNavigator";
@@ -33,7 +33,7 @@ export default function RootLayout() {
     if (ready) await SplashScreenExpo.hideAsync();
   }, [ready]);
 
-  if (!ready) return <Splash />;
+  if (!ready) return <SplashScreen />;
   if (error) return <ErrorScreen message={error} />;
 
   return (

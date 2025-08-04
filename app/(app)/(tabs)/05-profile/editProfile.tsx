@@ -18,7 +18,7 @@ import CustomInput from "@/src/components/ui/input/CustomInput";
 import Button from "@/src/components/ui/btns/Button";
 import CircleButton from "@/src/components/ui/btns/CircleButton";
 import { editProfileSchema } from "@/src/validation/editProfileSchema";
-
+import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
 import {
   useGetUserProfileQuery,
   useUpdateUserProfileMutation,
@@ -39,6 +39,7 @@ function SaveActionHeader({
   handleSubmit: () => void;
   saving: boolean;
 }) {
+  useAnnounceForAccessibility("Edit profile screen opened");
   const navigation = useNavigation();
 
   React.useLayoutEffect(() => {
@@ -74,7 +75,8 @@ export default function EditProfileScreen() {
   if (isLoading) return <Spinner />;
   if (isError || !user)
     return (
-      <Text textAlign="center" mt={8}>
+      <Text textAlign="center" mt={8} accessibilityRole="alert"
+  accessibilityLiveRegion="assertive">
         Error loading profile.
       </Text>
     );
@@ -137,23 +139,25 @@ export default function EditProfileScreen() {
                   <Avatar
                     size="xl"
                     source={{ uri: "https://via.placeholder.com/150" }}
+                    accessibilityLabel={`Profile avatar of ${values.name}`}
                   >
                     {values.name?.charAt(0).toUpperCase()}
                   </Avatar>
-                  <Heading size="md" pt={4}>
+                  <Heading accessibilityRole="header" size="md" pt={4}>
                     {values.name}
                   </Heading>
                 </VStack>
 
                 <Divider my={4} />
 
-                <Text mb={4} fontSize="sm" textAlign="center" color="gray.500">
+                <Text mb={4} fontSize="sm" textAlign="center" color="gray.500" accessibilityLiveRegion="polite">
                   Update your profile info below.
                 </Text>
 
                 {/* Form fields */}
                 <CustomInput
                   label="Full Name"
+                  accessibilityLabel="Full Name input field"
                   value={values.name || ""}
                   onChangeText={handleChange("name")}
                   error={touched.name && errors.name ? errors.name : undefined}
@@ -161,6 +165,7 @@ export default function EditProfileScreen() {
 
                 <CustomInput
                   label="Location"
+                  accessibilityLabel="Location input field"
                   placeholder="Enter location"
                   value={values.profile?.location || ""}
                   onChangeText={handleChange("profile.location")}
@@ -168,6 +173,7 @@ export default function EditProfileScreen() {
 
                 <CustomInput
                   label="Bio"
+                  accessibilityLabel="Bio input field"
                   multiline
                   numberOfLines={6}
                   value={values.profile?.bio || ""}
@@ -176,6 +182,7 @@ export default function EditProfileScreen() {
 
                 <CustomInput
                   label="Website"
+                  accessibilityLabel="Website input field"
                   placeholder="Enter website"
                   value={values.profile?.website || ""}
                   onChangeText={handleChange("profile.website")}

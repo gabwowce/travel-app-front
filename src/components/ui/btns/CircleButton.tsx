@@ -62,6 +62,18 @@ export default function CircleButton({
     <Box>
       <Pressable
         onPress={onPress}
+        accessibilityRole="button"
+  accessibilityLabel={final.label || final.iconName || "Button"}
+  accessibilityHint={
+    variant === "filter"
+      ? "Opens filter options"
+      : variant === "apply"
+      ? "Applies selected filters"
+      : variant === "close"
+      ? "Closes the modal"
+      : undefined
+  }
+  accessible={true}
         style={({ pressed }) => [
           {
             width: final.width ?? 44,

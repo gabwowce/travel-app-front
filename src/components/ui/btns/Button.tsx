@@ -67,6 +67,9 @@ export default function CustomButton({
   return (
     <View style={[styles.buttonContainer, spacingStyle]}>
       <Pressable
+     accessibilityRole="button"
+  accessibilityState={{ disabled: isDisabled }}
+  accessibilityLabel={typeof children === "string" ? children : label}
         style={[
           styles.button,
           theme === "primary" && styles.primaryButton,

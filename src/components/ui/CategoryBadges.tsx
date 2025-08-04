@@ -18,6 +18,9 @@ export default function CategoryBadges({ categories }: Props) {
     <HStack flexWrap="wrap">
       {categories.map((c) => (
         <Badge
+        accessible
+  accessibilityRole="text"
+  accessibilityLabel={`Category: ${c.name}`}
           key={c.id}
           bg={c.color ?? "primary.500"}
           _text={{ color: "white", fontSize: "xs" }}

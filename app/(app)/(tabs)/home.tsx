@@ -10,8 +10,10 @@ import { useRouter } from "expo-router";
 import { useHomeData } from "@/src/hooks/useHomeData";
 import type { Category } from "@/src/api/generated/models/Category";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
+import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
 
 export default function Home() {
+  useAnnounceForAccessibility("Home screen opened. Explore featured tours and categories.");
   const router = useRouter();
   const dispatch = useAppDispatch();
 
@@ -49,8 +51,8 @@ export default function Home() {
         <Box flex={1} pt={20}>
           {/* Header */}
           <VStack pl={5} pb={wp("1%")}>
-            <Text variant="header1">Explore the</Text>
-            <Text variant="header1Bold" mt={-4}>
+            <Text variant="header1" accessibilityRole="header">Explore the</Text>
+            <Text variant="header1Bold" accessibilityRole="header" mt={-4}>
               Beautiful world!
             </Text>
           </VStack>

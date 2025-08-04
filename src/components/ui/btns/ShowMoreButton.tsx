@@ -14,6 +14,8 @@ export default function ShowMoreButton({ onPress, isLoading }: Props) {
       onPress={onPress}
       isLoading={isLoading}
       borderRadius="full"
+      accessibilityRole="button"
+  accessibilityLabel="Load more items"
       px={6}
       py={3}
       bg="#001F3F"

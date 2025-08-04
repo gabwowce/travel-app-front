@@ -49,6 +49,8 @@ export const MiniTourCard: React.FC<MiniTourCardProps> = ({
         style={styles.card}
         onPress={handlePress}
         activeOpacity={0.9}
+        accessibilityRole="button"
+  accessibilityLabel={`Open tour: ${tour.name}, located in ${tour.city?.name}, ${tour.city?.country?.name}, rating ${tour.ratings_avg_rating ?? "unrated"} stars`}
       >
         {/* -------- Nuotrauka -------- */}
         <View style={styles.imageContainer}>
@@ -64,14 +66,16 @@ export const MiniTourCard: React.FC<MiniTourCardProps> = ({
           </Text>
 
           <View style={styles.infoRow}>
-            <Ionicons name="location-outline" size={14} color="gray" />
+            <Ionicons name="location-outline" size={14} color="gray" importantForAccessibility="no"
+  accessibilityElementsHidden/>
             <Text variant="bodyGraysm" ml={1} numberOfLines={1}>
               {tour.city?.name}, {tour.city?.country?.name}
             </Text>
           </View>
           <View style={styles.infoRow}>
-            <Ionicons name="star" size={13} color="#FACC15" />
-            <RatingText value={tour.ratings_avg_rating} variant="bodyGraysm" />
+            <Ionicons name="star" size={13} color="#FACC15" importantForAccessibility="no"
+  accessibilityElementsHidden/>
+            <RatingText value={tour.ratings_avg_rating} variant="bodyGraysm"  accessibilityLabel={`Rating: ${tour.ratings_avg_rating ?? "unrated"} stars`}/>
           </View>
         </View>
       </TouchableOpacity>

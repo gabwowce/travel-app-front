@@ -4,6 +4,7 @@ import { Stack, useRouter } from "expo-router";
 import { Box, VStack, Heading, Text, Divider } from "native-base";
 import FlexContainer from "@/src/components/layout/FlexContainer";
 import Header from "@/src/components/Header";
+import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
 
 /**
  * Privacy Policy Screen – GDPR‑compliant, mobile‑first, and responsive.
@@ -12,11 +13,12 @@ import Header from "@/src/components/Header";
 const PRIVACY_UPDATED_AT = "2025‑05‑14";
 
 export default function PrivacyPolicy() {
+  useAnnounceForAccessibility("Privacy Policy screen opened");
   const router = useRouter();
   return (
     <FlexContainer gap={16}>
       {/* <Header title="Privacy Policy" onBackPress={() => router.back()} /> */}
-      <ScrollView>
+      <ScrollView accessible={false} importantForAccessibility="no">
         <Stack.Screen
           options={{
             title: "Privacy Policy",
@@ -41,7 +43,7 @@ export default function PrivacyPolicy() {
 
             <Divider />
 
-            <Heading size="md">1. Data We Collect</Heading>
+            <Heading accessibilityRole="header" size="md">1. Data We Collect</Heading>
             <Text>
               <Text bold>Account data —</Text> name, e‑mail address and hashed
               password you provide during registration.{"\n"}
@@ -55,7 +57,7 @@ export default function PrivacyPolicy() {
               technologies used to analyse traffic and improve the Service.
             </Text>
 
-            <Heading size="md">2. How We Use Your Data</Heading>
+            <Heading accessibilityRole="header" size="md">2. How We Use Your Data</Heading>
             <Text>
               • Create, authenticate and manage your account.{"\n"}• Personalise
               recommended routes and points of interest.{"\n"}• Notify you when
@@ -66,7 +68,7 @@ export default function PrivacyPolicy() {
               content.
             </Text>
 
-            <Heading size="md">3. Legal Bases</Heading>
+            <Heading accessibilityRole="header" size="md">3. Legal Bases</Heading>
             <Text>
               We process personal data under the GDPR on the following bases:
               {"\n"}• <Text italic>Consent</Text> (Art. 6‑1‑a) — e.g. sharing
@@ -76,7 +78,7 @@ export default function PrivacyPolicy() {
               our users and improving the Service.
             </Text>
 
-            <Heading size="md">4. Sharing & Transfers</Heading>
+            <Heading accessibilityRole="header" size="md">4. Sharing & Transfers</Heading>
             <Text>
               We do <Text bold>not</Text> sell or rent your data. We share it
               only with:{"\n"}• Cloud hosting and analytics providers bound by
@@ -88,14 +90,14 @@ export default function PrivacyPolicy() {
               Standard Contractual Clauses.
             </Text>
 
-            <Heading size="md">5. Data Retention</Heading>
+            <Heading accessibilityRole="header" size="md">5. Data Retention</Heading>
             <Text>
               Personal data is retained only as long as necessary for the
               purposes above, or until you delete your account. Location history
               older than 12 months is automatically anonymised.
             </Text>
 
-            <Heading size="md">6. Your Rights</Heading>
+            <Heading accessibilityRole="header" size="md">6. Your Rights</Heading>
             <Text>
               Under the GDPR you can request access, rectification, erasure,
               restriction, data portability, or object to processing. You can
@@ -105,25 +107,25 @@ export default function PrivacyPolicy() {
               Inspectorate.
             </Text>
 
-            <Heading size="md">7. Children</Heading>
+            <Heading accessibilityRole="header" size="md">7. Children</Heading>
             <Text>
               The Service is not directed to children under 13. We do not
               knowingly collect data from children. If you believe a child has
               provided personal data, please contact us so we can delete it.
             </Text>
 
-            <Heading size="md">8. Security</Heading>
+            <Heading accessibilityRole="header" size="md">8. Security</Heading>
             <Text>
               We implement organisational and technical measures such as HTTPS
               encryption, pseudonymisation of location streams, and role‑based
               access controls to protect your data.
             </Text>
 
-            <Heading size="md">9. Contact Us</Heading>
+            <Heading accessibilityRole="header" size="md">9. Contact Us</Heading>
             <Text>
               UAB “Travel Solutions”{"\n"}
               J. Basana vičiaus g. 15‑1, LT‑03108 Vilnius, Lithuania{"\n"}
-              E‑mail: <Text underline>privacy@travel‑app.test</Text>
+              E‑mail: <Text accessibilityRole="link" accessibilityLabel="Email: privacy at travel dash app dot test" underline>privacy@travel‑app.test</Text>
             </Text>
 
             <Divider />

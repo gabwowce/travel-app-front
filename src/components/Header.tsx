@@ -48,7 +48,7 @@ export default function Header({ title, onBackPress, onPressClose, transparent =
         {onBackPress ? <CircleButton variant="back" onPress={onBackPress} /> : <View style={styles.backButtonPlaceholder} />}
       </View>
 
-      {title && <Text variant="header2Bold" style={styles.title}>{title}</Text>}
+      {title && <Text variant="header2Bold" accessibilityRole="header" style={styles.title}>{title}</Text>}
 
       <View style={styles.sideIconContainer}>
         {onPressClose ? (

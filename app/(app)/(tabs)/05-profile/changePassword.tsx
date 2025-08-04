@@ -17,6 +17,7 @@ import CustomInput from "@/src/components/ui/input/CustomInput";
 import Button from "@/src/components/ui/btns/Button";
 import Spinner from "@/src/components/ui/Spinner";
 import { passwordSchema } from "@/src/validation/passwordSchema";
+import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
 
 import {
   useGetUserProfileQuery,
@@ -37,6 +38,7 @@ function SaveActionHeader({
   handleSubmit: () => void;
   saving: boolean;
 }) {
+  useAnnounceForAccessibility("Change password screen opened");
   const navigation = useNavigation();
 
   React.useLayoutEffect(() => {
@@ -135,21 +137,23 @@ export default function ChangePasswordScreen() {
                   <Avatar
                     size="xl"
                     source={{ uri: "https://via.placeholder.com/150" }}
+                    accessibilityLabel={`Profile avatar of ${user.name}`}
                   >
                     {user.name?.charAt(0).toUpperCase()}
                   </Avatar>
-                  <Heading fontSize="lg">{user.name}</Heading>
+                  <Heading fontSize="lg" accessibilityRole="header">{user.name}</Heading>
                 </VStack>
 
                 <Divider my={4} />
 
-                <Text mb={4} fontSize="sm" textAlign="center" color="gray.500">
+                <Text mb={4} fontSize="sm" textAlign="center" color="gray.500" accessibilityLiveRegion="polite">
                   Enter a new password below.
                 </Text>
 
                 {/* New password */}
                 <CustomInput
                   label="New Password"
+                  accessibilityLabel="New password input field"
                   secureTextEntry
                   placeholder="Enter new password"
                   value={values.password}
@@ -165,6 +169,7 @@ export default function ChangePasswordScreen() {
                 {/* Confirmation */}
                 <CustomInput
                   label="Confirm New Password"
+                  accessibilityLabel="Confirm password input field"
                   secureTextEntry
                   placeholder="Confirm new password"
                   value={values.password_confirmation}
@@ -180,12 +185,14 @@ export default function ChangePasswordScreen() {
 
                 {/* Status messages */}
                 {status?.error && (
-                  <Text color="red.500" textAlign="center">
+                  <Text color="red.500" textAlign="center" accessibilityLiveRegion="assertive"
+    accessibilityRole="alert">
                     {status.error}
                   </Text>
                 )}
                 {status?.success && (
-                  <Text color="green.500" textAlign="center">
+                  <Text color="green.500" textAlign="center" accessibilityLiveRegion="polite"
+    accessibilityRole="status">
                     Password updated successfully!
                   </Text>
                 )}

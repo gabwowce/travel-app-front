@@ -5,23 +5,35 @@ import {
   Keyboard,
   Platform,
   ViewStyle,
+  StyleSheet,
 } from "react-native";
 
 type Props = {
   children: ReactNode;
   style?: ViewStyle;
+  keyboardVerticalOffset?: number;
 };
 
-export default function KeyboardWrapper({ children, style }: Props) {
+export default function KeyboardWrapper({
+  children,
+  style,
+  keyboardVerticalOffset = 64, // default’ą galima keisti pagal nav/header aukštį
+}: Props) {
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <KeyboardAvoidingView
-        style={[{ flex: 1 }, style]}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 0}
+        style={[styles.container, style]}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={keyboardVerticalOffset}
       >
         {children}
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

@@ -8,6 +8,7 @@ import Header from "../Header";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import SelectedTourPointDetails from "./SelectedTourPointDetails";
+import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
 
 
 interface Props {
@@ -20,6 +21,7 @@ interface Props {
 }
 
 const TourBottomSheet = forwardRef<BottomSheet, Props>(({ points, userLocation, selectedPoint, onSelectPoint, onBack, onFullScreenChange }, ref) => {
+  const announce = useAnnounceForAccessibility();
   const localRef = useRef<BottomSheet>(null);
   const insets = useSafeAreaInsets();
   const fullHeight = Dimensions.get('screen').height + insets.top;
@@ -27,6 +29,12 @@ const TourBottomSheet = forwardRef<BottomSheet, Props>(({ points, userLocation, 
   
   const [index, setIndex] = useState(1);
   const isFullScreen = index === 2;
+
+  useEffect(() => {
+  if (selectedPoint) {
+    announce(`Selected: ${selectedPoint.title}`);
+  }
+}, [selectedPoint]);
 
   useImperativeHandle(ref, () => localRef.current as BottomSheet);
 
@@ -78,6 +86,7 @@ const TourBottomSheet = forwardRef<BottomSheet, Props>(({ points, userLocation, 
 
   return (
     <BottomSheet
+    accessibilityViewIsModal={true}
       ref={localRef}
       index={1}
       snapPoints={snapPoints}

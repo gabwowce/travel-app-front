@@ -12,14 +12,17 @@ import { loginSchema } from "@/src/validation/loginSchema";
 import { useLoginUserMutation } from "@/src/store/travelApi";
 import { useAuthActions } from "@/src/hooks/useAuthActions";
 import { AppRoutes } from "@/src/config/routes";
+import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
 
 export default function LoginScreen() {
+  useAnnounceForAccessibility("Login screen opened");
   const router = useRouter();
   const { login } = useAuthActions();
   const [loginUser, { isLoading, error, reset }] = useLoginUserMutation();
 
   const apiErrors = (error as any)?.data?.errors ?? {};
   const general = (error as any)?.data?.message;
+  useAnnounceForAccessibility(general);
 
   const gotoRegister = () => {
     reset();
@@ -30,7 +33,7 @@ export default function LoginScreen() {
     <KeyboardWrapper>
       <ScreenContainer variant="center">
         <View style={styles.text}>
-          <Text variant="header1">Sign in now</Text>
+          <Text variant="header1" accessibilityRole="header">Sign in now</Text>
           <Text variant="bodyGray">Please sign in to continue</Text>
         </View>
 
@@ -72,7 +75,8 @@ export default function LoginScreen() {
                 onForgotPassword={() => router.push(AppRoutes.FORGOT_PASSWORD)}
               />
 
-              {general && <Text style={styles.generalError}>{general}</Text>}
+              {general && <Text style={styles.generalError} accessibilityLiveRegion="assertive"
+    accessibilityRole="alert">{general}</Text>}
 
               <Button
                 label={isLoading ? "Signing in..." : "Sign in"}
@@ -82,7 +86,8 @@ export default function LoginScreen() {
           )}
         </Formik>
 
-        <Text onPress={gotoRegister} style={styles.link}>
+        <Text onPress={gotoRegister} accessibilityRole="link"
+  accessibilityLabel="Don't have an account? Register here" style={styles.link}>
           Don't have an account? Register
         </Text>
       </ScreenContainer>

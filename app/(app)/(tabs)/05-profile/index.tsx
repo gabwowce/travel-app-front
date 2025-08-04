@@ -9,8 +9,10 @@ import ProfileHeaderInfo from "@/src/components/profile/ProfileHeaderInfo";
 import ProfileDetails from "@/src/components/profile/ProfileDetails";
 import { useProfileData } from "@/src/hooks/useProfileData";
 import { useRouter } from "expo-router";
+import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
 
 export default function ProfileScreen() {
+  useAnnounceForAccessibility("Profile screen opened");
   const { user, profile, isLoading, handleLogout, openNotificationSettings } =
     useProfileData();
 

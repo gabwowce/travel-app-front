@@ -25,7 +25,8 @@ export default function FeaturedRoutesRow({
     return <Text px={5}>No featured routes available.</Text>;
 
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} accessibilityRole="scrollbar"
+  accessibilityLabel="Featured tour routes">
       <HStack space={4} px={5}>
         {routes.map((route) => (
           <TourCard
@@ -35,6 +36,7 @@ export default function FeaturedRoutesRow({
             title={route.name ?? "Unnamed"}
             rating={(route as any).ratings_avg_rating ?? 0}
             location={`${route.city?.name ?? "Unknown"}, ${route.city?.country?.name ?? "Unknown"}`}
+            accessibilityLabel={`Tour: ${route.name}, rated ${(route as any).ratings_avg_rating ?? 0} stars`}
           />
         ))}
       </HStack>
