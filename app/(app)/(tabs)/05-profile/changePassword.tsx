@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { Avatar, Divider, Heading, Text, VStack } from "native-base";
-import { useRouter } from "expo-router";
+import { useRouter, useNavigation } from "expo-router";
 import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
 import { updateUser } from "@/src/data/features/user/userSlice";
 import { selectUser } from "@/src/data/features/user/userSelectors";
@@ -11,6 +11,7 @@ import CustomInput from "@/src/components/input/CustomInput";
 export default function ChangePasswordScreen() {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const navigation = useNavigation();
   const user = useAppSelector(selectUser);
 
   const [current, setCurrent] = useState("");
@@ -57,9 +58,21 @@ export default function ChangePasswordScreen() {
     }
   };
 
+    /* ---------- Header ---------- */
+    useLayoutEffect(() => {
+      navigation.setOptions({
+        headerRight: () =>
+          isModified ? (
+            <Text onPress={handleSave} color="blue.500" mr={2}>
+              Save
+            </Text>
+          ) : null,
+      });
+    }, [navigation, isModified, handleSave]);
+
   return (
     <ScreenContainer variant="top">
-      <Header
+      {/* <Header
         title="Change Password"
         onBackPress={() => router.back()}
         rightIcon={
@@ -69,7 +82,7 @@ export default function ChangePasswordScreen() {
             </Text>
           ) : null
         }
-      />
+      /> */}
 
       <VStack px={5} space={4}>
         {user && (

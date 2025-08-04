@@ -30,7 +30,7 @@ export default function SearchScreen() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <ScreenContainer variant="top">
-        <Header title="Search" />
+        {/* <Header title="Search" /> */}
         <SearchBar
           placeholder="Search Tours"
           value={searchTerm}

@@ -10,7 +10,6 @@ import { resetTour } from "@/src/data/features/tours/tourSlice";
 import { useRouter } from "expo-router";
 
 interface SelectableListScreenProps {
-  title: string;
   data: { id: number; name: string; [key: string]: any }[];
   selectedItem: string | null;
   setSelectedItem: (item: { id: number; name: string }) => void;
@@ -23,7 +22,6 @@ interface SelectableListScreenProps {
 }
 
 const SelectableListScreen: React.FC<SelectableListScreenProps> = ({
-  title,
   data,
   selectedItem,
   setSelectedItem,
@@ -58,11 +56,11 @@ const SelectableListScreen: React.FC<SelectableListScreenProps> = ({
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <ScreenContainer variant="top">
-        <Header
+        {/* <Header
           title={title}
           onBackPress={onBackPress}
          
-        />
+        /> */}
 
         <SearchBar
           placeholder={`Search ${title.toLowerCase()}...`}

@@ -98,13 +98,13 @@ export default function ProfileScreen() {
 
   return (
     <ScreenContainer style={styles.container} variant="top">
-      <Header 
+      {/* <Header 
         title="Profile" 
         rightIcon={<IconButton 
           icon={<AntDesign name="edit" size={24} color="black" />} 
           onPress={() => router.push("/05-profile/editProfile")}
         />}
-      />
+      /> */}
       
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
         <VStack alignItems="center" mt={5}>

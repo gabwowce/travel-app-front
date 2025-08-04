@@ -1,122 +1,142 @@
-import React, { useEffect, useState } from "react";
-import {
-  Avatar,
-  VStack,
-  Heading,
-  Text,
-  Button,
-} from "native-base";
-import { useRouter } from "expo-router";
+import React, {
+  useEffect,
+  useState,
+  useLayoutEffect,
+  useCallback,
+} from "react";
+import { Avatar, VStack, Text } from "native-base";
+import { useRouter, useNavigation } from "expo-router";
 import { useAppSelector, useAppDispatch } from "@/src/data/hooks";
 import { selectUser } from "@/src/data/features/user/userSelectors";
 import { setUser, updateUser } from "@/src/data/features/user/userSlice";
-import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
-import Header from "@/src/components/Header";
 import ScreenContainer from "@/src/components/ScreenContainer";
-import CustomInput from "@/src/components/input/CustomInput"; // 🔹 Importuojame CustomInput
+import CustomInput from "@/src/components/input/CustomInput";
 import { UserResponse } from "@/src/data/features/user/userTypes";
 
+type FormState = {
+  firstName: string;
+  lastName: string;
+  location: string;
+  bio: string;
+  website: string;
+};
+
 export default function EditProfileScreen() {
+  const router = useRouter();
+  const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
-  const router = useRouter();
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [location, setLocation] = useState("");
-  const [bio, setBio] = useState("");
-  const [website, setWebsite] = useState("");
-  const [isModified, setIsModified] = useState(false);
+  const [form, setForm] = useState<FormState>({
+    firstName: "",
+    lastName: "",
+    location: "",
+    bio: "",
+    website: "",
+  });
 
-
-  useEffect(() => {
-    if (user) {
-      const nameParts = user.name?.split(" ") || [];
-      setFirstName(nameParts[0] || "");
-      setLastName(nameParts[1] || "");
-      setLocation(user.profile?.location || "");
-      setBio(user.profile?.bio || "");
-      setWebsite(user.profile?.website || "");
-    }
-  }, [user]);
-  
+  /* ---------- Inicializacija iš user ---------- */
   useEffect(() => {
     if (!user) return;
-  
-    const nameParts = user.name?.split(" ") || [];
-    const initialFirst = nameParts[0] || "";
-    const initialLast = nameParts[1] || "";
-    const initialLocation = user.profile?.location || "";
-    const initialBio = user.profile?.bio || "";
-    const initialWebsite = user.profile?.website || "";
-  
-    const hasChanged =
-      firstName !== initialFirst ||
-      lastName !== initialLast ||
-      location !== initialLocation ||
-      bio !== initialBio ||
-      website !== initialWebsite;
-  
-    setIsModified(hasChanged);
-  }, [firstName, lastName, location, bio, website, user]);
-  
-  
+    const [first = "", last = ""] = (user.name ?? "").split(" ");
+    setForm({
+      firstName: first,
+      lastName: last,
+      location: user.profile?.location ?? "",
+      bio: user.profile?.bio ?? "",
+      website: user.profile?.website ?? "",
+    });
+  }, [user]);
 
-  if (!user) {
-    return <Text>Loading...</Text>; // Užtikriname, kad 'user' nėra null
-  }
+  /* ---------- Ar kas nors pasikeitė? ---------- */
+  const isModified = (() => {
+    if (!user) return false;
+    const [initFirst = "", initLast = ""] = (user.name ?? "").split(" ");
+    return (
+      form.firstName !== initFirst ||
+      form.lastName !== initLast ||
+      form.location !== (user.profile?.location ?? "") ||
+      form.bio !== (user.profile?.bio ?? "") ||
+      form.website !== (user.profile?.website ?? "")
+    );
+  })();
 
-  
-
-  const handleSave = () => {
-    const updatedData = {
-      name: `${firstName} ${lastName}`,
+  /* ---------- Save ---------- */
+  const handleSave = useCallback(() => {
+    const updated = {
+      name: `${form.firstName} ${form.lastName}`,
       profile: {
-        location,
-        bio,
-        website,
+        location: form.location,
+        bio: form.bio,
+        website: form.website,
       },
     };
+    dispatch(updateUser(updated))
+      .unwrap()
+      .then((res: UserResponse) => {
+        dispatch(setUser(res.data.user));
+        router.back();
+      });
+  }, [form, dispatch, router]);
 
-    dispatch(updateUser(updatedData))
-    .unwrap()
-    .then((res: UserResponse) => {
-      dispatch(setUser(res.data.user)); 
-      router.back();
+  /* ---------- Header ---------- */
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () =>
+        isModified ? (
+          <Text onPress={handleSave} color="blue.500" mr={2}>
+            Save
+          </Text>
+        ) : null,
     });
-  };
+  }, [navigation, isModified, handleSave]);
 
+  if (!user) return <Text>Loading...</Text>;
+
+  const onChange = (key: keyof FormState) => (value: string) =>
+    setForm((prev) => ({ ...prev, [key]: value }));
+
+  /* ---------- UI ---------- */
   return (
     <ScreenContainer>
-      <Header title="Edit Profile" 
-          onBackPress={() => router.back()} rightIcon={
-          isModified ? (
-            <Text onPress={handleSave} color="blue.500">
-              Save
-            </Text>
-          ) : null
-        }
-      />
-      
       <VStack alignItems="center" mt={5}>
-        <Avatar size="xl" source={{ uri:  "https://via.placeholder.com/150" }}>
+        <Avatar
+          size="xl"
+          source={{ uri: "https://via.placeholder.com/150" }}
+        >
           {user.name?.[0]}
         </Avatar>
-        <TouchableOpacity>
-          <Text color="blue.500" mt={2}>Change Profile Picture</Text>
-        </TouchableOpacity>
+        <Text color="blue.500" mt={2}>
+          Change Profile Picture
+        </Text>
       </VStack>
-      
+
       <VStack space={4} mt={5} px={5}>
-        <CustomInput label="First Name" value={firstName} onChangeText={setFirstName} placeholder="Enter first name" />
-        <CustomInput label="Last Name" value={lastName} onChangeText={setLastName} placeholder="Enter last name" />
-        <CustomInput label="Location" value={location} onChangeText={setLocation} placeholder="Enter location" />
-        <CustomInput label="Bio" value={bio} onChangeText={setBio} placeholder="Enter your bio" />
-        <CustomInput label="Website" value={website} onChangeText={setWebsite} placeholder="Enter website URL" />
+        <CustomInput
+          label="First Name"
+          value={form.firstName}
+          onChangeText={onChange("firstName")}
+        />
+        <CustomInput
+          label="Last Name"
+          value={form.lastName}
+          onChangeText={onChange("lastName")}
+        />
+        <CustomInput
+          label="Location"
+          value={form.location}
+          onChangeText={onChange("location")}
+        />
+        <CustomInput
+          label="Bio"
+          value={form.bio}
+          onChangeText={onChange("bio")}
+        />
+        <CustomInput
+          label="Website"
+          value={form.website}
+          onChangeText={onChange("website")}
+        />
       </VStack>
     </ScreenContainer>
   );

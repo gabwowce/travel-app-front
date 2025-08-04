@@ -68,9 +68,9 @@ export default function SelectCategoryScreen() {
     c.name.toLowerCase().startsWith(searchTerm.toLowerCase())
   );
 
+  
   return (
     <SelectableListScreen
-      title="Select Category"
       data={filteredCategories}
       selectedItem={category}
       setSelectedItem={(item) =>

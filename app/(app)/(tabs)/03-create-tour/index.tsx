@@ -25,7 +25,6 @@ export default function SelectCountryScreen() {
 
   return (
     <SelectableListScreen
-      title="Select a Country"
       data={countries}
       selectedItem={country}
       setSelectedItem={(item) => {

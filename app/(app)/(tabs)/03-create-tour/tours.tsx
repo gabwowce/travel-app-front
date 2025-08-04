@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useLayoutEffect } from "react";
 import { View, Text, FlatList, ActivityIndicator, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { useRouter } from "expo-router";
 import { useAppSelector } from "@/src/data/hooks";
@@ -9,8 +9,9 @@ import ScreenContainer from "@/src/components/ScreenContainer";
 import Header from "@/src/components/Header";
 import { Box } from "native-base";
 import SearchBar from "@/src/components/SearchBar"; 
+import BackButton from "./btns/BackButton";
 
-export default function SelectTourScreen() {
+export default function SelectTourScreen({navigation}) {
   const router = useRouter();
   const [tours, setTours] = useState<Route[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -50,7 +51,6 @@ export default function SelectTourScreen() {
     fetchTours();
   }, [country_id, city_id, category_id]);
   
-  
 
   // ✅ Filtruojame turus pagal įvestą paiešką
   const filteredTours = tours.filter((tour) =>
@@ -61,7 +61,7 @@ export default function SelectTourScreen() {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
 
       <ScreenContainer variant="top">
-        <Header title="Available Tours Based on Your Selection" onBackPress={() => router.back()} />
+        {/* <Header title="Available Tours Based on Your Selection" onBackPress={() => router.back()} /> */}
         
         <Box px={5}>
           <SearchBar 

@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { useRouter } from "expo-router";
+import React, { useEffect, useLayoutEffect } from "react";
+import { useRouter, useNavigation } from "expo-router";
 import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
 import { fetchCountryById } from "@/src/data/features/countries/countriesSlice";
 import { setTourData } from "@/src/data/features/tours/tourSlice";
@@ -9,6 +9,7 @@ import { selectSelectedCountry } from "@/src/data/features/countries/countriesSe
 export default function SelectCityScreen() {
   const router = useRouter();
   const dispatch = useAppDispatch();
+const navigation = useNavigation();
 
   const { country, country_id, city, city_id } = useAppSelector((state) => state.tour);
   const loading = useAppSelector((state) => state.countries.loading);
@@ -26,9 +27,13 @@ export default function SelectCityScreen() {
     }
   }, [dispatch, country_id, selectedCountry]);
 
+    /* ---------- Header ---------- */
+    useLayoutEffect(() => {
+      navigation.setOptions({title: `Select a City in ${country}`});
+    }, [navigation]);
+
   return (
     <SelectableListScreen
-      title={`Select a City in ${country}`}
       data={selectedCountry?.cities || []}
       selectedItem={city}
       setSelectedItem={(item) =>

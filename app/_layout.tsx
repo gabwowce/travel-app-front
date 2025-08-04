@@ -1,96 +1,94 @@
-import React, { useState, useEffect } from 'react';
-import { Stack, Slot } from 'expo-router';
-import { Provider as ReduxProvider, useSelector, useDispatch } from 'react-redux';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { NativeBaseProvider } from 'native-base';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import { store } from '@/src/data/store';
-import theme from '@/src/config/theme';
-import Splash from '@/src/components/screens/splash';
-
+// app/_layout.tsx
+import "react-native-gesture-handler";
+import "react-native-reanimated";
+import React, { useEffect, useState } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { NativeBaseProvider } from "native-base";
+import { Provider as ReduxProvider } from "react-redux";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { StatusBar } from "expo-status-bar";
+import { Stack } from "expo-router";
 
+import theme from "@/src/config/theme";
+import { store } from "@/src/data/store";
+import  initAuth  from "@/src/data/features/auth/authSlice";
 import { useAppSelector } from "@/src/data/hooks";
-import { initAuth } from "@/src/data/features/auth/authSlice"; 
-import { useAppDispatch } from '@/src/data/hooks';
 
-export default function RootLayout() {
-  return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <ReduxProvider store={store}>
-        <NativeBaseProvider theme={theme}>
-            <StatusBar style="dark" />
-            <MainNavigation />
-        </NativeBaseProvider>
-      </ReduxProvider>
-    </GestureHandlerRootView>
-  );
+// 🎨 Custom splash component (replaces native one)
+import SplashScreen from "@/src/components/screens/splash";
+import ErrorScreen from "@/src/components/screens/error";
+/**
+ * A single place to register every async task that **must** finish
+ * before the app becomes interactive.  Add new promises to `tasks`
+ * and the custom splash screen will remain visible until they resolve.
+ */
+async function loadAppResources() {
+  const tasks: Promise<unknown>[] = [
+    // 🔐 1) Check auth state
+    store.dispatch<any>(initAuth()),
+    // 📦 2) Future: preload fonts, remote config, etc.
+  ];
+
+  await Promise.all(tasks);
 }
 
-function MainNavigation() {
-  const isAuthenticated = useAppSelector( state => state.auth.isAuthenticated);
-  const isLoading = useAppSelector(state => state.auth.loading);
-  const dispatch = useAppDispatch();
-  
-  const [onboardingDone, setOnboardingDone] = useState(false);
-  const [ready, setReady] = useState(false);
-  const [showSplash, setShowSplash] = useState(true);
-
+function useAppInitializer() {
+  const [ready, setReady] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
       try {
-        const done = await AsyncStorage.getItem('onboardingDone');
-        setOnboardingDone(done === 'true'); 
+        await loadAppResources();
       } catch (e) {
-        console.warn(e);
+        console.error("App initialisation failed", e);
+        setError((e as Error).message ?? "Something went wrong")
       } finally {
         setReady(true);
       }
     })();
-  }, []); 
-
-  useEffect(() => {
-    dispatch(initAuth()); // ✅ Dabar saugu naudoti
   }, []);
-  
 
-  // useEffect(() => {
-  //   AsyncStorage.removeItem('onboardingDone');
-  // }, []);
-  
+  return {ready, error};
+}
+
+function AppNavigator() {
+  const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
+
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      {isAuthenticated ? (
+        <Stack.Screen name="(app)" />
+      ) : (
+        <Stack.Screen name="(auth)" />
+      )}
+      <Stack.Screen name="+not-found" />
+    </Stack>
+  );
+}
 
 
-  useEffect(() => {
-    setTimeout(() => {
-      setShowSplash(false);
-    }, 3000);
-  }, []);
- 
-  if (showSplash || isLoading) {
-    return <Splash onFinish={() => setShowSplash(false)} />;
-  }
+export default function RootLayout() {
+  const {ready, error} = useAppInitializer();
 
+  // Show custom splash while loading critical resources.
   if (!ready) {
-    return <Splash onFinish={() => setReady(true)} />;
+    return <SplashScreen />;
+  }
+   if (error) {
+    return <ErrorScreen message={error} />;
   }
 
-  if (!onboardingDone) {
-    return (
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(onboarding)" />
-      </Stack>
-    );
-  }
-
-  if (isAuthenticated) {
-    return (
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(auth)/index" />
-      </Stack>
-    );
-  }
-
-  return <Slot />;
+return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ReduxProvider store={store}>
+        <NativeBaseProvider theme={theme}>
+          <BottomSheetModalProvider>
+            <StatusBar style="dark" hidden={false} translucent />
+            <AppNavigator />
+          </BottomSheetModalProvider>
+        </NativeBaseProvider>
+      </ReduxProvider>
+    </GestureHandlerRootView>
+  );
 }

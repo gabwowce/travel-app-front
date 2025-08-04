@@ -3,10 +3,10 @@ import { Box, Center, Text } from "native-base";
 import { LinearGradient } from 'expo-linear-gradient';
 
 interface SplashProps {
-  onFinish: () => void;
+  onFinish?: () => void;
 }
 
-export default function Splash({ onFinish }: SplashProps) {
+export default function SplashScreen({ onFinish }: SplashProps) {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (onFinish) onFinish();

@@ -25,7 +25,7 @@ export default function ForgotPasswordScreen() {
   return (
     <KeyboardWrapper>
       <ScreenContainer variant="center">
-        <Header onBackPress={() => router.back()} transparent />
+        {/* <Header onBackPress={() => router.back()} transparent /> */}
 
         <Text variant="header1" style={styles.title}>
           Forgot password
