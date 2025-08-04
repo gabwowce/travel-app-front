@@ -15,7 +15,7 @@ export default function PrivacyPolicy() {
   const router = useRouter();
   return (
     <FlexContainer gap={16}>
-      <Header title="Privacy Policy" onBackPress={() => router.back()} />
+      {/* <Header title="Privacy Policy" onBackPress={() => router.back()} /> */}
       <ScrollView>
         <Stack.Screen
           options={{

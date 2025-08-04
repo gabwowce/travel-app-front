@@ -5,33 +5,62 @@ import {
   Heading,
   Text,
   Divider,
-  Box,
   ScrollView,
   Avatar,
+  useToast,
 } from "native-base";
-import { useRouter } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import { Formik } from "formik";
-import * as Yup from "yup";
 
-import ScreenContainer from "@/src/components/ScreenContainer";
-import Header from "@/src/components/Header";
+import FlexContainer from "@/src/components/layout/FlexContainer";
 import CustomInput from "@/src/components/ui/input/CustomInput";
 import Button from "@/src/components/ui/btns/Button";
-import { passwordSchema } from "@/src/validation/passwordSchema";
-import { useToast } from "native-base";
 import Spinner from "@/src/components/ui/Spinner";
+import { passwordSchema } from "@/src/validation/passwordSchema";
 
 import {
   useGetUserProfileQuery,
   useUpdateUserProfileMutation,
 } from "@/src/store/travelApi";
-import FlexContainer from "@/src/components/layout/FlexContainer";
 
-/* ───────────────────  Component  ──────────────────────── */
+/* ------------------------------------------------------------------------- */
+/* 🔹 D Y N A M I N I S   'S A V E'   M Y G T U K A S   A P P  B A R ' e      */
+/* ------------------------------------------------------------------------- */
+function SaveActionHeader({
+  dirty,
+  isValid,
+  handleSubmit,
+  saving,
+}: {
+  dirty: boolean;
+  isValid: boolean;
+  handleSubmit: () => void;
+  saving: boolean;
+}) {
+  const navigation = useNavigation();
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () =>
+        dirty && isValid ? (
+          <Text onPress={handleSubmit} color="blue.500" mr={3}>
+            {saving ? "Saving…" : "Save"}
+          </Text>
+        ) : null,
+    });
+  }, [navigation, dirty, isValid, saving, handleSubmit]);
+
+  return null; // UI-neko nerenderinam
+}
+
+/* ------------------------------------------------------------------------- */
+/* 🖥️  P A G R I N D I N I S   E K R A N A S                                  */
+/* ------------------------------------------------------------------------- */
 export default function ChangePasswordScreen() {
   const toast = useToast();
-  const router = useRouter();
+  const navigation = useNavigation();
 
+  /* 👉  Užkraunam vartotojo profilį */
   const { data: response, isLoading } = useGetUserProfileQuery();
   const user = response?.data;
   const [updateProfile, { isLoading: saving }] = useUpdateUserProfileMutation();
@@ -47,7 +76,6 @@ export default function ChangePasswordScreen() {
   return (
     <Formik
       initialValues={{
-        // current_password: '',
         password: "",
         password_confirmation: "",
       }}
@@ -67,12 +95,11 @@ export default function ChangePasswordScreen() {
           } as any);
 
           setTimeout(() => {
-            router.back(); // grįžtam po 1s (kad matytų toast'ą)
+            router.back(); // leiskim toast’ui pasimatyt 1 s
           }, 1000);
         } catch (err: any) {
           const details = err?.data?.errors;
           if (details) {
-            console.log("Server validation errors:", details);
             setErrors(details);
           } else {
             setStatus({ error: "Something went wrong" });
@@ -85,109 +112,95 @@ export default function ChangePasswordScreen() {
         errors,
         touched,
         handleChange,
-        handleSubmit,
         handleBlur,
+        handleSubmit,
         isValid,
         dirty,
         status,
       }) => (
-        <FlexContainer>
-          <Header
-            title="Change Password"
-            onBackPress={() => router.back()}
-            rightIcon={
-              dirty && isValid ? (
-                <Text onPress={() => handleSubmit()} color="blue.500">
-                  {saving ? "Saving..." : "Save"}
-                </Text>
-              ) : null
-            }
+        <>
+          {/* 🔑 HeaderRight logika */}
+          <SaveActionHeader
+            dirty={dirty}
+            isValid={isValid}
+            handleSubmit={handleSubmit}
+            saving={saving}
           />
 
-          <ScrollView keyboardShouldPersistTaps="handled">
-            <VStack px={5} space={4}>
-              <VStack alignItems="center" mt={5} space={4}>
-                <Avatar
-                  size="xl"
-                  source={{ uri: "https://via.placeholder.com/150" }}
-                >
-                  {user.name?.charAt(0).toUpperCase()}
-                </Avatar>
-                <Heading fontSize="lg">{user.name}</Heading>
-              </VStack>
+          <FlexContainer>
+            <ScrollView keyboardShouldPersistTaps="handled">
+              <VStack px={5} space={4}>
+                {/* Profile avatar + name */}
+                <VStack alignItems="center" mt={5} space={4}>
+                  <Avatar
+                    size="xl"
+                    source={{ uri: "https://via.placeholder.com/150" }}
+                  >
+                    {user.name?.charAt(0).toUpperCase()}
+                  </Avatar>
+                  <Heading fontSize="lg">{user.name}</Heading>
+                </VStack>
 
-              <Divider my={4} />
+                <Divider my={4} />
 
-              <Text mb={4} fontSize="sm" textAlign="center" color="gray.500">
-                Enter a new password below.
-              </Text>
-
-              {/* <CustomInput
-                label="Current Password"
-                secureTextEntry
-                placeholder="Enter current password"
-                value={values.current_password}
-                onChangeText={handleChange('current_password')}
-                error={
-                  touched.current_password && errors.current_password
-                    ? errors.current_password
-                    : undefined
-                }
-              /> */}
-              {/* {touched.current_password && errors.current_password && (
-                <Text color="red.500" fontSize="xs" mt={-3} mb={1}>
-                  {errors.current_password}
+                <Text mb={4} fontSize="sm" textAlign="center" color="gray.500">
+                  Enter a new password below.
                 </Text>
-              )} */}
 
-              <CustomInput
-                label="New Password"
-                secureTextEntry
-                placeholder="Enter new password"
-                value={values.password}
-                onBlur={handleBlur("password")}
-                onChangeText={handleChange("password")}
-                error={
-                  touched.password && errors.password
-                    ? errors.password
-                    : undefined
-                }
-              />
-
-              <CustomInput
-                label="Confirm New Password"
-                secureTextEntry
-                placeholder="Confirm new password"
-                value={values.password_confirmation}
-                onBlur={handleBlur("password_confirmation")}
-                onChangeText={handleChange("password_confirmation")}
-                error={
-                  touched.password_confirmation && errors.password_confirmation
-                    ? errors.password_confirmation
-                    : undefined
-                }
-              />
-
-              {status?.error && (
-                <Text color="red.500" textAlign="center">
-                  {status.error}
-                </Text>
-              )}
-              {status?.success && (
-                <Text color="green.500" textAlign="center">
-                  Password updated successfully!
-                </Text>
-              )}
-              {/* Extra button for small devices */}
-              {dirty && isValid && (
-                <Button
-                  label={saving ? "Saving..." : "Save"}
-                  onPress={() => handleSubmit()}
+                {/* New password */}
+                <CustomInput
+                  label="New Password"
+                  secureTextEntry
+                  placeholder="Enter new password"
+                  value={values.password}
+                  onBlur={handleBlur("password")}
+                  onChangeText={handleChange("password")}
+                  error={
+                    touched.password && errors.password
+                      ? errors.password
+                      : undefined
+                  }
                 />
-              )}
-            </VStack>
-          </ScrollView>
-        </FlexContainer>
+
+                {/* Confirmation */}
+                <CustomInput
+                  label="Confirm New Password"
+                  secureTextEntry
+                  placeholder="Confirm new password"
+                  value={values.password_confirmation}
+                  onBlur={handleBlur("password_confirmation")}
+                  onChangeText={handleChange("password_confirmation")}
+                  error={
+                    touched.password_confirmation &&
+                    errors.password_confirmation
+                      ? errors.password_confirmation
+                      : undefined
+                  }
+                />
+
+                {/* Status messages */}
+                {status?.error && (
+                  <Text color="red.500" textAlign="center">
+                    {status.error}
+                  </Text>
+                )}
+                {status?.success && (
+                  <Text color="green.500" textAlign="center">
+                    Password updated successfully!
+                  </Text>
+                )}
+
+                {/* Atsarginis mygtukas apačioje (mažiems ekranams) */}
+                {dirty && isValid && (
+                  <Button
+                    label={saving ? "Saving…" : "Save"}
+                    onPress={handleSubmit}
+                  />
+                )}
+              </VStack>
+            </ScrollView>
+          </FlexContainer>
+        </>
       )}
     </Formik>
   );

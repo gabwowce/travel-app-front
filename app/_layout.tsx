@@ -1,84 +1,54 @@
-// app/_layout.tsx
-import { BackHandler, Platform } from "react-native";
+import "react-native-gesture-handler";
+import "react-native-reanimated";
 
-// RN ≥ 0.72 nebėra removeEventListener ⇒ pridedam tylų stub'ą
+import React, { useCallback } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { StatusBar } from "expo-status-bar";
+import { BackHandler, View } from "react-native";
+import * as SplashScreenExpo from "expo-splash-screen";
+import { Provider as ReduxProvider } from "react-redux";
+import { NativeBaseProvider } from "native-base";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+
+import theme from "@/src/config/theme";
+import { store } from "@/src/data/store";
+import Splash from "@/src/components/screens/splash";
+import ErrorScreen from "@/src/components/screens/error";
+import { useAppInitializer } from "@/src/hooks/useAppInitializer";
+import AppNavigator from "@/src/navigation/AppNavigator";
+import BusyOverlay from "@/src/components/ui/BusyOverlay";
+
+// ─── RN ≥0.72 BackHandler.removeEventListener polyfill ─────────────────────
 if (!(BackHandler as any).removeEventListener) {
-  Object.defineProperty(BackHandler, "removeEventListener", {
-    value: () => {},
-    writable: false,
-    configurable: true,
-  });
+  Object.defineProperty(BackHandler, "removeEventListener", { value: () => {} });
 }
 
-import React, { useState, useEffect } from "react";
-import { Stack, Slot } from "expo-router";
-import {
-  Provider as ReduxProvider,
-  useSelector,
-  useDispatch,
-} from "react-redux";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { NativeBaseProvider, View } from "native-base";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
-import { useRouter } from "expo-router";
-import * as SecureStore from "expo-secure-store";
+// Laikom natyvinį splash kol React pasiruošęs
+SplashScreenExpo.preventAutoHideAsync();
 
-import { store } from "@/src/data/store";
-import theme from "@/src/config/theme";
-import Splash from "@/src/components/screens/splash";
-
-import { StatusBar } from "expo-status-bar";
-
-import { useAppSelector } from "@/src/data/hooks";
-import { initAuth } from "@/src/data/features/auth/authThunks";
-import { useAppDispatch } from "@/src/data/hooks";
-import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { setCredentials } from "@/src/data/features/auth/authSlice";
-import { useLoginUserMutation } from "@/src/store/travelApi";
-import { useInitAuth } from "@/src/hooks/useInitAuth";
-import { AppRoutes } from "@/src/config/routes";
 export default function RootLayout() {
+  const { ready, error } = useAppInitializer();
+
+  const onLayout = useCallback(async () => {
+    if (ready) await SplashScreenExpo.hideAsync();
+  }, [ready]);
+
+  if (!ready) return <Splash />;
+  if (error) return <ErrorScreen message={error} />;
+
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayout}>
       <BottomSheetModalProvider>
         <ReduxProvider store={store}>
           <NativeBaseProvider theme={theme}>
             <StatusBar style="dark" translucent backgroundColor="transparent" />
             <View style={{ flex: 1 }}>
-              <MainNavigation />
+              <AppNavigator />
+              <BusyOverlay />
             </View>
           </NativeBaseProvider>
         </ReduxProvider>
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
-  );
-}
-
-function MainNavigation() {
-  const ready = useInitAuth(); // ← vienintelė auth inicijavimo vieta
-  const isAuthenticated = useAppSelector((state) => !!state.auth.token);
-
-  if (!ready) {
-    return (
-      <Splash
-        onFinish={function (): void {
-          throw new Error("Function not implemented.");
-        }}
-      />
-    );
-  }
-
-  return (
-    <Stack screenOptions={{ headerShown: false }}>
-      {isAuthenticated ? (
-        <Stack.Screen name={AppRoutes.HOME} />
-      ) : (
-        <Stack.Screen name={AppRoutes.LOGIN} />
-      )}
-    </Stack>
   );
 }

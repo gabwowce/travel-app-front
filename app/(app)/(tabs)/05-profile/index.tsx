@@ -59,7 +59,7 @@ export default function ProfileScreen() {
 
   return (
     <FlexContainer>
-      <Header
+      {/* <Header
         title="Profile"
         rightIcon={
           <CircleButton
@@ -67,7 +67,7 @@ export default function ProfileScreen() {
             onPress={() => router.push(AppRoutes.EDIT_PROFILE)}
           />
         }
-      />
+      /> */}
 
       <ScrollView keyboardShouldPersistTaps="handled">
         <VStack space={4} mt={6} px={5}>

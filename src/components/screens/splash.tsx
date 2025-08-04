@@ -5,7 +5,7 @@ interface SplashProps {
   onFinish?: () => void;
 }
 
-export default function Splash({ onFinish }: Props) {
+export default function Splash({ onFinish }: SplashProps) {
   useEffect(() => {
     const timer = setTimeout(() => {
       onFinish?.(); // kviečiam tik jei yra

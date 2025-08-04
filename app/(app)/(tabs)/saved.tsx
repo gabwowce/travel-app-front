@@ -16,7 +16,7 @@ export default function SavedScreen() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <FlexContainer>
-        <Header title="Your Favorite Tours" />
+        {/* <Header title="Your Favorite Tours" /> */}
 
         <ResponsiveTourListStatic
           data={filtered}

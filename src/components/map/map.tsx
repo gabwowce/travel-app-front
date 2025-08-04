@@ -1,5 +1,5 @@
 // Map.tsx
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -77,6 +77,12 @@ export default function Map({ title, points }: MapProps) {
     }
   }, [points]);
 
+    useLayoutEffect(() => {
+      navigation.setOptions({
+        title:`${title}`
+      });
+    }, [navigation]);
+
   return (
     <View style={styles.container}>
       <ExpoStatusBar style="dark" translucent backgroundColor="transparent" />
@@ -84,11 +90,11 @@ export default function Map({ title, points }: MapProps) {
       {showMainHeader && (
         <View style={styles.headerContainer}>
           
-        <Header
+        {/* <Header
           title={title}
           onBackPress={selectedPoint ? handleBackToList : () => navigation.goBack()}
           onPressClose={selectedPoint ? () => navigation.goBack() : undefined}
-        />
+        /> */}
 
         
       </View>

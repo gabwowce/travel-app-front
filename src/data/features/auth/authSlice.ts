@@ -42,6 +42,21 @@ const authSlice = createSlice({
       state.errors = null;
     },
   },
+  extraReducers:(builder)=>{
+    builder
+      .addCase(initAuth.pending,   (st) => { st.loading = true;  })
+      .addCase(initAuth.fulfilled, (st) => { st.loading = false; })
+      .addCase(initAuth.rejected,  (st) => { st.loading = false; st.isAuthenticated = false; });
+
+    // jei turi login/logout thunk’us, pridėk juos taip pat
+    builder
+      .addCase(login.pending,   (st) => { st.loading = true;  })
+      .addCase(login.fulfilled, (st) => { st.loading = false; })
+      .addCase(login.rejected,  (st) => { st.loading = false; });
+
+    // arba vietoj viso šito — naudok utilį:
+   // createCommonReducers([initAuth, login, logout], "auth")(builder);
+  }
 });
 
 export const { setCredentials, clearAuth, setLoading, setErrors, clearErrors } = authSlice.actions;

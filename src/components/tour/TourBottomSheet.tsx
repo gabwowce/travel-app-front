@@ -26,15 +26,13 @@ const TourBottomSheet = forwardRef<BottomSheet, Props>(({ points, userLocation, 
   const snapPoints = useMemo(() => ['28%', '50%', '100%'], []);
   
   const [index, setIndex] = useState(1);
-
-
   const isFullScreen = index === 2;
 
   useImperativeHandle(ref, () => localRef.current as BottomSheet);
 
-  useEffect(() => {
-    onFullScreenChange?.(isFullScreen);
-  }, [isFullScreen]);
+  // useEffect(() => {
+  //   onFullScreenChange?.(isFullScreen);
+  // }, [isFullScreen, index]);
 
   const renderScrollView = () => {
     if (!selectedPoint && userLocation) {
@@ -88,7 +86,9 @@ const TourBottomSheet = forwardRef<BottomSheet, Props>(({ points, userLocation, 
       enableContentPanningGesture={true}
       handleStyle={isFullScreen ? styles.hiddenHandle : styles.handleStyle}
       handleIndicatorStyle={isFullScreen ? styles.hiddenHandle : styles.handleIndicatorStyle}
-      onChange={(i) => setIndex(i)}
+      onChange={(i) => {
+      onFullScreenChange?.(i === 2);
+    }}
       backgroundStyle={isFullScreen ? styles.fullscreenBackground : styles.screenBackground}
       enableDynamicSizing = {false}
     >

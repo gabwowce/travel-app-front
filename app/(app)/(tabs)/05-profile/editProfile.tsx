@@ -6,17 +6,17 @@ import {
   Heading,
   Text,
   ScrollView,
-  Box,
   Divider,
+  useToast,
 } from "native-base";
-import { useRouter } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import { Formik, FormikErrors } from "formik";
 
-import Header from "@/src/components/Header";
-import ScreenContainer from "@/src/components/ScreenContainer";
+import FlexContainer from "@/src/components/layout/FlexContainer";
+import Spinner from "@/src/components/ui/Spinner";
 import CustomInput from "@/src/components/ui/input/CustomInput";
 import Button from "@/src/components/ui/btns/Button";
-import Spinner from "@/src/components/ui/Spinner";
+import CircleButton from "@/src/components/ui/btns/CircleButton";
 import { editProfileSchema } from "@/src/validation/editProfileSchema";
 
 import {
@@ -24,26 +24,54 @@ import {
   useUpdateUserProfileMutation,
 } from "@/src/store/travelApi";
 import type { User, UserUpdateRequest } from "@/src/store/travelApi";
-import FlexContainer from "@/src/components/layout/FlexContainer";
-import CircleButton from "@/src/components/ui/btns/CircleButton";
 
+/* ------------------------------------------------------------------------- */
+/* 🔹  ‘SAVE’ mygtukas Header’yje                                             */
+/* ------------------------------------------------------------------------- */
+function SaveActionHeader({
+  dirty,
+  isValid,
+  handleSubmit,
+  saving,
+}: {
+  dirty: boolean;
+  isValid: boolean;
+  handleSubmit: () => void;
+  saving: boolean;
+}) {
+  const navigation = useNavigation();
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () =>
+        dirty && isValid ? (
+          <CircleButton
+            variant="save"
+            label={saving ? "Saving..." : "Save"}
+            onPress={handleSubmit}
+          />
+        ) : null,
+    });
+  }, [navigation, dirty, isValid, saving, handleSubmit]);
+
+  return null;
+}
+
+/* ------------------------------------------------------------------------- */
+/* 🖥️  Pagrindinis profilį redaguojantis ekranas                              */
+/* ------------------------------------------------------------------------- */
 export default function EditProfileScreen() {
-  const router = useRouter();
+  const toast = useToast();
 
-  const {
-    data: response,
-    isLoading: loading,
-    isError,
-    refetch,
-  } = useGetUserProfileQuery();
+  /* 1) --- Užkraunam vartotoją */
+  const { data, isLoading, isError, refetch } = useGetUserProfileQuery();
+  const user = data?.data;
 
-  const user = response?.data;
-
-  const [updateProfile, { isLoading: isSaving }] =
+  /* 2) --- Mutacija profilio atnaujinimui */
+  const [updateProfile, { isLoading: saving }] =
     useUpdateUserProfileMutation();
 
-  if (loading) return <Spinner />;
-
+  if (isLoading) return <Spinner />;
   if (isError || !user)
     return (
       <Text textAlign="center" mt={8}>
@@ -54,11 +82,12 @@ export default function EditProfileScreen() {
   return (
     <Formik<User>
       initialValues={user}
-      validationSchema={editProfileSchema}
       enableReinitialize
+      validationSchema={editProfileSchema}
       onSubmit={async (values, { setErrors }) => {
         try {
-          const cleanedValues: UserUpdateRequest = {
+          /* Išvalome nereikalingus laukus prieš siųsdami į API */
+          const cleaned: UserUpdateRequest = {
             name: values.name,
             email: values.email,
             profile: {
@@ -68,8 +97,13 @@ export default function EditProfileScreen() {
             },
           };
 
-          await updateProfile({ userUpdateRequest: cleanedValues }).unwrap();
+          await updateProfile({ userUpdateRequest: cleaned }).unwrap();
           await refetch();
+          toast.show({
+            title: "Profile updated",
+            status: "success",
+            placement: "top",
+          } as any);
           router.back();
         } catch (err: any) {
           const details = err?.data?.error?.details;
@@ -86,78 +120,78 @@ export default function EditProfileScreen() {
         isValid,
         dirty,
       }) => (
-        <FlexContainer>
-          <Header
-            title="Edit Profile"
-            onBackPress={() => router.back()}
-            rightIcon={
-              dirty && isValid ? (
-                <CircleButton
-                  variant="save"
-                  label={isSaving ? "Saving..." : "Save"}
-                  onPress={() => handleSubmit()}
-                />
-              ) : null
-            }
+        <>
+          {/* 🔑 HeaderRight logika */}
+          <SaveActionHeader
+            dirty={dirty}
+            isValid={isValid}
+            handleSubmit={handleSubmit}
+            saving={saving}
           />
 
-          <ScrollView keyboardShouldPersistTaps="handled">
-            <VStack space={4} mt={6} px={5}>
-              <VStack alignItems="center">
-                <Avatar
-                  size="xl"
-                  source={{ uri: "https://via.placeholder.com/150" }}
-                >
-                  {values.name?.charAt(0).toUpperCase()}
-                </Avatar>
-                <Heading size="md" pt={4}>
-                  {values.name}
-                </Heading>
-              </VStack>
-              <Divider my={4} />
+          <FlexContainer>
+            <ScrollView keyboardShouldPersistTaps="handled">
+              <VStack space={4} mt={6} px={5}>
+                {/* Avatar + vardas */}
+                <VStack alignItems="center">
+                  <Avatar
+                    size="xl"
+                    source={{ uri: "https://via.placeholder.com/150" }}
+                  >
+                    {values.name?.charAt(0).toUpperCase()}
+                  </Avatar>
+                  <Heading size="md" pt={4}>
+                    {values.name}
+                  </Heading>
+                </VStack>
 
-              <Text mb={4} fontSize="sm" textAlign="center" color="gray.500">
-                Update your profile info below.
-              </Text>
+                <Divider my={4} />
 
-              <CustomInput
-                label="Full Name"
-                value={values.name || ""}
-                onChangeText={handleChange("name")}
-                error={touched.name && errors.name ? errors.name : undefined}
-              />
+                <Text mb={4} fontSize="sm" textAlign="center" color="gray.500">
+                  Update your profile info below.
+                </Text>
 
-              <CustomInput
-                label="Location"
-                placeholder="Enter location"
-                value={values.profile?.location || ""}
-                onChangeText={handleChange("profile.location")}
-              />
-
-              <CustomInput
-                label="Bio"
-                multiline
-                numberOfLines={6}
-                value={values.profile?.bio || ""}
-                onChangeText={handleChange("profile.bio")}
-              />
-
-              <CustomInput
-                label="Website"
-                placeholder="Enter website"
-                value={values.profile?.website || ""}
-                onChangeText={handleChange("profile.website")}
-              />
-
-              {dirty && isValid && (
-                <Button
-                  label={isSaving ? "Saving..." : "Save"}
-                  onPress={() => handleSubmit()}
+                {/* Form fields */}
+                <CustomInput
+                  label="Full Name"
+                  value={values.name || ""}
+                  onChangeText={handleChange("name")}
+                  error={touched.name && errors.name ? errors.name : undefined}
                 />
-              )}
-            </VStack>
-          </ScrollView>
-        </FlexContainer>
+
+                <CustomInput
+                  label="Location"
+                  placeholder="Enter location"
+                  value={values.profile?.location || ""}
+                  onChangeText={handleChange("profile.location")}
+                />
+
+                <CustomInput
+                  label="Bio"
+                  multiline
+                  numberOfLines={6}
+                  value={values.profile?.bio || ""}
+                  onChangeText={handleChange("profile.bio")}
+                />
+
+                <CustomInput
+                  label="Website"
+                  placeholder="Enter website"
+                  value={values.profile?.website || ""}
+                  onChangeText={handleChange("profile.website")}
+                />
+
+                {/* Atsarginis mygtukas apačioje mažiems ekranams */}
+                {dirty && isValid && (
+                  <Button
+                    label={saving ? "Saving..." : "Save"}
+                    onPress={handleSubmit}
+                  />
+                )}
+              </VStack>
+            </ScrollView>
+          </FlexContainer>
+        </>
       )}
     </Formik>
   );

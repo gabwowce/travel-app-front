@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useLayoutEffect} from "react";
 import { useLocalSearchParams, router } from "expo-router";
 import { ScrollView, StyleSheet } from "react-native";
 import { Box, Image, VStack, HStack, Text, Badge, Icon } from "native-base";
@@ -18,8 +18,10 @@ import Spinner from "@/src/components/ui/Spinner";
 import RatingStars from "@/src/components/ui/RatingStars";
 import RouteStatsRow from "@/src/components/ui/RouteStatsRow";
 import CategoryBadges from "@/src/components/ui/CategoryBadges";
+import { useNavigation } from "@react-navigation/native";
 
 export default function RouteInfoScreen() {
+    const navigation = useNavigation();
   const { id } = useLocalSearchParams();
   const routeId = Array.isArray(id)
     ? parseInt(id[0], 10)
@@ -67,13 +69,19 @@ export default function RouteInfoScreen() {
     });
   };
 
+      useLayoutEffect(() => {
+      navigation.setOptions({
+        title:`${name}`
+      });
+    }, [navigation]);
+
   return (
     <FlexContainer>
-      <Header
+      {/* <Header
         title={name}
         onBackPress={() => router.back()}
         rightIcon={<CircleButton variant="start" onPress={navigateToMap} />}
-      />
+      /> */}
 
       <ScrollView keyboardShouldPersistTaps="handled">
         <VStack space={4} mt={6}>

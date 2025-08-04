@@ -1,7 +1,7 @@
-import React from "react";
+import React, {useLayoutEffect} from "react";
 import { Text } from "native-base";
 import { TouchableWithoutFeedback, Keyboard } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useNavigation } from "expo-router";
 
 import Spinner from "@/src/components/ui/Spinner";
 import Header from "@/src/components/Header";
@@ -19,6 +19,7 @@ import { useAppDispatch } from "@/src/data/hooks";
 
 export default function SearchScreen() {
   const router = useRouter();
+  const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const {
     routeKey,
@@ -34,13 +35,21 @@ export default function SearchScreen() {
     routes,
   } = useSearchScreenData();
 
+  useLayoutEffect(()=>{
+    navigation.setOptions({
+      headerRight:()=>{
+        <FilterCircleButton routeKey={routeKey} />
+      }
+    })
+  })
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <FlexContainer>
-        <Header
+        {/* <Header
           title="Search"
           rightIcon={<FilterCircleButton routeKey={routeKey} />}
-        />
+        /> */}
 
         <SearchBar
           placeholder="Search Tours"

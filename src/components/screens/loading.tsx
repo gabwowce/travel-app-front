@@ -1,13 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import { Box, Center, Text } from "native-base";
 import { LinearGradient } from 'expo-linear-gradient';
 import {ActivityIndicator,} from 'react-native';
 
 export default function LoadingScreen() {
-  // useEffect(() => {
-  //   SplashScreen.preventAutoHideAsync().catch(() => {});
-  // }, []);
+
 
   return (
     <Box flex={1}>
