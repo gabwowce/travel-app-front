@@ -10,6 +10,7 @@ interface SearchBarProps {
   onChangeText: (text: string) => void;
   onClear?: () => void;
   onEndEditing?: () => void;
+  accessibilityLabel?: string;
 }
 
 export default function SearchBar({
@@ -18,6 +19,7 @@ export default function SearchBar({
   onChangeText,
   onClear,
   onEndEditing,
+  accessibilityLabel,
 }: SearchBarProps) {
   return (
     <VStack mt={6} space={3}>
@@ -41,7 +43,7 @@ export default function SearchBar({
           placeholderTextColor="gray"
           onEndEditing={onEndEditing}
           accessible
-          accessibilityLabel="Search input"
+          accessibilityLabel={accessibilityLabel ?? "Search input"}
           accessibilityHint="Enter search keywords"
           returnKeyType="search"
         />
@@ -62,7 +64,6 @@ export default function SearchBar({
   );
 }
 
-
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
@@ -76,7 +77,7 @@ const styles = StyleSheet.create({
 
     alignSelf: "center",
   },
-  
+
   iconLeft: {
     marginRight: 8,
   },

@@ -17,6 +17,7 @@ import TourBottomSheet from "../tour/TourBottomSheet";
 import { getMarkerIcon } from "../tour/getMarkerIconByCategory";
 import { Platform } from "react-native";
 import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface MapProps {
   title: string;
@@ -44,12 +45,16 @@ export default function Map({ title, points }: MapProps) {
   const [selectedPoint, setSelectedPoint] = useState<TourPoint | null>(null);
   const { userLocation } = useUserLocation();
   const [showMainHeader, setShowMainHeader] = useState(true);
-  const [sheetState, setSheetState] = useState<'list' | 'details' | 'full'>('list');
-
+  const [sheetState, setSheetState] = useState<"list" | "details" | "full">(
+    "list"
+  );
+  const insets = useSafeAreaInsets();
 
   const handleSelectPoint = (point: TourPoint) => {
     setSelectedPoint(point);
-    useAnnounceForAccessibility(`Selected: ${point.title}. ${point.description}`)
+    // useAnnounceForAccessibility(
+    //   `Selected: ${point.title}. ${point.description}`
+    // );
     mapRef.current?.animateToRegion(
       {
         latitude: point.coords.latitude - 0.001,
@@ -61,7 +66,6 @@ export default function Map({ title, points }: MapProps) {
     );
     bottomSheetRef.current?.snapToIndex(0);
   };
-  
 
   const handleBackToList = () => {
     setSelectedPoint(null);
@@ -71,38 +75,41 @@ export default function Map({ title, points }: MapProps) {
   useEffect(() => {
     if (points.length > 0 && mapRef.current) {
       const timeout = setTimeout(() => {
-        mapRef.current?.fitToCoordinates(points.map(p => p.coords), {
-          edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
-          animated: true,
-        });
+        mapRef.current?.fitToCoordinates(
+          points.map((p) => p.coords),
+          {
+            edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
+            animated: true,
+          }
+        );
       }, 300);
       return () => clearTimeout(timeout);
     }
   }, [points]);
 
-    useLayoutEffect(() => {
-      navigation.setOptions({
-        title:`${title}`
-      });
-    }, [navigation]);
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: `${title}`,
+    });
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
-      <ExpoStatusBar style="dark" translucent backgroundColor="transparent" />
-      <RNStatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
-      {showMainHeader && (
+      {/* <ExpoStatusBar style="dark" translucent backgroundColor="transparent" />
+      <RNStatusBar
+        barStyle="dark-content"
+        translucent
+        backgroundColor="transparent"
+      /> */}
+      {/* {showMainHeader && (
         <View style={styles.headerContainer}>
-          
-        {/* <Header
+          <Header
           title={title}
           onBackPress={selectedPoint ? handleBackToList : () => navigation.goBack()}
           onPressClose={selectedPoint ? () => navigation.goBack() : undefined}
-        /> */}
-
-        
-      </View>
-
-      )}
+        />
+        </View>
+      )} */}
       <MapView
         provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined}
         userInterfaceStyle="light"
@@ -111,7 +118,7 @@ export default function Map({ title, points }: MapProps) {
         showsUserLocation
         showsCompass
         accessible={false}
-  importantForAccessibility="no"
+        importantForAccessibility="no"
       >
         {points.map((point) => {
           const { name, color } = getMarkerIcon(point.category);
@@ -123,16 +130,15 @@ export default function Map({ title, points }: MapProps) {
               coordinate={point.coords}
               anchor={{ x: 0.5, y: 1 }} // <- rodo į markerio apačią (taip kaip Waze)
               onPress={() => handleSelectPoint(point)}
-               accessibilityLabel={`Point of interest: ${point.title}, category: ${point.category ?? 'location'}`}
+              accessibilityLabel={`Point of interest: ${point.title}, category: ${point.category ?? "location"}`}
             >
               <View
                 style={[
                   styles.customMarker,
                   isSelected && styles.customMarkerSelected,
-                  isSelected && styles.customMarkerLarge // ← pridedam padidinimą!
+                  isSelected && styles.customMarkerLarge, // ← pridedam padidinimą!
                 ]}
               >
-
                 <Ionicons
                   name={name as any}
                   size={isSelected ? 32 : 28}
@@ -140,7 +146,6 @@ export default function Map({ title, points }: MapProps) {
                 />
               </View>
             </Marker>
-
           );
         })}
       </MapView>
@@ -190,9 +195,9 @@ const styles = StyleSheet.create({
   },
   map: {
     flex: 1,
-    marginTop: 100,
+    paddingTop: 20,
   },
- 
+
   customMarkerSelected: {
     backgroundColor: "#D1E8FF",
     borderColor: "#1E90FF",

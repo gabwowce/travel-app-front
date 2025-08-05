@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet, AccessibilityInfo } from "react-native";
 import { Checkbox, Text } from "native-base";
 import Button from "@/src/components/ui/btns/Button";
 import { useRouter } from "expo-router";
@@ -16,14 +16,23 @@ import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility
 export default function RegisterScreen() {
   useAnnounceForAccessibility("Registration screen opened");
   const [agreed, setAgreed] = useState(false);
+  const [generalError, setGeneralError] = useState("");
   const router = useRouter();
   const { register } = useAuthActions();
+
+  useEffect(() => {
+    if (generalError) {
+      AccessibilityInfo.announceForAccessibility(generalError);
+    }
+  }, [generalError]);
 
   return (
     <KeyboardWrapper>
       <ScreenContainer variant="center">
         <View style={styles.text}>
-          <Text variant="header1" accessibilityRole="header">Create an Account</Text>
+          <Text variant="header1" accessibilityRole="header">
+            Create an Account
+          </Text>
           <Text variant="bodyGray">Fill in the details to register</Text>
         </View>
 
@@ -47,6 +56,8 @@ export default function RegisterScreen() {
             } catch (err: any) {
               const details = err?.data?.errors;
               if (details) setErrors(details);
+              const message = err?.data?.message ?? "Unknown error";
+              setGeneralError(message);
             }
           }}
         >
@@ -131,6 +142,16 @@ export default function RegisterScreen() {
                 </Text>
               </View>
 
+              {generalError && (
+                <Text
+                  style={styles.generalError}
+                  accessibilityLiveRegion="assertive"
+                  accessibilityRole="alert"
+                >
+                  {generalError}
+                </Text>
+              )}
+
               <Button label={"Register"} onPress={() => handleSubmit()} />
             </>
           )}
@@ -155,5 +176,10 @@ const styles = StyleSheet.create({
   text: {
     alignItems: "center",
     marginBottom: 20,
+  },
+  generalError: {
+    color: "red",
+    textAlign: "center",
+    paddingBottom: 10,
   },
 });

@@ -7,10 +7,13 @@ export function useAppInitializer() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log("[useAppInitializer  init] start");
     (async () => {
       try {
         await Promise.all([store.dispatch(initAuth())]);
+        console.log("useAppInitializer [init] ok");
       } catch (e) {
+        console.log("[useAppInitializer init] error", e);
         setError((e as Error).message ?? "Something went wrong");
       } finally {
         setReady(true);

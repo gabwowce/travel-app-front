@@ -37,14 +37,12 @@ export default function CustomInput({
 
       <View style={styles.inputWrapper}>
         <TextInput
-        accessible
-  accessibilityLabel={accessibilityLabel ?? label ?? props.placeholder}
-  accessibilityHint={props.placeholder}
-  accessibilityRole="textbox"
-  accessibilityState={{
-    disabled: props.editable === false,
-    invalid: !!error,
-  }}
+          accessible
+          accessibilityLabel={accessibilityLabel ?? label ?? props.placeholder}
+          accessibilityHint={props.placeholder}
+          accessibilityState={{
+            disabled: props.editable === false,
+          }}
           style={[
             styles.input,
             multiline && styles.textArea,
@@ -76,7 +74,12 @@ export default function CustomInput({
 
       {secureTextEntry && onForgotPassword && (
         <TouchableOpacity onPress={onForgotPassword}>
-          <Text style={styles.forgotPassword} color="primary.500">
+          <Text
+            style={styles.forgotPassword}
+            color="primary.500"
+            accessibilityLiveRegion="assertive"
+            accessibilityRole="alert"
+          >
             Forgot Password?
           </Text>
         </TouchableOpacity>

@@ -25,7 +25,7 @@ export default function ForgotPasswordScreen() {
 
   return (
     <KeyboardWrapper>
-      <ScreenContainer variant="top">
+      <ScreenContainer variant="center">
         {/* <Header onBackPress={() => router.back()} transparent /> */}
 
         <Text variant="header1" accessibilityRole="header" style={styles.title}>
@@ -45,7 +45,7 @@ export default function ForgotPasswordScreen() {
           onChangeText={setEmail}
           error={error}
         />
-        {error && (
+        {/* {error && (
           <Text
             color="red.500"
             accessibilityLiveRegion="assertive"
@@ -54,9 +54,13 @@ export default function ForgotPasswordScreen() {
           >
             {error}
           </Text>
-        )}
+        )} */}
         {/* Slaptažodžio atstatymo mygtukas */}
-        <Button label="Reset Password" accessibilityLabel="Send password reset email" onPress={handleResetPassword} />
+        <Button
+          label="Reset Password"
+          accessibilityLabel="Send password reset email"
+          onPress={handleResetPassword}
+        />
       </ScreenContainer>
     </KeyboardWrapper>
   );

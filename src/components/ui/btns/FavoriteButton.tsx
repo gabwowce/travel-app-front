@@ -1,13 +1,13 @@
 // components/FavoriteButton.tsx
-import React from 'react';
-import { IconButton } from 'native-base';
-import { MaterialIcons } from '@expo/vector-icons';
+import React from "react";
+import { IconButton } from "native-base";
+import { MaterialIcons } from "@expo/vector-icons";
 import {
   useGetUserFavoritesQuery,
   useAddRouteToFavoritesMutation,
   useRemoveRouteFromFavoritesMutation,
-} from '@/src/store/travelApi';
-import { StyleProp, ViewStyle } from 'react-native';
+} from "@/src/store/travelApi";
+import { StyleProp, ViewStyle } from "react-native";
 
 type Props = {
   routeId: number;
@@ -16,22 +16,22 @@ type Props = {
 
 export default function FavoriteButton({ routeId, style }: Props) {
   const {
-  data: favorites,
-  isLoading: favLoading,
-  isFetching: favFetching,
-  isSuccess: favSuccess,
-  refetch
-} = useGetUserFavoritesQuery({});
-
+    data: favorites,
+    isLoading: favLoading,
+    isFetching: favFetching,
+    isSuccess: favSuccess,
+    refetch,
+  } = useGetUserFavoritesQuery({});
 
   const [addToFavorites] = useAddRouteToFavoritesMutation();
   const [removeFromFavorites] = useRemoveRouteFromFavoritesMutation();
 
   const isFavorited =
-  favSuccess && favorites?.data?.some((fav) => String(fav.id) === String(routeId));
+    favSuccess &&
+    Array.isArray(favorites?.data) &&
+    favorites.data.some((fav) => String(fav.id) === String(routeId));
 
   const toggleFavorite = async () => {
-    
     try {
       if (isFavorited) {
         await removeFromFavorites({ route: routeId }).unwrap();
@@ -39,25 +39,28 @@ export default function FavoriteButton({ routeId, style }: Props) {
         await addToFavorites({ route: routeId }).unwrap();
       }
     } catch (err) {
-      console.error('Favorite toggle error', err);
+      console.error("Favorite toggle error", err);
     }
     await refetch();
   };
 
   return (
-    <IconButton style={style}
+    <IconButton
+      style={style}
       icon={
         <MaterialIcons
-          name={isFavorited ? 'bookmark' : 'bookmark-border'}
+          name={isFavorited ? "bookmark" : "bookmark-border"}
           size={24}
-          color={isFavorited ? 'white' : 'white'}
+          color={isFavorited ? "white" : "white"}
         />
       }
       onPress={toggleFavorite}
       accessibilityRole="button"
-  accessibilityLabel={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
-  accessibilityState={{ selected: isFavorited }}
-  accessible={true}
+      accessibilityLabel={
+        isFavorited ? "Remove from favorites" : "Add to favorites"
+      }
+      accessibilityState={{ selected: isFavorited }}
+      accessible={true}
     />
   );
 }

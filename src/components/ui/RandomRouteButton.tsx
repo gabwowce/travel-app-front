@@ -4,21 +4,20 @@ import { Box, VStack, Text, HStack, Button } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useGetRoutesQuery } from "@/src/store/travelApi";
-import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility"; 
+import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
 
 export default function RandomRouteButton() {
   const router = useRouter();
-const announce = useAnnounceForAccessibility();
   // Gaunam visus turus (arba daug jų – pagal poreikį)
   const { data, isLoading } = useGetRoutesQuery({ limit: 100 });
   const routes = data?.data ?? [];
 
-const handleRandomRoute = () => {
-  if (!routes.length) return;
-  const random = routes[Math.floor(Math.random() * routes.length)];
-  announce(`Navigating to random tour: ${random.name}`);
-  router.push(`/routes/${random.id}`);
-};
+  const handleRandomRoute = () => {
+    if (!routes.length) return;
+    const random = routes[Math.floor(Math.random() * routes.length)];
+    useAnnounceForAccessibility(`Navigating to random tour: ${random.name}`);
+    router.push(`/routes/${random.id}`);
+  };
 
   if (isLoading) return null;
 
@@ -50,8 +49,8 @@ const handleRandomRoute = () => {
         colorScheme="primary"
         borderRadius="full"
         accessibilityLabel="Suggest me a random tour"
-  accessibilityRole="button"
-  accessibilityHint="Navigates to a randomly selected tour"
+        accessibilityRole="button"
+        accessibilityHint="Navigates to a randomly selected tour"
         onPress={handleRandomRoute}
         isDisabled={!routes.length}
         style={{

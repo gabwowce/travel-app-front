@@ -1,5 +1,5 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, StyleSheet, AccessibilityInfo } from "react-native";
 import { Text } from "native-base";
 import { useRouter } from "expo-router";
 import { Formik } from "formik";
@@ -15,14 +15,20 @@ import { AppRoutes } from "@/src/config/routes";
 import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
 
 export default function LoginScreen() {
+  // Pagrindinis pranešimas atidarius ekraną
   useAnnounceForAccessibility("Login screen opened");
-  const router = useRouter();
-  const { login } = useAuthActions();
-  const [loginUser, { isLoading, error, reset }] = useLoginUserMutation();
 
-  const apiErrors = (error as any)?.data?.errors ?? {};
-  const general = (error as any)?.data?.message;
-  useAnnounceForAccessibility(general);
+  const router = useRouter();
+  const [generalError, setGeneralError] = useState("");
+  const { login } = useAuthActions();
+  const [loginUser, { isLoading, reset }] = useLoginUserMutation();
+
+  // 🔈 Klaidos paskelbimas – ne hookas, o tiesiog Accessibility API
+  useEffect(() => {
+    if (generalError) {
+      AccessibilityInfo.announceForAccessibility(generalError);
+    }
+  }, [generalError]);
 
   const gotoRegister = () => {
     reset();
@@ -33,20 +39,22 @@ export default function LoginScreen() {
     <KeyboardWrapper>
       <ScreenContainer variant="center">
         <View style={styles.text}>
-          <Text variant="header1" accessibilityRole="header">Sign in now</Text>
+          <Text variant="header1" accessibilityRole="header">
+            Sign in now
+          </Text>
           <Text variant="bodyGray">Please sign in to continue</Text>
         </View>
 
         <Formik
           initialValues={{ email: "", password: "" }}
           validationSchema={loginSchema}
-          onSubmit={async (values, { setErrors }) => {
+          onSubmit={async (values) => {
             try {
               await login({ loginRequest: values });
               router.push("/(app)/(tabs)/home");
             } catch (err: any) {
-              const backendErrors = err?.data?.errors;
-              if (backendErrors) setErrors(backendErrors);
+              const message = err?.data?.message ?? "Unknown error";
+              setGeneralError(message);
             }
           }}
         >
@@ -75,8 +83,15 @@ export default function LoginScreen() {
                 onForgotPassword={() => router.push(AppRoutes.FORGOT_PASSWORD)}
               />
 
-              {general && <Text style={styles.generalError} accessibilityLiveRegion="assertive"
-    accessibilityRole="alert">{general}</Text>}
+              {generalError && (
+                <Text
+                  style={styles.generalError}
+                  accessibilityLiveRegion="assertive"
+                  accessibilityRole="alert"
+                >
+                  {generalError}
+                </Text>
+              )}
 
               <Button
                 label={isLoading ? "Signing in..." : "Sign in"}
@@ -86,8 +101,12 @@ export default function LoginScreen() {
           )}
         </Formik>
 
-        <Text onPress={gotoRegister} accessibilityRole="link"
-  accessibilityLabel="Don't have an account? Register here" style={styles.link}>
+        <Text
+          onPress={gotoRegister}
+          accessibilityRole="link"
+          accessibilityLabel="Don't have an account? Register here"
+          style={styles.link}
+        >
           Don't have an account? Register
         </Text>
       </ScreenContainer>
@@ -101,6 +120,6 @@ const styles = StyleSheet.create({
   generalError: {
     color: "red",
     textAlign: "center",
-    paddingBottom: 20,
+    paddingBottom: 10,
   },
 });

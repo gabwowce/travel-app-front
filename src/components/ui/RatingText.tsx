@@ -7,11 +7,19 @@ interface RatingTextProps {
   accessibilityLabel?: string;
 }
 
-export default function RatingText({ value, variant = "bodyGray" }: RatingTextProps) {
+export default function RatingText({
+  value,
+  variant = "bodyGray",
+  accessibilityLabel,
+}: RatingTextProps) {
   const numeric = Number(value);
 
   return (
-    <Text variant={variant} accessibilityRole="text" accessibilityLabel={accessibilityLabel}>
+    <Text
+      variant={variant}
+      accessibilityRole="text"
+      accessibilityLabel={accessibilityLabel}
+    >
       {!isNaN(numeric) ? numeric.toFixed(1) : "–"}
     </Text>
   );

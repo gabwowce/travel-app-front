@@ -1,21 +1,12 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { defaultHeaderOptions } from "@/src/navigation/headerOptions";
 
 export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#0C2736",
-        headerStyle: {
-          backgroundColor: "#FFFCF9",
-          alignContent: "center",
-          justifyContent: "center",
-        },
-        headerShadowVisible: false,
-        headerTintColor: "#000000",
-        tabBarStyle: {
-          backgroundColor: "#FFFCF9",
-        },
+        ...defaultHeaderOptions,
       }}
     >
       <Tabs.Screen
@@ -56,7 +47,6 @@ export default function TabsLayout() {
         name="saved"
         options={{
           title: "Saved",
-          headerShown: false,
           headerTitle: "Saved",
           tabBarIcon: ({ focused, color }) => (
             <Ionicons name="bookmark-outline" size={24} color={color} />

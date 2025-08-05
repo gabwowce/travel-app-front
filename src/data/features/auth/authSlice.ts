@@ -1,4 +1,7 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+// src/data/features/auth/authSlice.ts
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { initAuth } from "./authThunks";
+import { travelApi } from "@/src/store/travelApi";
 
 type AuthState = {
   token: string | null;
@@ -17,10 +20,13 @@ const initialState: AuthState = {
 };
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
-    setCredentials: (state, action: PayloadAction<{ token: string; user: any }>) => {
+    setCredentials: (
+      state,
+      action: PayloadAction<{ token: string; user: any }>
+    ) => {
       state.token = action.payload.token;
       state.user = action.payload.user;
       state.isAuthenticated = true;
@@ -41,23 +47,55 @@ const authSlice = createSlice({
     clearErrors: (state) => {
       state.errors = null;
     },
+    setUser: (state, action: PayloadAction<any>) => {
+      state.user = action.payload;
+    },
   },
-  extraReducers:(builder)=>{
+  extraReducers: (builder) => {
     builder
-      .addCase(initAuth.pending,   (st) => { st.loading = true;  })
-      .addCase(initAuth.fulfilled, (st) => { st.loading = false; })
-      .addCase(initAuth.rejected,  (st) => { st.loading = false; st.isAuthenticated = false; });
+      .addCase(initAuth.pending, (st) => {
+        st.loading = true;
+      })
+      .addCase(initAuth.fulfilled, (st) => {
+        st.loading = false;
+      })
+      .addCase(initAuth.rejected, (st) => {
+        st.loading = false;
+        st.isAuthenticated = false;
+      });
+    builder.addMatcher(
+      travelApi.endpoints.loginUser.matchFulfilled,
+      (state, { payload }) => {
+        // payload: LoginUserApiResponse
+        const token = payload.data?.token;
+        const user = payload.data?.user;
 
-    // jei turi login/logout thunk’us, pridėk juos taip pat
-    builder
-      .addCase(login.pending,   (st) => { st.loading = true;  })
-      .addCase(login.fulfilled, (st) => { st.loading = false; })
-      .addCase(login.rejected,  (st) => { st.loading = false; });
+        if (token && user) {
+          state.token = token;
+          state.user = user;
+          state.isAuthenticated = true;
+        } else {
+          // jeigu API grąžino unexpected formatą – pasaugomės
+          state.token = null;
+          state.user = null;
+          state.isAuthenticated = false;
+        }
+      }
+    );
 
-    // arba vietoj viso šito — naudok utilį:
-   // createCommonReducers([initAuth, login, logout], "auth")(builder);
-  }
+    // ⬇️ LOGOUT → clearAuth
+    builder.addMatcher(
+      travelApi.endpoints.logoutUser.matchFulfilled,
+      (state) => {
+        state.token = null;
+        state.user = null;
+        state.isAuthenticated = false;
+      }
+    );
+  },
 });
 
-export const { setCredentials, clearAuth, setLoading, setErrors, clearErrors } = authSlice.actions;
+export const { setCredentials, clearAuth, setLoading, setErrors, clearErrors } =
+  authSlice.actions;
+
 export default authSlice.reducer;

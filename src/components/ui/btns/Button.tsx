@@ -9,7 +9,8 @@ type Props = {
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   children?: React.ReactNode;
-  isDisabled?: boolean; 
+  isDisabled?: boolean;
+  accessibilityLabel?: string;
 
   // Spacing
   m?: number;
@@ -36,7 +37,7 @@ export default function CustomButton({
   rightIcon,
   children,
   isDisabled,
-
+  accessibilityLabel,
   // spacing props
   m,
   mx,
@@ -67,9 +68,9 @@ export default function CustomButton({
   return (
     <View style={[styles.buttonContainer, spacingStyle]}>
       <Pressable
-     accessibilityRole="button"
-  accessibilityState={{ disabled: isDisabled }}
-  accessibilityLabel={typeof children === "string" ? children : label}
+        accessibilityRole="button"
+        accessibilityState={{ disabled: isDisabled }}
+        accessibilityLabel={accessibilityLabel ? accessibilityLabel : label}
         style={[
           styles.button,
           theme === "primary" && styles.primaryButton,
@@ -124,6 +125,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   disabledButton: {
-  opacity: 0.5,
-},
+    opacity: 0.5,
+  },
 });

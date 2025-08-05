@@ -1,7 +1,7 @@
-import React, {useLayoutEffect} from "react";
+import React, { useLayoutEffect, useMemo } from "react";
 import { useLocalSearchParams, router } from "expo-router";
-import { ScrollView, StyleSheet } from "react-native";
-import { Box, Image, VStack, HStack, Text, Badge, Icon } from "native-base";
+import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import { Box, Image, VStack, Text, Icon } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
 import {
   useGetRouteByIdQuery,
@@ -10,24 +10,19 @@ import {
 import { FAKE_POINTS } from "@/src/config/fakeData";
 import { IMAGES } from "@/src/config/images";
 import FlexContainer from "@/src/components/layout/FlexContainer";
-import Header from "@/src/components/Header";
-import Button from "@/src/components/ui/btns/Button";
-import CircleButton from "@/src/components/ui/btns/CircleButton";
-import FavoriteButton from "@/src/components/ui/btns/FavoriteButton";
 import Spinner from "@/src/components/ui/Spinner";
 import RatingStars from "@/src/components/ui/RatingStars";
 import RouteStatsRow from "@/src/components/ui/RouteStatsRow";
 import CategoryBadges from "@/src/components/ui/CategoryBadges";
+import Button from "@/src/components/ui/btns/Button";
+import FavoriteButton from "@/src/components/ui/btns/FavoriteButton";
 import { useNavigation } from "@react-navigation/native";
 import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
 
 export default function RouteInfoScreen() {
-
-    const navigation = useNavigation();
+  const navigation = useNavigation();
   const { id } = useLocalSearchParams();
-  const routeId = Array.isArray(id)
-    ? parseInt(id[0], 10)
-    : parseInt(id ?? "", 10);
+  const routeId = useMemo(() => Number(Array.isArray(id) ? id[0] : id), [id]);
 
   const { data: selectedRoute, isLoading: routeLoading } = useGetRouteByIdQuery(
     { route: String(routeId) },
@@ -39,13 +34,37 @@ export default function RouteInfoScreen() {
     { skip: !routeId }
   );
 
-  if (routeLoading || !selectedRoute) {
-    return <Spinner />;
-  }
-
+  // Consolidated loading state so hooks order stays the same on every render
+  const isLoading = routeLoading || placesLoading || !selectedRoute;
   const route = selectedRoute?.data;
 
-  if (routeLoading || !route) {
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: isLoading ? "" : (route?.name ?? ""),
+      headerRight: () => (
+        <TouchableOpacity onPress={navigateToMap} accessibilityLabel="Open map">
+          <Icon as={MaterialIcons} name="map" size="lg" color="primary.500" />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation, isLoading, route?.name]);
+
+  useAnnounceForAccessibility(
+    isLoading ? "Loading route..." : `${route!.name} route screen opened`
+  );
+
+  const navigateToMap = () => {
+    router.push({
+      pathname: "/routes/[id]/map",
+      params: {
+        id: String(routeId),
+        fake: encodeURIComponent(JSON.stringify(FAKE_POINTS)),
+        routeName: route?.name ?? "",
+      },
+    });
+  };
+
+  if (isLoading) {
     return <Spinner />;
   }
 
@@ -57,40 +76,20 @@ export default function RouteInfoScreen() {
     difficulty,
     estimated_time,
     ratings_avg_rating,
-    media,
     categories,
-  } = route;
-  const navigateToMap = () => {
-    router.push({
-      pathname: "/routes/[id]/map",
-      params: {
-        id: String(routeId),
-        fake: encodeURIComponent(JSON.stringify(FAKE_POINTS)),
-        routeName: String(name),
-      },
-    });
-  };
+  } = route!;
 
-      useLayoutEffect(() => {
-      navigation.setOptions({
-        title:`${name}`
-      });
-    }, [navigation]);
-useAnnounceForAccessibility(`${name} route screen opened`);
   return (
     <FlexContainer>
-      {/* <Header
-        title={name}
-        onBackPress={() => router.back()}
-        rightIcon={<CircleButton variant="start" onPress={navigateToMap} />}
-      /> */}
-
-      <ScrollView keyboardShouldPersistTaps="handled" accessible={false}
-  importantForAccessibility="no">
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        accessible={false}
+        importantForAccessibility="no"
+      >
         <VStack space={4} mt={6}>
           <Box style={styles.imageContainer}>
             <Image
-               alt={`${name} route main image`}
+              alt={`${name} route main image`}
               accessibilityLabel={`${name} route photo`}
               accessible
               source={IMAGES.VINGIO_PARKAS}
@@ -98,8 +97,13 @@ useAnnounceForAccessibility(`${name} route screen opened`);
             />
             <FavoriteButton routeId={routeId} style={styles.bookmarkIcon} />
             <Box style={styles.imageOverlay}>
-              <Text style={styles.title} accessibilityRole="header">{name}</Text>
-              <RatingStars value={ratings_avg_rating} accessibilityLabel={`Rating: ${ratings_avg_rating} stars`} />
+              <Text style={styles.title} accessibilityRole="header">
+                {name}
+              </Text>
+              <RatingStars
+                value={ratings_avg_rating}
+                accessibilityLabel={`Rating: ${ratings_avg_rating} stars`}
+              />
             </Box>
           </Box>
         </VStack>
@@ -117,19 +121,20 @@ useAnnounceForAccessibility(`${name} route screen opened`);
           <Text fontSize="sm" lineHeight="lg">
             {description}
           </Text>
-
-          <Button
-            pb={15}
-            onPress={navigateToMap}
-            accessibilityLabel={`Start ${name} route on the map`}
-            leftIcon={
-              <Icon as={MaterialIcons} name="map" size="sm" color="white" />
-            }
-          >
-            Start
-          </Button>
         </VStack>
       </ScrollView>
+      <Button
+        pr={10}
+        pl={10}
+        pb={35}
+        onPress={navigateToMap}
+        accessibilityLabel={`Start ${name} route on the map`}
+        leftIcon={
+          <Icon as={MaterialIcons} name="map" size="sm" color="white" />
+        }
+      >
+        Start
+      </Button>
     </FlexContainer>
   );
 }
@@ -157,11 +162,6 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 24,
     fontWeight: "bold",
-  },
-  ratingText: {
-    color: "#E5E7EB",
-    marginLeft: 8,
-    fontSize: 14,
   },
   bookmarkIcon: {
     position: "absolute",

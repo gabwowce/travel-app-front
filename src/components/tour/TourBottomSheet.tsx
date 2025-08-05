@@ -1,6 +1,21 @@
 // TourBottomSheet.tsx
-import React, { forwardRef, useImperativeHandle, useMemo, useRef, useState, useEffect } from "react";
-import { StyleSheet, View, Text, Dimensions, Linking, TouchableOpacity, Platform } from "react-native";
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+  useEffect,
+} from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Dimensions,
+  Linking,
+  TouchableOpacity,
+  Platform,
+} from "react-native";
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { TourPoint } from "../map/map";
 import TourPointItem from "./TourPointItem";
@@ -9,7 +24,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import SelectedTourPointDetails from "./SelectedTourPointDetails";
 import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
-
 
 interface Props {
   points: TourPoint[];
@@ -20,115 +34,130 @@ interface Props {
   onFullScreenChange?: (isFull: boolean) => void;
 }
 
-const TourBottomSheet = forwardRef<BottomSheet, Props>(({ points, userLocation, selectedPoint, onSelectPoint, onBack, onFullScreenChange }, ref) => {
-  const announce = useAnnounceForAccessibility();
-  const localRef = useRef<BottomSheet>(null);
-  const insets = useSafeAreaInsets();
-  const fullHeight = Dimensions.get('screen').height + insets.top;
-  const snapPoints = useMemo(() => ['28%', '50%', '100%'], []);
-  
-  const [index, setIndex] = useState(1);
-  const isFullScreen = index === 2;
+const TourBottomSheet = forwardRef<BottomSheet, Props>(
+  (
+    {
+      points,
+      userLocation,
+      selectedPoint,
+      onSelectPoint,
+      onBack,
+      onFullScreenChange,
+    },
+    ref
+  ) => {
+    const localRef = useRef<BottomSheet>(null);
+    const insets = useSafeAreaInsets();
+    const fullHeight = Dimensions.get("screen").height + insets.top;
+    const snapPoints = useMemo(() => ["28%", "50%", "100%"], []);
 
-  useEffect(() => {
-  if (selectedPoint) {
-    announce(`Selected: ${selectedPoint.title}`);
-  }
-}, [selectedPoint]);
+    const [index, setIndex] = useState(1);
+    const isFullScreen = index === 2;
 
-  useImperativeHandle(ref, () => localRef.current as BottomSheet);
+    // useEffect(() => {
+    //   if (selectedPoint) {
+    //     useAnnounceForAccessibility(`Selected: ${selectedPoint.title}`);
+    //   }
+    // }, [selectedPoint]);
 
-  // useEffect(() => {
-  //   onFullScreenChange?.(isFullScreen);
-  // }, [isFullScreen, index]);
+    useImperativeHandle(ref, () => localRef.current as BottomSheet);
 
-  const renderScrollView = () => {
-    if (!selectedPoint && userLocation) {
-      return (
-        <BottomSheetScrollView
-         
-          contentContainerStyle={styles.contentContainer}
-          scrollEnabled={true}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          {points.map((point) => (
-            <TourPointItem
-              key={point.id}
-              point={point}
+    // useEffect(() => {
+    //   onFullScreenChange?.(isFullScreen);
+    // }, [isFullScreen, index]);
+
+    const renderScrollView = () => {
+      if (!selectedPoint && userLocation) {
+        return (
+          <BottomSheetScrollView
+            contentContainerStyle={styles.contentContainer}
+            scrollEnabled={true}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            {points.map((point) => (
+              <TourPointItem
+                key={point.id}
+                point={point}
+                userLocation={userLocation}
+                onSelect={(p) => {
+                  onSelectPoint(p);
+                  localRef.current?.snapToIndex(0);
+                }}
+              />
+            ))}
+          </BottomSheetScrollView>
+        );
+      }
+
+      if (selectedPoint) {
+        return (
+          <BottomSheetScrollView
+            contentContainerStyle={styles.contentContainer}
+            scrollEnabled={true}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            <SelectedTourPointDetails
+              point={selectedPoint}
               userLocation={userLocation}
-              onSelect={(p) => {
-                onSelectPoint(p);
-                localRef.current?.snapToIndex(0);
-              }}
             />
-          ))}
-        </BottomSheetScrollView>
-      );
-    }
+          </BottomSheetScrollView>
+        );
+      }
+      return null;
+    };
 
-    if (selectedPoint) {
-      return (
-        <BottomSheetScrollView
-          contentContainerStyle={styles.contentContainer}
-          scrollEnabled={true}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          <SelectedTourPointDetails point={selectedPoint} userLocation={userLocation}/>
+    return (
+      <BottomSheet
+        accessibilityViewIsModal={true}
+        ref={localRef}
+        index={1}
+        snapPoints={snapPoints}
+        enablePanDownToClose={false}
+        topInset={0}
+        enableContentPanningGesture={true}
+        handleStyle={isFullScreen ? styles.hiddenHandle : styles.handleStyle}
+        handleIndicatorStyle={
+          isFullScreen ? styles.hiddenHandle : styles.handleIndicatorStyle
+        }
+        onChange={(i) => {
+          onFullScreenChange?.(i === 2);
+        }}
+        backgroundStyle={
+          isFullScreen ? styles.fullscreenBackground : styles.screenBackground
+        }
+        enableDynamicSizing={false}
+      >
+        {selectedPoint
+          ? isFullScreen && (
+              <Header
+                title={`About`}
+                onBackPress={() => localRef.current?.snapToIndex(1)}
+                onPressClose={onBack}
+                // disableSafeArea
+              />
+            )
+          : isFullScreen && (
+              <Header
+                title="Geo Points"
+                onBackPress={() => {
+                  if (isFullScreen) {
+                    localRef.current?.snapToIndex(1);
+                  } else {
+                    onBack();
+                  }
+                }}
+                onPressClose={onBack}
+                // disableSafeArea
+              />
+            )}
 
-
-        </BottomSheetScrollView>
-      );
-    }
-    return null;
-  };
-
-  return (
-    <BottomSheet
-    accessibilityViewIsModal={true}
-      ref={localRef}
-      index={1}
-      snapPoints={snapPoints}
-      enablePanDownToClose={false}
-      topInset={0}
-      enableContentPanningGesture={true}
-      handleStyle={isFullScreen ? styles.hiddenHandle : styles.handleStyle}
-      handleIndicatorStyle={isFullScreen ? styles.hiddenHandle : styles.handleIndicatorStyle}
-      onChange={(i) => {
-      onFullScreenChange?.(i === 2);
-    }}
-      backgroundStyle={isFullScreen ? styles.fullscreenBackground : styles.screenBackground}
-      enableDynamicSizing = {false}
-    >
-      {selectedPoint ? (
-        isFullScreen && (
-          <Header
-            title={`About`}
-            onBackPress={() => localRef.current?.snapToIndex(1)}
-            onPressClose={onBack}
-            // disableSafeArea
-          />
-        )
-      ) : isFullScreen && (
-        <Header
-          title="Geo Points"
-          onBackPress={() => {
-            if (isFullScreen) {
-              localRef.current?.snapToIndex(1);
-            } else {
-              onBack();
-            }
-          }}
-          onPressClose={onBack}
-          // disableSafeArea
-        />
-      )}
-
-      {renderScrollView()}
-    </BottomSheet>
-  );
-});
+        {renderScrollView()}
+      </BottomSheet>
+    );
+  }
+);
 
 export default TourBottomSheet;
 
@@ -191,5 +220,4 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingHorizontal: 16,
   },
-  
 });

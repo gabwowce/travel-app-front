@@ -1,4 +1,4 @@
-import React, {useLayoutEffect} from "react";
+import React, { useLayoutEffect } from "react";
 import { Text } from "native-base";
 import { TouchableWithoutFeedback, Keyboard } from "react-native";
 import { useRouter, useNavigation } from "expo-router";
@@ -18,7 +18,9 @@ import { useSearchScreenData } from "@/src/hooks/useSearchScreenData";
 import { useAppDispatch } from "@/src/data/hooks";
 
 export default function SearchScreen() {
-  useAnnounceForAccessibility("Search screen opened. Enter a keyword to begin searching tours.");
+  useAnnounceForAccessibility(
+    "Search screen opened. Enter a keyword to begin searching tours."
+  );
   const router = useRouter();
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
@@ -36,13 +38,11 @@ export default function SearchScreen() {
     routes,
   } = useSearchScreenData();
 
- useLayoutEffect(() => {
-  navigation.setOptions({
-    headerRight: () => (
-      <FilterCircleButton routeKey={routeKey} />
-    )
-  });
-}, [navigation, routeKey]);
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => <FilterCircleButton routeKey={routeKey} />,
+    });
+  }, [navigation, routeKey]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -75,15 +75,24 @@ export default function SearchScreen() {
         {hasSearchOrFilters ? (
           <>
             {isFetching ? (
-              <Spinner mt={8} />
+              <Spinner />
             ) : isError ? (
-              <Text mt={8} color="red.500" textAlign="center" accessibilityLiveRegion="assertive"
-  accessibilityRole="alert">
+              <Text
+                mt={8}
+                color="red.500"
+                textAlign="center"
+                accessibilityLiveRegion="assertive"
+                accessibilityRole="alert"
+              >
                 Failed to load routes
               </Text>
             ) : routes.length === 0 ? (
-              <Text mt={8} color="gray.500" textAlign="center"  accessibilityLiveRegion="polite"
-  accessibilityRole="status">
+              <Text
+                mt={8}
+                color="gray.500"
+                textAlign="center"
+                accessibilityLiveRegion="polite"
+              >
                 No results found.
               </Text>
             ) : (
@@ -96,8 +105,13 @@ export default function SearchScreen() {
             )}
           </>
         ) : (
-          <Text textAlign="center" mt={10} color="gray.400" px={6} accessibilityLiveRegion="polite"
-  accessibilityRole="status">
+          <Text
+            textAlign="center"
+            mt={10}
+            color="gray.400"
+            px={6}
+            accessibilityLiveRegion="polite"
+          >
             Type at least 3 letters or apply filters to start searching…
           </Text>
         )}

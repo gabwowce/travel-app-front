@@ -69,21 +69,31 @@ export default function EditProfileScreen() {
   const user = data?.data;
 
   /* 2) --- Mutacija profilio atnaujinimui */
-  const [updateProfile, { isLoading: saving }] =
-    useUpdateUserProfileMutation();
+  const [updateProfile, { isLoading: saving }] = useUpdateUserProfileMutation();
 
   if (isLoading) return <Spinner />;
   if (isError || !user)
     return (
-      <Text textAlign="center" mt={8} accessibilityRole="alert"
-  accessibilityLiveRegion="assertive">
+      <Text
+        textAlign="center"
+        mt={8}
+        accessibilityRole="alert"
+        accessibilityLiveRegion="assertive"
+      >
         Error loading profile.
       </Text>
     );
 
   return (
     <Formik<User>
-      initialValues={user}
+      initialValues={{
+        ...user,
+        profile: user.profile ?? {
+          bio: "",
+          location: "",
+          website: "",
+        },
+      }}
       enableReinitialize
       validationSchema={editProfileSchema}
       onSubmit={async (values, { setErrors }) => {
@@ -150,7 +160,13 @@ export default function EditProfileScreen() {
 
                 <Divider my={4} />
 
-                <Text mb={4} fontSize="sm" textAlign="center" color="gray.500" accessibilityLiveRegion="polite">
+                <Text
+                  mb={4}
+                  fontSize="sm"
+                  textAlign="center"
+                  color="gray.500"
+                  accessibilityLiveRegion="polite"
+                >
                   Update your profile info below.
                 </Text>
 
