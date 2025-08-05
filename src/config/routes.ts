@@ -17,7 +17,7 @@ export const AppRoutes = {
   CHANGE_PASSWORD: "/05-profile/changePassword",
 
   // Legal
-  PRIVACY_POLICY: "/(legal)/privacy",
+  PRIVACY_POLICY: "/(auth)/privacy",
 
   // Routes
   routeDetails: (id: string | number) => `/(app)/routes/${id}`,

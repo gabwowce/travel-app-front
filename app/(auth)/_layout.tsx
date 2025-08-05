@@ -14,6 +14,12 @@ export default function AuthLayout() {
           headerStyle: { backgroundColor: "transparent" }, // (nebūtina, bet nuima šešėlį Android’e)
         }}
       />
+      <Stack.Screen
+        name="privacy"
+        options={{
+          title: "Privacy Policy",
+        }}
+      />
     </Stack>
   );
 }

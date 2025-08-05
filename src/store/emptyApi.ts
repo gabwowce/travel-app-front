@@ -7,7 +7,7 @@ import {
   type FetchArgs, // ← šitas turi url / params / method / body
 } from "@reduxjs/toolkit/query/react";
 import type { RootState } from "@/src/data/store";
-
+import { ENV } from "@/src/config/env";
 /* 1. Neapdorotas bazinis fetch’as */
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: "https://travelapp.prus.dev",

@@ -11,8 +11,9 @@
     "test": "jest --watchAll",
     "lint": "expo lint",
     "api:pull": "curl -L https://travelapp.prus.dev/api/documentation-json -o spec/openapi.json",
-    "api:gen": "npx @rtk-query/codegen-openapi openapi-config.js",
-    "api:update": "npm run api:pull && npm run api:gen"
+    "api:fixIds": "node scripts/fix-operationIds.js",
+    "api:gen": "cross-env TS_NODE_PROJECT=tsconfig.codegen.json npx @rtk-query/codegen-openapi openapi-config.js",
+    "api:update": "npm run api:pull && npm run api:fixIds && npm run api:gen"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
@@ -54,7 +55,7 @@
     "react-native-reanimated": "~3.17.4",
     "react-native-responsive-screen": "^1.4.2",
     "react-native-safe-area-context": "5.4.0",
-    "react-native-screens": "~4.10.0",
+    "react-native-screens": "~4.11.1",
     "react-native-svg": "15.11.2",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "^0.20.0",
@@ -66,13 +67,16 @@
     "@babel/core": "^7.26.0",
     "@rtk-query/codegen-openapi": "^2.0.0",
     "@types/jest": "^29.5.14",
+    "@types/lodash": "^4.17.20",
     "@types/react": "~19.0.10",
     "@types/react-native": "^0.72.8",
     "@types/react-native-vector-icons": "^6.4.18",
     "@types/react-test-renderer": "^18.3.0",
+    "cross-env": "^7.0.3",
     "jest": "~29.7.0",
     "jest-expo": "^53.0.0",
     "openapi-typescript-codegen": "^0.29.0",
+    "ts-node": "^10.9.2",
     "typescript": "~5.8.3"
   },
   "private": true

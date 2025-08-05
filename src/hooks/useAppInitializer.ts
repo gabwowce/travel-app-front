@@ -1,25 +1,36 @@
+// src/hooks/useAppInitializer.ts
 import { useEffect, useState } from "react";
-import { store } from "@/src/data/store";
-import { initAuth } from "@/src/data/features/auth/authThunks";
 
-export function useAppInitializer() {
+type InitTask = () => Promise<unknown>;
+
+export function useAppInitializer(
+  tasks: InitTask[] = [],
+  splashMinMs: number // perduodam iš ENV
+) {
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log("[useAppInitializer  init] start");
+    let isMounted = true;
+
     (async () => {
+      const startedAt = Date.now();
       try {
-        await Promise.all([store.dispatch(initAuth())]);
-        console.log("useAppInitializer [init] ok");
+        // paleidžiam visus inicializacijos darbus
+        await Promise.all(tasks.map((t) => t()));
       } catch (e) {
-        console.log("[useAppInitializer init] error", e);
-        setError((e as Error).message ?? "Something went wrong");
+        if (isMounted) setError((e as Error).message);
       } finally {
-        setReady(true);
+        const elapsed = Date.now() - startedAt;
+        const remaining = Math.max(0, splashMinMs - elapsed);
+        setTimeout(() => isMounted && setReady(true), remaining);
       }
     })();
-  }, []);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [tasks, splashMinMs]);
 
   return { ready, error } as const;
 }

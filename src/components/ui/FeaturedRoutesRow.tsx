@@ -25,8 +25,12 @@ export default function FeaturedRoutesRow({
     return <Text px={5}>No featured routes available.</Text>;
 
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} accessibilityRole="scrollbar"
-  accessibilityLabel="Featured tour routes">
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      accessibilityRole="scrollbar"
+      accessibilityLabel="Featured tour routes"
+    >
       <HStack space={4} px={5}>
         {routes.map((route) => (
           <TourCard
@@ -34,7 +38,11 @@ export default function FeaturedRoutesRow({
             id={String(route.id)}
             image={IMAGES.VINGIO_PARKAS}
             title={route.name ?? "Unnamed"}
-            rating={(route as any).ratings_avg_rating ?? 0}
+            rating={
+              (route as any).ratings_avg_rating ??
+              (route as any).ratings_avg ??
+              0
+            }
             location={`${route.city?.name ?? "Unknown"}, ${route.city?.country?.name ?? "Unknown"}`}
             accessibilityLabel={`Tour: ${route.name}, rated ${(route as any).ratings_avg_rating ?? 0} stars`}
           />

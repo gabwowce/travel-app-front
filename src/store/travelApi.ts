@@ -334,16 +334,20 @@ const injectedRtkApi = api.injectEndpoints({
       GetRouteRatingsApiResponse,
       GetRouteRatingsApiArg
     >({
-      query: (queryArg) => ({
-        url: `/api/v1/routes/${queryArg.route}/ratings`,
-        params: {
-          cursor: queryArg.cursor,
-          limit: queryArg.limit,
-          direction: queryArg.direction,
-          per_page: queryArg.perPage,
-          page: queryArg.page,
-        },
-      }),
+      query: ({ route, ...rest }) => {
+        // Pašalinam undefined reikšmes iš params
+        const params: Record<string, any> = {};
+        if (rest.cursor !== undefined) params.cursor = rest.cursor;
+        if (rest.limit !== undefined) params.limit = rest.limit;
+        if (rest.direction !== undefined) params.direction = rest.direction;
+        if (rest.perPage !== undefined) params.per_page = rest.perPage;
+        if (rest.page !== undefined) params.page = rest.page;
+
+        return {
+          url: `/api/v1/routes/${route}/ratings`,
+          params,
+        };
+      },
     }),
     storeRating: build.mutation<StoreRatingApiResponse, StoreRatingApiArg>({
       query: (queryArg) => ({

@@ -18,6 +18,8 @@ import SplashScreen from "@/src/components/screens/splash";
 import ErrorScreen from "@/src/components/screens/error";
 import BusyOverlay from "@/src/components/ui/BusyOverlay";
 import { useAppInitializer } from "@/src/hooks/useAppInitializer";
+import { ENV } from "@/src/config/env";
+import { initAuth } from "@/src/data/features/auth/authThunks";
 
 // RN ≥ 0.72 BackHandler.removeEventListener polyfill
 if (!(BackHandler as any).removeEventListener) {
@@ -30,8 +32,10 @@ if (!(BackHandler as any).removeEventListener) {
 // SplashScreenExpo.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const { ready, error } = useAppInitializer();
-
+  const { ready, error } = useAppInitializer(
+    [() => store.dispatch(initAuth())],
+    ENV.SPLASH_MIN_MS
+  );
   // const onLayoutRootView = useCallback(async () => {
   //   await SplashScreenExpo.hideAsync();
   // }, [ready]);
