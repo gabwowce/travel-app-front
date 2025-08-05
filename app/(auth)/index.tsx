@@ -40,7 +40,7 @@ export default function LoginScreen() {
           onSubmit={async (values, { setErrors }) => {
             try {
               await login({ loginRequest: values });
-              router.push(AppRoutes.HOME);
+              router.push("/(app)/(tabs)/home");
             } catch (err: any) {
               const backendErrors = err?.data?.errors;
               if (backendErrors) setErrors(backendErrors);
