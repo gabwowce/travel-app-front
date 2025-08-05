@@ -6,9 +6,11 @@ import { FontAwesome } from "@expo/vector-icons";
 export default function StatChip({
   icon,
   label,
+  accessibilityLabel
 }: {
   icon: string;
   label: string;
+  accessibilityLabel?: string;
 }) {
   return (
     <HStack
@@ -20,6 +22,8 @@ export default function StatChip({
       rounded="md"
       mr="2"
       mb="2"
+      accessibilityRole="text"
+  accessibilityLabel={accessibilityLabel}
     >
       <Icon as={FontAwesome} name={icon} size="xs" mr="1" />
       <Text fontSize="xs">{label}</Text>

@@ -88,11 +88,14 @@ export default function PaginatedFlatList<T>({
       {ListHeaderComponent}
 
       {isFetching && cursor === undefined ? (
-        <Box alignItems="center" py={6}><Spinner size="lg" /></Box>
+        <Box alignItems="center" py={6}><Spinner size="lg" accessibilityRole="progressbar"
+  accessibilityLabel="Loading data, please wait" /></Box>
       ) : isError ? (
-        <Text textAlign="center" color="red.500" mt={4}>Failed to load data.</Text>
+        <Text textAlign="center" color="red.500" mt={4} accessibilityRole="alert"
+  accessibilityLiveRegion="assertive">Failed to load data.</Text>
       ) : displayedItems.length === 0 ? (
-        ListEmptyComponent ?? <Text textAlign="center" color="gray.500" mt={4}>No results.</Text>
+        ListEmptyComponent ?? <Text textAlign="center" color="gray.500" mt={4} accessibilityRole="status"
+  accessibilityLiveRegion="polite">No results.</Text>
       ) : (
         <>
           <SimpleGrid minChildWidth={170} spacing={3} w="100%">

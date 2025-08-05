@@ -23,13 +23,23 @@ export default function RouteStatsRow({
       <StatChip
         icon="map-marker"
         label={isValidDistance ? `${parsedDistance.toFixed(1)} km` : "–"}
+        accessibilityLabel={
+    isValidDistance ? `Distance: ${parsedDistance.toFixed(1)} kilometers` : "Distance unknown"
+  }
       />
       <StatChip
         icon="area-chart"
         label={elevation ? `${elevation} m ↑` : "–"}
+        accessibilityLabel={
+    elevation ? `Elevation gain: ${elevation} meters` : "Elevation unknown"
+  }
       />
-      <StatChip icon="road" label={difficulty ?? "–"} />
-      <StatChip icon="clock-o" label={estimated_time ?? "–"} />
+      <StatChip icon="road" label={difficulty ?? "–"} accessibilityLabel={
+    difficulty ? `Difficulty: ${difficulty}` : "Difficulty unknown"
+  } />
+      <StatChip icon="clock-o" label={estimated_time ?? "–"} accessibilityLabel={
+    estimated_time ? `Estimated time: ${estimated_time}` : "Estimated time unknown"
+  } />
     </HStack>
   );
 }

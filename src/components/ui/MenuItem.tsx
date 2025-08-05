@@ -14,13 +14,15 @@ interface MenuItemProps {
 
 const MenuItem: React.FC<MenuItemProps> = ({ icon, title, onPress, color = "black", showArrow = true }) => {
   return (
-    <TouchableOpacity style={styles.listItem} onPress={onPress}>
+    <TouchableOpacity style={styles.listItem} onPress={onPress}  accessibilityRole="button"
+  accessibilityLabel={`${title} menu item`}>
       <HStack alignItems="center">
         <MaterialIcons name={icon as any} size={24} color={color} />
         <Text ml={3} style={{ color }}>{title}</Text>
       </HStack>
       {showArrow && (
-        <MaterialIcons name="keyboard-arrow-right" size={24} color="gray" />
+        <MaterialIcons name="keyboard-arrow-right" size={24} color="gray" accessible={false}
+    importantForAccessibility="no"/>
       )}
     </TouchableOpacity>
   );

@@ -20,6 +20,8 @@ export function Background({ children, style, ...props }: BackgroundProps) {
       source={backgroundSource}
       style={[styles.bgImage, style]}
       resizeMode="cover"
+      accessible={false} // 👈 paslepiam nuo screen reader
+  importantForAccessibility="no"
       {...props}
     >
       {children}

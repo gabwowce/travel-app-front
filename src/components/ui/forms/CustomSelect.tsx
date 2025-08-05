@@ -23,7 +23,7 @@ export default function CustomSelect({
   return (
     <>
       {label && <Text mb={1}>{label}</Text>}
-      <Select
+     <Select
   selectedValue={selectedValue}
   placeholder={placeholder ?? "Select option"}
   onValueChange={onValueChange}
@@ -31,6 +31,10 @@ export default function CustomSelect({
   style={styles.selectStyle}
   borderColor="gray.300"
   fontSize="sm"
+  accessibilityLabel={label ?? placeholder ?? "Dropdown menu"}
+  accessibilityHint="Double tap to open the list of options"
+  accessibilityRole="menu"
+  accessible={true}
   dropdownIcon={
     <Box mr={4}>
       <Ionicons name="chevron-down" size={16} color="#6b7280" />
@@ -42,9 +46,16 @@ export default function CustomSelect({
   }}
 >
   {options.map((opt) => (
-    <Select.Item key={opt.value} label={opt.label} value={opt.value} />
+    <Select.Item
+      key={opt.value}
+      label={opt.label}
+      value={opt.value}
+      accessibilityLabel={opt.label}
+      accessibilityRole="menuitem"
+    />
   ))}
 </Select>
+
     </>
   );
 }

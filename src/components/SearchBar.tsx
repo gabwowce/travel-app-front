@@ -12,35 +12,56 @@ interface SearchBarProps {
   onEndEditing?: () => void;
 }
 
-export default function SearchBar({ placeholder, value, onChangeText, onClear, onEndEditing }: SearchBarProps) {
+export default function SearchBar({
+  placeholder,
+  value,
+  onChangeText,
+  onClear,
+  onEndEditing,
+}: SearchBarProps) {
   return (
     <VStack mt={6} space={3}>
+      <View style={styles.container}>
+        {/* 🔍 Search ikona */}
+        <Ionicons
+          name="search-outline"
+          size={20}
+          color="gray"
+          style={styles.iconLeft}
+          accessibilityElementsHidden
+          importantForAccessibility="no"
+        />
 
- <View style={styles.container}>
-      {/* 🔍 Search ikona */}
-      <Ionicons name="search-outline" size={20} color="gray" style={styles.iconLeft} />
+        {/* 📝 Teksto įvedimo laukas */}
+        <TextInput
+          style={styles.input}
+          placeholder={placeholder || "Search..."}
+          value={value}
+          onChangeText={onChangeText}
+          placeholderTextColor="gray"
+          onEndEditing={onEndEditing}
+          accessible
+          accessibilityLabel="Search input"
+          accessibilityHint="Enter search keywords"
+          returnKeyType="search"
+        />
 
-      {/* 📝 Teksto įvedimo laukas */}
-      <TextInput
-        style={styles.input}
-        placeholder={placeholder || "Search..."}
-        value={value}
-        onChangeText={onChangeText}
-        placeholderTextColor="gray"
-        onEndEditing={onEndEditing}
-      />
-
-      {/* ❌ Išvalymo mygtukas */}
-      {value.length > 0 && (
-        <Pressable onPress={onClear} style={styles.clearButton}>
-          <Ionicons name="close-circle" size={20} color="gray" />
-        </Pressable>
-      )}
-    </View>
+        {/* ❌ Išvalymo mygtukas */}
+        {value.length > 0 && (
+          <Pressable
+            onPress={onClear}
+            style={styles.clearButton}
+            accessibilityRole="button"
+            accessibilityLabel="Clear search"
+          >
+            <Ionicons name="close-circle" size={20} color="gray" />
+          </Pressable>
+        )}
+      </View>
     </VStack>
-   
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

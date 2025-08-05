@@ -37,7 +37,8 @@ export default function SelectableList<T extends { id: number }>({
           data={data}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
-            <Pressable onPress={() => onSelect(item)} style={styles.item}>
+            <Pressable onPress={() => onSelect(item)} style={styles.item} accessibilityRole="button"
+        accessibilityLabel={`Select ${label}`} accessibilityHint="Double tap to select this item">
               {renderItem ? renderItem(item) : <Text style={styles.text}>{getItemLabel ? getItemLabel(item) : ""}</Text>}
             </Pressable>
           )}

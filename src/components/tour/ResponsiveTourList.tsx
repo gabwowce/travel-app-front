@@ -39,6 +39,8 @@ export default function ResponsiveTourList({
 
   return (
     <FlashList
+      accessible
+      accessibilityLabel="List of available tours"
       data={data}
       numColumns={numColumns}
       estimatedItemSize={220}
@@ -55,7 +57,8 @@ export default function ResponsiveTourList({
           <FilterChips filters={filters} onClear={onClearFilters} />
         </VStack>
       }
-      ListFooterComponent={isFetchingNextPage ? <Spinner my={4} /> : null}
+      ListFooterComponent={isFetchingNextPage ? <Spinner my={4} accessibilityRole="progressbar"
+  accessibilityLabel="Loading more tours" /> : null}
       contentContainerStyle={{ paddingBottom: 32 }}
       renderItem={({ item, index }) => (
         <ColumnItem index={index} numColumns={numColumns}>
@@ -64,7 +67,9 @@ export default function ResponsiveTourList({
         )}
 
        ListEmptyComponent={
-        <Text mt={5} color="gray.500" textAlign="center">
+        <Text mt={5} color="gray.500" textAlign="center"
+        accessibilityRole="status"
+        accessibilityLiveRegion="polite">
             No tours found.
         </Text>
         }

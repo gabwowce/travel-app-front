@@ -54,6 +54,10 @@ export default function FavoriteButton({ routeId, style }: Props) {
         />
       }
       onPress={toggleFavorite}
+      accessibilityRole="button"
+  accessibilityLabel={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+  accessibilityState={{ selected: isFavorited }}
+  accessible={true}
     />
   );
 }

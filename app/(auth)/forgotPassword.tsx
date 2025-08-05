@@ -7,8 +7,10 @@ import Button from "@/src/components/ui/btns/Button";
 import KeyboardWrapper from "@/src/components/KeyboardWrapper";
 import Header from "@/src/components/Header";
 import ScreenContainer from "@/src/components/ScreenContainer";
+import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
 
 export default function ForgotPasswordScreen() {
+  useAnnounceForAccessibility("Forgot password screen opened");
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
@@ -24,9 +26,9 @@ export default function ForgotPasswordScreen() {
   return (
     <KeyboardWrapper>
       <ScreenContainer variant="top">
-        <Header onBackPress={() => router.back()} transparent />
+        {/* <Header onBackPress={() => router.back()} transparent /> */}
 
-        <Text variant="header1" style={styles.title}>
+        <Text variant="header1" accessibilityRole="header" style={styles.title}>
           Forgot password
         </Text>
         <Text variant="bodyGray" style={styles.subtitle}>
@@ -43,9 +45,18 @@ export default function ForgotPasswordScreen() {
           onChangeText={setEmail}
           error={error}
         />
-
+        {error && (
+          <Text
+            color="red.500"
+            accessibilityLiveRegion="assertive"
+            accessibilityRole="alert"
+            style={{ textAlign: "center", marginTop: 10 }}
+          >
+            {error}
+          </Text>
+        )}
         {/* Slaptažodžio atstatymo mygtukas */}
-        <Button label="Reset Password" onPress={handleResetPassword} />
+        <Button label="Reset Password" accessibilityLabel="Send password reset email" onPress={handleResetPassword} />
       </ScreenContainer>
     </KeyboardWrapper>
   );

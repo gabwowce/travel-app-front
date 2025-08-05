@@ -14,6 +14,16 @@ export default function StartButton({ onPress, iconName = "map" }: Props) {
     <Box>
       <Pressable
         onPress={onPress}
+        accessibilityRole="button"
+  accessibilityLabel={
+    iconName === "map"
+      ? "Start tour"
+      : iconName === "play"
+      ? "Play audio"
+      : "Start"
+  }
+  accessibilityHint="Activates the selected function"
+  accessible={true}
         style={{
           width: 44,
           height: 44,

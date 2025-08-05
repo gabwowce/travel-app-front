@@ -13,6 +13,7 @@ export default function FavoritesListHeader({
     <VStack alignItems="center" mt={6} mb={4} space={4}>
       <SearchBar
         placeholder="Search favorites"
+  accessibilityLabel="Search favorites input field"
         value={searchTerm}
         onChangeText={setSearchTerm}
         onClear={() => setSearchTerm("")}

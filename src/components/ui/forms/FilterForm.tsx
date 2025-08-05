@@ -86,6 +86,9 @@ const FilterForm = forwardRef<FormikProps<RouteFilters>, Props>(
           showsVerticalScrollIndicator={false}
           style={{ flex: 1 }} 
           contentContainerStyle={{ paddingBottom: wp("5%"), paddingTop: wp("5%") }}
+          accessible={true}
+  accessibilityLabel="Route filter form"
+  accessibilityRole="form"
         >
           <FlexContainer gap={16} px={wp("4%")}>
             <HStack space={3}>

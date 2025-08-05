@@ -25,11 +25,13 @@ export default function TourPointItem({
   const distanceLabel = getDistanceLabel(userLocation, point.coords);
 
   return (
-    <TouchableOpacity onPress={() => onSelect?.(point)} activeOpacity={0.8}>
+    <TouchableOpacity onPress={() => onSelect?.(point)} activeOpacity={0.8} accessibilityRole="button"
+  accessibilityLabel={`Tour point: ${point.title}, located at ${point.address}, distance ${distanceLabel}`}>
       <View style={styles.container}>
         {/* Kairė pusė: ikonėlė ir tekstas */}
         <View style={styles.left}>
-        <Ionicons name="location-sharp" color="#FF6347" size={20} style={styles.icon} />
+        <Ionicons name="location-sharp" color="#FF6347" size={20} style={styles.icon} importantForAccessibility="no"
+  accessibilityElementsHidden/>
           <View style={styles.textGroup}>
             <Text style={styles.title}>{point.title}</Text>
             <Text style={styles.address}>{point.address}</Text>

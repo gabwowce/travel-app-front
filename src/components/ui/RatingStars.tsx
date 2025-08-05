@@ -7,6 +7,7 @@ interface RatingStarsProps {
   color?: string;
   size?: "xs" | "sm" | "md" | "lg";
   showText?: boolean;
+  accessibilityLabel?: string;
 }
 
 export default function RatingStars({
@@ -14,12 +15,14 @@ export default function RatingStars({
   color = "yellow.400",
   size = "sm",
   showText = true,
+  accessibilityLabel
 }: RatingStarsProps) {
   const rating = Number(value);
   const valid = !isNaN(rating);
 
   return (
-    <HStack alignItems="center" space={1}>
+    <HStack alignItems="center" space={1} accessibilityRole="text"
+      accessibilityLabel={accessibilityLabel}>
       {Array.from({ length: 5 }).map((_, i) => (
         <Icon
           key={i}

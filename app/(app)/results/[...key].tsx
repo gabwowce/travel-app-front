@@ -12,8 +12,10 @@ import FilterChips from "@/src/components/ui/FilterChips";
 import { clearFilters } from "@/src/data/features/filters/filtersSlice";
 import ResponsiveTourList from "@/src/components/tour/ResponsiveTourList";
 import Spinner from "@/src/components/ui/Spinner";
+import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
 
 export default function ResultsScreen() {
+  useAnnounceForAccessibility("Tour screen opened");
   /* params & filters */
   const { key: rawKey } = useLocalSearchParams<{ key: string | string[] }>();
   const routeKey = Array.isArray(rawKey) ? rawKey.join("/") : rawKey;
@@ -57,7 +59,8 @@ export default function ResultsScreen() {
     return (
       <FlexContainer>
         <Header title="Tours" onBackPress={router.back} />
-        <Text color="red.500" mt={10} textAlign="center">
+        <Text accessibilityLiveRegion="assertive"
+  accessibilityRole="alert" color="red.500" mt={10} textAlign="center">
           Failed to load tours
         </Text>
       </FlexContainer>

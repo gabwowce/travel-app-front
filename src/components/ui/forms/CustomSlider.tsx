@@ -1,6 +1,7 @@
 // src/components/ui/form/CustomSlider.tsx
 import React from "react";
 import { VStack, Slider, Text } from "native-base";
+import { AccessibilityProps } from "react-native";
 
 interface CustomSliderProps {
   label: string;
@@ -20,14 +21,24 @@ export default function CustomSlider({
   onChange,
 }: CustomSliderProps) {
   return (
-    <VStack>
-      <Text>{label}: {value}</Text>
+    <VStack accessible accessibilityRole="adjustable" accessibilityLabel={label} accessibilityValue={{ min, max, now: value }} accessibilityHint={`Adjust ${label} between ${min} and ${max}`}>
+      <Text>
+        {label}: {value}
+      </Text>
       <Slider
         minValue={min}
         maxValue={max}
         step={step}
         value={value}
         onChange={onChange}
+        accessibilityLabel={label}
+        accessibilityHint={`Double tap and swipe to change ${label}`}
+        accessibilityRole="adjustable"
+        accessibilityValue={{
+          min,
+          max,
+          now: value,
+        }}
       >
         <Slider.Track>
           <Slider.FilledTrack />

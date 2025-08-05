@@ -52,6 +52,8 @@ export default function FilterChips({ filters, onClear }: Props) {
         {chips.map((chip, idx) => (
           <Pressable
             key={idx}
+            accessibilityRole="text"
+  accessibilityLabel={`Active filter: ${chip}`}
             bg="primary.100"
             borderRadius="full"
             px={3}
@@ -67,6 +69,8 @@ export default function FilterChips({ filters, onClear }: Props) {
 
       {onClear && (
         <Button
+        accessibilityRole="button"
+  accessibilityLabel="Clear all active filters"
           variant="ghost"
           size="sm"
           colorScheme="primary"

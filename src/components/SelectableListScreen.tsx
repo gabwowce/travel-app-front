@@ -77,26 +77,36 @@ const SelectableListScreen: React.FC<SelectableListScreenProps> = ({
               ref={listRef}
               data={filteredData}
               keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => (
-                <TouchableWithoutFeedback onPress={() => handleSelect(item)}>
-                  <HStack
-                    alignItems="center"
-                    space={3}
-                    px={3}
-                    py={2}
-                    borderWidth={selectedItem === item.name ? 2 : 1}
-                    borderColor={selectedItem === item.name ? "#001F3F" : "#D1D5DB"}
-                    borderRadius={10}
-                    p={3}
-                    mb={2}
+              renderItem={({ item }) => {
+                const isSelected = selectedItem === item.name;
+
+                return (
+                  <TouchableWithoutFeedback
+                    onPress={() => handleSelect(item)}
+                    accessible={true}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Select ${item.name}${isSelected ? ", selected" : ""}`}
                   >
-                    {renderIcon && renderIcon(item)}
-                    <Text>{item.name}</Text>
-                  </HStack>
-                </TouchableWithoutFeedback>
-              )}
+                    <HStack
+                      alignItems="center"
+                      space={3}
+                      px={3}
+                      py={2}
+                      borderWidth={isSelected ? 2 : 1}
+                      borderColor={isSelected ? "#001F3F" : "#D1D5DB"}
+                      borderRadius={10}
+                      p={3}
+                      mb={2}
+                    >
+                      {renderIcon && renderIcon(item)}
+                      <Text>{item.name}</Text>
+                    </HStack>
+                  </TouchableWithoutFeedback>
+                );
+              }}
               keyboardShouldPersistTaps="handled"
             />
+
           </Box>
 
           {selectedItem && (

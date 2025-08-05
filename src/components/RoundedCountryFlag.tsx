@@ -1,13 +1,17 @@
 import React from "react";
-import { Image } from "react-native";
 import CountryFlag from "react-native-country-flag";
 
 interface RoundedCountryFlagProps {
   isoCode: string;
   size?: number;
+  accessibilityLabel?: string;
 }
 
-export default function RoundedCountryFlag({ isoCode, size = 20 }: RoundedCountryFlagProps) {
+export default function RoundedCountryFlag({
+  isoCode,
+  size = 20,
+  accessibilityLabel,
+}: RoundedCountryFlagProps) {
   return (
     <CountryFlag
       isoCode={isoCode}
@@ -15,9 +19,11 @@ export default function RoundedCountryFlag({ isoCode, size = 20 }: RoundedCountr
       style={{
         width: size,
         height: size,
-        borderRadius: size / 2, // ✅ Padaro apvalią ikoną
-        overflow: "hidden", // ✅ Užtikrina, kad vėliava nesikirstų su kraštais
+        borderRadius: size / 2,
+        overflow: "hidden",
       }}
+      accessibilityLabel={accessibilityLabel ?? `Flag of ${isoCode}`}
+      accessibilityRole="image"
     />
   );
 }

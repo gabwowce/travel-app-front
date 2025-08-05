@@ -9,8 +9,10 @@ import ProfileHeaderInfo from "@/src/components/profile/ProfileHeaderInfo";
 import ProfileDetails from "@/src/components/profile/ProfileDetails";
 import { useProfileData } from "@/src/hooks/useProfileData";
 import { useRouter } from "expo-router";
+import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
 
 export default function ProfileScreen() {
+  useAnnounceForAccessibility("Profile screen opened");
   const { user, profile, isLoading, handleLogout, openNotificationSettings } =
     useProfileData();
 
@@ -59,7 +61,7 @@ export default function ProfileScreen() {
 
   return (
     <FlexContainer>
-      <Header
+      {/* <Header
         title="Profile"
         rightIcon={
           <CircleButton
@@ -67,7 +69,7 @@ export default function ProfileScreen() {
             onPress={() => router.push(AppRoutes.EDIT_PROFILE)}
           />
         }
-      />
+      /> */}
 
       <ScrollView keyboardShouldPersistTaps="handled">
         <VStack space={4} mt={6} px={5}>

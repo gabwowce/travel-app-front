@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useLayoutEffect} from "react";
 import { useLocalSearchParams, router } from "expo-router";
 import { ScrollView, StyleSheet } from "react-native";
 import { Box, Image, VStack, HStack, Text, Badge, Icon } from "native-base";
@@ -18,8 +18,12 @@ import Spinner from "@/src/components/ui/Spinner";
 import RatingStars from "@/src/components/ui/RatingStars";
 import RouteStatsRow from "@/src/components/ui/RouteStatsRow";
 import CategoryBadges from "@/src/components/ui/CategoryBadges";
+import { useNavigation } from "@react-navigation/native";
+import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
 
 export default function RouteInfoScreen() {
+
+    const navigation = useNavigation();
   const { id } = useLocalSearchParams();
   const routeId = Array.isArray(id)
     ? parseInt(id[0], 10)
@@ -67,26 +71,35 @@ export default function RouteInfoScreen() {
     });
   };
 
+      useLayoutEffect(() => {
+      navigation.setOptions({
+        title:`${name}`
+      });
+    }, [navigation]);
+useAnnounceForAccessibility(`${name} route screen opened`);
   return (
     <FlexContainer>
-      <Header
+      {/* <Header
         title={name}
         onBackPress={() => router.back()}
         rightIcon={<CircleButton variant="start" onPress={navigateToMap} />}
-      />
+      /> */}
 
-      <ScrollView keyboardShouldPersistTaps="handled">
+      <ScrollView keyboardShouldPersistTaps="handled" accessible={false}
+  importantForAccessibility="no">
         <VStack space={4} mt={6}>
           <Box style={styles.imageContainer}>
             <Image
-              alt={name}
+               alt={`${name} route main image`}
+              accessibilityLabel={`${name} route photo`}
+              accessible
               source={IMAGES.VINGIO_PARKAS}
               style={styles.image}
             />
             <FavoriteButton routeId={routeId} style={styles.bookmarkIcon} />
             <Box style={styles.imageOverlay}>
-              <Text style={styles.title}>{name}</Text>
-              <RatingStars value={ratings_avg_rating} />
+              <Text style={styles.title} accessibilityRole="header">{name}</Text>
+              <RatingStars value={ratings_avg_rating} accessibilityLabel={`Rating: ${ratings_avg_rating} stars`} />
             </Box>
           </Box>
         </VStack>
@@ -108,6 +121,7 @@ export default function RouteInfoScreen() {
           <Button
             pb={15}
             onPress={navigateToMap}
+            accessibilityLabel={`Start ${name} route on the map`}
             leftIcon={
               <Icon as={MaterialIcons} name="map" size="sm" color="white" />
             }

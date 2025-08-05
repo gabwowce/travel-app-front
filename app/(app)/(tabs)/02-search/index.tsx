@@ -1,7 +1,7 @@
-import React from "react";
+import React, {useLayoutEffect} from "react";
 import { Text } from "native-base";
 import { TouchableWithoutFeedback, Keyboard } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useNavigation } from "expo-router";
 
 import Spinner from "@/src/components/ui/Spinner";
 import Header from "@/src/components/Header";
@@ -13,12 +13,14 @@ import {
   clearFilters,
   mergeFiltersForKey,
 } from "@/src/data/features/filters/filtersSlice";
-
+import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
 import { useSearchScreenData } from "@/src/hooks/useSearchScreenData";
 import { useAppDispatch } from "@/src/data/hooks";
 
 export default function SearchScreen() {
+  useAnnounceForAccessibility("Search screen opened. Enter a keyword to begin searching tours.");
   const router = useRouter();
+  const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const {
     routeKey,
@@ -34,16 +36,25 @@ export default function SearchScreen() {
     routes,
   } = useSearchScreenData();
 
+ useLayoutEffect(() => {
+  navigation.setOptions({
+    headerRight: () => (
+      <FilterCircleButton routeKey={routeKey} />
+    )
+  });
+}, [navigation, routeKey]);
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <FlexContainer>
-        <Header
+        {/* <Header
           title="Search"
           rightIcon={<FilterCircleButton routeKey={routeKey} />}
-        />
+        /> */}
 
         <SearchBar
           placeholder="Search Tours"
+          accessibilityLabel="Search tours input"
           value={localSearch}
           onChangeText={(t) => {
             setLocalSearch(t);
@@ -66,11 +77,13 @@ export default function SearchScreen() {
             {isFetching ? (
               <Spinner mt={8} />
             ) : isError ? (
-              <Text mt={8} color="red.500" textAlign="center">
+              <Text mt={8} color="red.500" textAlign="center" accessibilityLiveRegion="assertive"
+  accessibilityRole="alert">
                 Failed to load routes
               </Text>
             ) : routes.length === 0 ? (
-              <Text mt={8} color="gray.500" textAlign="center">
+              <Text mt={8} color="gray.500" textAlign="center"  accessibilityLiveRegion="polite"
+  accessibilityRole="status">
                 No results found.
               </Text>
             ) : (
@@ -83,7 +96,8 @@ export default function SearchScreen() {
             )}
           </>
         ) : (
-          <Text textAlign="center" mt={10} color="gray.400" px={6}>
+          <Text textAlign="center" mt={10} color="gray.400" px={6} accessibilityLiveRegion="polite"
+  accessibilityRole="status">
             Type at least 3 letters or apply filters to start searching…
           </Text>
         )}

@@ -11,8 +11,10 @@ import { Formik } from "formik";
 import { registerSchema } from "@/src/validation/registerSchema";
 import { useAuthActions } from "@/src/hooks/useAuthActions";
 import { AppRoutes } from "@/src/config/routes";
+import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
 
 export default function RegisterScreen() {
+  useAnnounceForAccessibility("Registration screen opened");
   const [agreed, setAgreed] = useState(false);
   const router = useRouter();
   const { register } = useAuthActions();
@@ -21,7 +23,7 @@ export default function RegisterScreen() {
     <KeyboardWrapper>
       <ScreenContainer variant="center">
         <View style={styles.text}>
-          <Text variant="header1">Create an Account</Text>
+          <Text variant="header1" accessibilityRole="header">Create an Account</Text>
           <Text variant="bodyGray">Fill in the details to register</Text>
         </View>
 
@@ -113,11 +115,15 @@ export default function RegisterScreen() {
                   isChecked={agreed}
                   onChange={setAgreed}
                   value="agree"
+                  accessibilityLabel="Agree to Privacy Policy and Terms"
+                  accessibilityState={{ checked: agreed }}
                 />
                 <Text ml={2}>
                   I agree to the{" "}
                   <Text
                     onPress={() => router.push(AppRoutes.PRIVACY_POLICY)}
+                    accessibilityRole="link"
+                    accessibilityLabel="View Privacy Policy and Terms"
                     style={{ textDecorationLine: "underline" }}
                   >
                     Privacy & Terms
@@ -134,6 +140,8 @@ export default function RegisterScreen() {
           onPress={() => {
             router.push("/");
           }}
+          accessibilityRole="link"
+          accessibilityLabel="Already have an account? Log in"
           style={{ textAlign: "center", marginTop: 20 }}
         >
           Have an account? Login
