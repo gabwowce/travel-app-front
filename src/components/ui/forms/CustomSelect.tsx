@@ -23,39 +23,40 @@ export default function CustomSelect({
   return (
     <>
       {label && <Text mb={1}>{label}</Text>}
-     <Select
-  selectedValue={selectedValue}
-  placeholder={placeholder ?? "Select option"}
-  onValueChange={onValueChange}
-  isDisabled={isDisabled}
-  style={styles.selectStyle}
-  borderColor="gray.300"
-  fontSize="sm"
-  accessibilityLabel={label ?? placeholder ?? "Dropdown menu"}
-  accessibilityHint="Double tap to open the list of options"
-  accessibilityRole="menu"
-  accessible={true}
-  dropdownIcon={
-    <Box mr={4}>
-      <Ionicons name="chevron-down" size={16} color="#6b7280" />
-    </Box>
-  }
-  _selectedItem={{
-    bg: "primary.100",
-    endIcon: <Ionicons name="checkmark" size={18} color="#3b82f6" />,
-  }}
->
-  {options.map((opt) => (
-    <Select.Item
-      key={opt.value}
-      label={opt.label}
-      value={opt.value}
-      accessibilityLabel={opt.label}
-      accessibilityRole="menuitem"
-    />
-  ))}
-</Select>
-
+      <Select
+        selectedValue={selectedValue}
+        placeholder={placeholder ?? "Select option"}
+        onValueChange={onValueChange}
+        isDisabled={isDisabled}
+        style={styles.selectStyle}
+        borderColor="gray.300"
+        fontSize="sm"
+        accessibilityLabel={label ?? placeholder ?? "Dropdown menu"}
+        accessibilityHint="Double tap to open the list of options"
+        accessibilityRole="menu"
+        accessible={true}
+        _actionSheet={{ style: { zIndex: 9999, elevation: 9999 } }}
+        _backdrop={{ opacity: 0 }}
+        dropdownIcon={
+          <Box mr={4}>
+            <Ionicons name="chevron-down" size={16} color="#6b7280" />
+          </Box>
+        }
+        _selectedItem={{
+          bg: "primary.100",
+          endIcon: <Ionicons name="checkmark" size={18} color="#3b82f6" />,
+        }}
+      >
+        {options.map((opt) => (
+          <Select.Item
+            key={opt.value}
+            label={opt.label}
+            value={opt.value}
+            accessibilityLabel={opt.label}
+            accessibilityRole="menuitem"
+          />
+        ))}
+      </Select>
     </>
   );
 }
@@ -64,5 +65,4 @@ const styles = StyleSheet.create({
   selectStyle: {
     borderRadius: 24,
   },
-
 });

@@ -3,7 +3,15 @@ import { Pressable, Text, StyleSheet, ViewStyle } from "react-native";
 import { Box, Icon } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 
-type Variant = "back" | "apply" | "start" | "close" | "edit" | "filter" | "save" | "custom";
+type Variant =
+  | "back"
+  | "apply"
+  | "start"
+  | "close"
+  | "edit"
+  | "filter"
+  | "save"
+  | "custom";
 
 type Props = {
   onPress: () => void;
@@ -16,8 +24,8 @@ type Props = {
   bgColor?: string;
   size?: number;
   style?: ViewStyle;
-   borderRadius?: number;
-   width?: number;
+  borderRadius?: number;
+  width?: number;
 };
 
 export default function CircleButton({
@@ -29,31 +37,63 @@ export default function CircleButton({
   bgColor,
   size,
   style,
-  width
+  width,
 }: Props) {
   // default’ai pagal variantą
   const defaults: Record<Variant, Partial<Props>> = {
-  back: { iconName: "chevron-back", color: "#181818", bgColor: "#F7F7F7", size: 44 },
-  close: { iconName: "close", color: "#181818", bgColor: "#F7F7F7", size: 44 },
-  start: { iconName: "map", color: "#0C2736", bgColor: "#F7F7F7", size: 44 },
-  apply: { label: "Apply", color: "#3B82F6", bgColor: "transparent", size: 44, borderRadius: 0 },
-  edit: { iconName: "create-outline", color: "#181818", bgColor: "#F7F7F7", size: 44 }, // Ionicons pavadinimas
-  filter: { iconName: "options-outline", color: "#181818", bgColor: "#F7F7F7", size: 44 },
-  save:   { label: "Save", color: "#3B82F6", bgColor: "transparent", borderRadius: 0, width: 58 },
-  custom: {},
-};
+    back: {
+      iconName: "chevron-back",
+      color: "#181818",
+      bgColor: "transparent",
+      size: 44,
+    },
+    close: {
+      iconName: "close",
+      color: "#181818",
+      bgColor: "#F7F7F7",
+      size: 44,
+    },
+    start: { iconName: "map", color: "#0C2736", bgColor: "#F7F7F7", size: 44 },
+    apply: {
+      label: "Apply",
+      color: "#3B82F6",
+      bgColor: "transparent",
+      size: 44,
+      borderRadius: 0,
+    },
+    edit: {
+      iconName: "create-outline",
+      color: "#181818",
+      bgColor: "#F7F7F7",
+      size: 44,
+    }, // Ionicons pavadinimas
+    filter: {
+      iconName: "options-outline",
+      color: "#181818",
+      bgColor: "#F7F7F7",
+      size: 44,
+    },
+    save: {
+      label: "Save",
+      color: "#3B82F6",
+      bgColor: "transparent",
+      borderRadius: 0,
+      width: 58,
+    },
+    custom: {},
+  };
 
   const def = defaults[variant] ?? {};
 
-   const final = {
-  iconName: iconName ?? def.iconName,
-  label: label ?? def.label,
-  color: color ?? def.color ?? "#181818",
-  bgColor: bgColor ?? def.bgColor ?? "#F7F7F7",
-  size: size ?? def.size ?? 44,
-  borderRadius: def.borderRadius ?? 24, // ← čia default fallback
-  width: width ?? def.width ?? 44,
-};
+  const final = {
+    iconName: iconName ?? def.iconName,
+    label: label ?? def.label,
+    color: color ?? def.color ?? "#181818",
+    bgColor: bgColor ?? def.bgColor ?? "#F7F7F7",
+    size: size ?? def.size ?? 44,
+    borderRadius: def.borderRadius ?? 24, // ← čia default fallback
+    width: width ?? def.width ?? 44,
+  };
 
   // Nerenderinam tuščio mygtuko
   if (!final.iconName && !final.label) return null;
@@ -63,17 +103,17 @@ export default function CircleButton({
       <Pressable
         onPress={onPress}
         accessibilityRole="button"
-  accessibilityLabel={final.label || final.iconName || "Button"}
-  accessibilityHint={
-    variant === "filter"
-      ? "Opens filter options"
-      : variant === "apply"
-      ? "Applies selected filters"
-      : variant === "close"
-      ? "Closes the modal"
-      : undefined
-  }
-  accessible={true}
+        accessibilityLabel={final.label || final.iconName || "Button"}
+        accessibilityHint={
+          variant === "filter"
+            ? "Opens filter options"
+            : variant === "apply"
+              ? "Applies selected filters"
+              : variant === "close"
+                ? "Closes the modal"
+                : undefined
+        }
+        accessible={true}
         style={({ pressed }) => [
           {
             width: final.width ?? 44,
@@ -91,9 +131,16 @@ export default function CircleButton({
         android_ripple={{ color: "#E0E0E0", borderless: true }}
       >
         {final.iconName ? (
-          <Icon as={Ionicons} name={final.iconName} size="lg" color={final.color} />
+          <Icon
+            as={Ionicons}
+            name={final.iconName}
+            size="lg"
+            color={final.color}
+          />
         ) : final.label ? (
-          <Text style={[styles.label, { color: final.color }]}>{final.label}</Text>
+          <Text style={[styles.label, { color: final.color }]}>
+            {final.label}
+          </Text>
         ) : null}
       </Pressable>
     </Box>

@@ -37,10 +37,24 @@ export default function ForgotPasswordScreen() {
 
         {/* Email įvedimo laukas */}
         <CustomInput
+          /* ─── Etiketės / placeholder ─────────────────────────── */
           label="Email"
           placeholder="Email"
-          autoCapitalize="none"
+          /* ─── Klaviatūra ir automatiniai pataisymai ──────────── */
           keyboardType="email-address"
+          inputMode="email" // RN 0.70+: tikslesnė klaviatūra
+          autoCapitalize="none"
+          autoCorrect={false}
+          /* ─── Autofill & OS hint’ai ──────────────────────────── */
+          autoComplete="email" // Android & iOS (RN 0.68+)
+          textContentType="emailAddress" // iOS (leidžia iCloud Keychain)
+          importantForAutofill="yes" // Android
+          /* ─── UX smulkmenos ─────────────────────────────────── */
+          autoFocus // iškart atidaro klaviatūrą
+          returnKeyType="send" // rodo „Send“ mygtuką
+          enablesReturnKeyAutomatically
+          onSubmitEditing={handleResetPassword}
+          /* ─── Reikalingi tau valdikliai ─────────────────────── */
           value={email}
           onChangeText={setEmail}
           error={error}

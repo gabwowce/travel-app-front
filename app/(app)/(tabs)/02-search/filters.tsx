@@ -1,6 +1,6 @@
 import { Box } from "native-base";
 import { router } from "expo-router";
-import React, {useLayoutEffect} from "react";
+import React, { useLayoutEffect } from "react";
 import { useNavigation } from "expo-router";
 import Header from "@/src/components/Header";
 import FilterForm from "@/src/components/ui/forms/FilterForm";
@@ -20,25 +20,26 @@ export default function FiltersModal() {
     setSelectedCountryId,
     dispatch,
   } = useFiltersModalData();
-    const navigation = useNavigation();
-useAnnounceForAccessibility("Filters modal opened. Use the form to refine your search.");
+  const navigation = useNavigation();
+  useAnnounceForAccessibility(
+    "Filters modal opened. Use the form to refine your search."
+  );
   const handleSubmit = (values: typeof initial) => {
     dispatch(mergeFiltersForKey({ key: from, filters: values }));
     router.back();
   };
 
-useLayoutEffect(() => {
-  navigation.setOptions({
-    headerRight: () => (
-      <CircleButton
-        variant="apply"
-        label="Apply"
-        accessibilityLabel="Apply filters"
-        onPress={() => formRef.current?.handleSubmit()}
-      />
-    ),
-  });
-}, [navigation, formRef]);
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <CircleButton
+          variant="apply"
+          label="Apply"
+          onPress={() => formRef.current?.handleSubmit()}
+        />
+      ),
+    });
+  }, [navigation, formRef]);
 
   return (
     <Box flex={1} bg="white">

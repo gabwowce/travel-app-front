@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { View, StyleSheet, AccessibilityInfo } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { View, StyleSheet, AccessibilityInfo, TextInput } from "react-native";
 import { Text } from "native-base";
 import { useRouter } from "expo-router";
 import { Formik } from "formik";
@@ -17,7 +17,7 @@ import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility
 export default function LoginScreen() {
   // Pagrindinis pranešimas atidarius ekraną
   useAnnounceForAccessibility("Login screen opened");
-
+  const passwordRef = useRef<TextInput>(null);
   const router = useRouter();
   const [generalError, setGeneralError] = useState("");
   const { login } = useAuthActions();
@@ -36,7 +36,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <KeyboardWrapper>
+    <KeyboardWrapper style={styles.wrapper}>
       <ScreenContainer variant="center">
         <View style={styles.text}>
           <Text variant="header1" accessibilityRole="header">
@@ -63,18 +63,37 @@ export default function LoginScreen() {
               <CustomInput
                 label="Email"
                 placeholder="Email"
-                autoCapitalize="none"
-                keyboardType="email-address"
                 value={values.email}
                 onChangeText={handleChange("email")}
+                /* UX + autofill */
+                inputMode="email"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoComplete="email"
+                textContentType="emailAddress"
+                importantForAutofill="yes"
+                returnKeyType="next"
                 error={touched.email && errors.email ? errors.email : undefined}
+                onSubmitEditing={() => passwordRef.current?.focus()}
               />
+
               <CustomInput
+                ref={passwordRef}
                 label="Password"
                 placeholder="Enter your password"
-                secureTextEntry
                 value={values.password}
                 onChangeText={handleChange("password")}
+                /* UX + autofill */
+                secureTextEntry
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoComplete="password"
+                textContentType="password"
+                importantForAutofill="yes"
+                returnKeyType="go"
+                enablesReturnKeyAutomatically
+                onSubmitEditing={() => handleSubmit()}
                 error={
                   touched.password && errors.password
                     ? errors.password
@@ -82,7 +101,6 @@ export default function LoginScreen() {
                 }
                 onForgotPassword={() => router.push(AppRoutes.FORGOT_PASSWORD)}
               />
-
               {generalError && (
                 <Text
                   style={styles.generalError}
@@ -115,6 +133,9 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    backgroundColor: "#FFF",
+  },
   text: { alignItems: "center", marginBottom: 20 },
   link: { textAlign: "center", marginTop: 20 },
   generalError: {

@@ -5,7 +5,10 @@ export default function SearchLayout() {
   return (
     <Stack screenOptions={{ ...defaultHeaderOptions }}>
       <Stack.Screen name="index" options={{ title: "Search" }} />
-      <Stack.Screen name="filter" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="filters"
+        options={{ title: "Filters", presentation: "modal" }}
+      />
     </Stack>
   );
 }

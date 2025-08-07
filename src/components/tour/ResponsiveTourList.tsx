@@ -5,7 +5,6 @@ import MiniTourCard from "@/src/components/MiniTourCard";
 import FilterChips from "@/src/components/ui/FilterChips";
 import { ColumnItem } from "../getItemStyle";
 
-
 interface Props {
   data: any[];
   isFetching?: boolean;
@@ -30,8 +29,7 @@ export default function ResponsiveTourList({
   onClearFilters,
 }: Props) {
   // determine column count per breakpoint
-  const numColumns =
-    useBreakpointValue({ base: 1, sm: 2, md: 3, lg: 3 }) ?? 1;
+  const numColumns = useBreakpointValue({ base: 1, sm: 2, md: 3, lg: 3 }) ?? 1;
 
   // unique key for every item (id preferred, index fallback)
   const getKey = (item: any, index: number) =>
@@ -57,23 +55,31 @@ export default function ResponsiveTourList({
           <FilterChips filters={filters} onClear={onClearFilters} />
         </VStack>
       }
-      ListFooterComponent={isFetchingNextPage ? <Spinner my={4} accessibilityRole="progressbar"
-  accessibilityLabel="Loading more tours" /> : null}
+      ListFooterComponent={
+        isFetchingNextPage ? (
+          <Spinner
+            my={4}
+            accessibilityRole="progressbar"
+            accessibilityLabel="Loading more tours"
+          />
+        ) : null
+      }
       contentContainerStyle={{ paddingBottom: 32 }}
       renderItem={({ item, index }) => (
         <ColumnItem index={index} numColumns={numColumns}>
-            <MiniTourCard tour={item} />
+          <MiniTourCard tour={item} />
         </ColumnItem>
-        )}
-
-       ListEmptyComponent={
-        <Text mt={5} color="gray.500" textAlign="center"
-        accessibilityRole="status"
-        accessibilityLiveRegion="polite">
-            No tours found.
+      )}
+      ListEmptyComponent={
+        <Text
+          mt={5}
+          color="gray.500"
+          textAlign="center"
+          accessibilityLiveRegion="polite"
+        >
+          No tours found.
         </Text>
-        }
-
+      }
     />
   );
 }

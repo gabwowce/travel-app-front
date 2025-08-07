@@ -12,7 +12,7 @@ export default function FilterCircleButton({ routeKey }: Props) {
       variant="filter"
       onPress={() =>
         router.push({
-          pathname: "/(app)/(modals)/filters",
+          pathname: "/(app)/(tabs)/02-search/filters",
           params: { from: routeKey },
         })
       }

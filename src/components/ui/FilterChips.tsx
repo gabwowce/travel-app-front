@@ -1,6 +1,10 @@
 import React from "react";
 import { Box, HStack, Pressable, Text, Button } from "native-base";
-import { useGetCategoriesQuery, useGetCountriesQuery, useGetCitiesQuery } from "@/src/store/travelApi";
+import {
+  useGetCategoriesQuery,
+  useGetCountriesQuery,
+  useGetCitiesQuery,
+} from "@/src/store/travelApi";
 
 type Props = {
   filters: {
@@ -17,12 +21,18 @@ type Props = {
 export default function FilterChips({ filters, onClear }: Props) {
   const { data: cats } = useGetCategoriesQuery();
   const { data: countries } = useGetCountriesQuery();
-  const { data: cities } = useGetCitiesQuery({});
+  const { data: cities } = useGetCitiesQuery(
+    { countryId: filters.countryId! },
+    { skip: false }
+  );
 
-  const categoryName = cats?.data?.find(c => c.id === filters.categoryId)?.name;
-  const countryName  = countries?.data?.find(c => c.id === filters.countryId)?.name;
-  const cityName     = cities?.data?.find(c => c.id === filters.cityId)?.name;
-
+  const categoryName = cats?.data?.find(
+    (c) => c.id === filters.categoryId
+  )?.name;
+  const countryName = countries?.data?.find(
+    (c) => c.id === filters.countryId
+  )?.name;
+  const cityName = cities?.data?.find((c) => c.id === filters.cityId)?.name;
   const chips: string[] = [];
 
   if (filters.categoryId) {
@@ -47,13 +57,13 @@ export default function FilterChips({ filters, onClear }: Props) {
   if (!chips.length) return null;
 
   return (
-    <Box >
+    <Box>
       <HStack flexWrap="wrap" space={2}>
         {chips.map((chip, idx) => (
           <Pressable
             key={idx}
             accessibilityRole="text"
-  accessibilityLabel={`Active filter: ${chip}`}
+            accessibilityLabel={`Active filter: ${chip}`}
             bg="primary.100"
             borderRadius="full"
             px={3}
@@ -69,8 +79,8 @@ export default function FilterChips({ filters, onClear }: Props) {
 
       {onClear && (
         <Button
-        accessibilityRole="button"
-  accessibilityLabel="Clear all active filters"
+          accessibilityRole="button"
+          accessibilityLabel="Clear all active filters"
           variant="ghost"
           size="sm"
           colorScheme="primary"

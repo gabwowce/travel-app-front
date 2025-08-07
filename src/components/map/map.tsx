@@ -18,24 +18,25 @@ import { getMarkerIcon } from "../tour/getMarkerIconByCategory";
 import { Platform } from "react-native";
 import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { TourPoint } from "@/src/types/tourPoint";
 
 interface MapProps {
   title: string;
   points: TourPoint[];
 }
 
-export interface TourPoint {
-  id: string;
-  title: string;
-  coords: {
-    latitude: number;
-    longitude: number;
-  };
-  url: string;
-  address: string;
-  category?: "museum" | "nature" | "food";
-  description: string;
-}
+// export interface TourPoint {
+//   id: string;
+//   title: string;
+//   coords: {
+//     latitude: number;
+//     longitude: number;
+//   };
+//   url: string;
+//   address: string;
+//   category?: "museum" | "nature" | "food";
+//   description: string;
+// }
 
 export default function Map({ title, points }: MapProps) {
   useAnnounceForAccessibility(`Map screen opened. Showing route: ${title}`);
@@ -95,21 +96,23 @@ export default function Map({ title, points }: MapProps) {
 
   return (
     <View style={styles.container}>
-      {/* <ExpoStatusBar style="dark" translucent backgroundColor="transparent" />
+      <ExpoStatusBar style="dark" translucent backgroundColor="transparent" />
       <RNStatusBar
         barStyle="dark-content"
         translucent
         backgroundColor="transparent"
-      /> */}
-      {/* {showMainHeader && (
+      />
+      {showMainHeader && (
         <View style={styles.headerContainer}>
           <Header
-          title={title}
-          onBackPress={selectedPoint ? handleBackToList : () => navigation.goBack()}
-          onPressClose={selectedPoint ? () => navigation.goBack() : undefined}
-        />
+            title={title}
+            onBackPress={
+              selectedPoint ? handleBackToList : () => navigation.goBack()
+            }
+            onPressClose={selectedPoint ? () => navigation.goBack() : undefined}
+          />
         </View>
-      )} */}
+      )}
       <MapView
         provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined}
         userInterfaceStyle="light"

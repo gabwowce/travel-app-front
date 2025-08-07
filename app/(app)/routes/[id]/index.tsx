@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useMemo } from "react";
+import React, { useEffect, useLayoutEffect, useMemo } from "react";
 import { useLocalSearchParams, router } from "expo-router";
 import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import { Box, Image, VStack, Text, Icon } from "native-base";
@@ -18,12 +18,18 @@ import Button from "@/src/components/ui/btns/Button";
 import FavoriteButton from "@/src/components/ui/btns/FavoriteButton";
 import { useNavigation } from "@react-navigation/native";
 import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
+import { travelApi } from "@/src/store/travelApi";
 
 export default function RouteInfoScreen() {
   const navigation = useNavigation();
   const { id } = useLocalSearchParams();
   const routeId = useMemo(() => Number(Array.isArray(id) ? id[0] : id), [id]);
-
+  const prefetchRoutePlaces = travelApi.usePrefetch("getRoutePlaces");
+  useEffect(() => {
+    if (routeId) {
+      prefetchRoutePlaces({ route: String(routeId) });
+    }
+  }, [routeId]);
   const { data: selectedRoute, isLoading: routeLoading } = useGetRouteByIdQuery(
     { route: String(routeId) },
     { skip: !routeId }
@@ -58,7 +64,6 @@ export default function RouteInfoScreen() {
       pathname: "/routes/[id]/map",
       params: {
         id: String(routeId),
-        fake: encodeURIComponent(JSON.stringify(FAKE_POINTS)),
         routeName: route?.name ?? "",
       },
     });

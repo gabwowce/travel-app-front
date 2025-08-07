@@ -14,24 +14,23 @@ export const filtersSlice = createSlice({
   initialState,
   reducers: {
     mergeFiltersForKey: (
-  state,
-  action: PayloadAction<{ key: string; filters: RouteFilters }>
-) => {
-  const { key, filters } = action.payload;
-  state[key] = { ...(state[key] ?? {}), ...filters };
+      state,
+      action: PayloadAction<{ key: string; filters: RouteFilters }>
+    ) => {
+      const { key, filters } = action.payload;
+      state[key] = { ...(state[key] ?? {}), ...filters };
 
-  if (__DEV__) {
-    console.log(`[filters] MERGE → key: "${key}"`);
-    console.table(filters);
-  }
-},
-clearFilters: (state, action: PayloadAction<{ key: string }>) => {
-  if (__DEV__) {
-    console.log(`[filters] CLEAR → key: "${action.payload.key}"`);
-  }
-  delete state[action.payload.key];
-},
-
+      if (__DEV__) {
+        console.log(`[filters] MERGE → key: "${key}"`);
+        console.table(filters);
+      }
+    },
+    clearFilters: (state, action: PayloadAction<{ key: string }>) => {
+      if (__DEV__) {
+        console.log(`[filters] CLEAR → key: "${action.payload.key}"`);
+      }
+      delete state[action.payload.key];
+    },
   },
 });
 

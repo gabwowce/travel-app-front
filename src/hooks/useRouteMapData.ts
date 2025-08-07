@@ -1,58 +1,28 @@
 // src/hooks/useRouteMapData.ts
 import { useLocalSearchParams } from "expo-router";
-import { useGetRoutePlacesQuery } from "@/src/store/travelApi";
-
-export interface TourPoint {
-  id: string;
-  title: string;
-  coords: {
-    latitude: number;
-    longitude: number;
-  };
-  url: string;
-  address: string;
-  category?: "museum" | "nature" | "food";
-  description: string;
-}
+import { Place, useGetRoutePlacesQuery } from "@/src/store/travelApi";
+import { placeToPoint } from "@/src/utils/placeToPoint";
+import type { TourPoint } from "@/src/types/tourPoint"; // jei turite atskirame faile
 
 export function useRouteMapData() {
-  const { id, fake, routeName } = useLocalSearchParams();
+  /* 1) ID ir routeName iš params */
+  const { id, routeName } = useLocalSearchParams();
+  const routeId = Array.isArray(id) ? +id[0] : +(id ?? "");
 
-  const routeId = Array.isArray(id)
-    ? parseInt(id[0], 10)
-    : parseInt(id ?? "", 10);
-
-  const decodedFakeData: TourPoint[] | null = fake
-    ? JSON.parse(decodeURIComponent(fake as string))
-    : null;
-
+  /* 2) API užklausa */
   const {
-    data: places,
+    data: placesResponse,
     isLoading,
     isError,
   } = useGetRoutePlacesQuery({ route: String(routeId) }, { skip: !routeId });
 
-  const title = typeof routeName === "string" ? routeName : "Tour";
+  /* 3) Konvertuojam Place[] → TourPoint[] vienu sakiniu */
+  const points: TourPoint[] | null =
+    placesResponse?.data?.map(placeToPoint) ?? null;
 
-  const points: TourPoint[] | null = decodedFakeData
-    ? decodedFakeData
-    : (places?.data?.map((p: any) => ({
-        id: String(p.id),
-        title: p.name,
-        coords: {
-          latitude: parseFloat(p.latitude),
-          longitude: parseFloat(p.longitude),
-        },
-        url: p.media?.[0]?.url ?? "",
-        address: p.address ?? "",
-        description: p.description ?? "",
-        category: p.category?.slug ?? undefined,
-      })) ?? null);
+  /* 4) Pavadinimas */
+  const title =
+    typeof routeName === "string" && routeName.length ? routeName : "Tour";
 
-  return {
-    points,
-    title,
-    isLoading,
-    isError,
-  };
+  return { points, title, isLoading, isError };
 }

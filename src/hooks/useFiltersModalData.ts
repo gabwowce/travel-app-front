@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
 import { RouteFilters } from "@/src/data/features/types/routeFilters";
 import { deriveContextDefaults } from "@/src/utils/deriveContextDefaults";
 import { mergeFiltersForKey } from "@/src/data/features/filters/filtersSlice";
+import { BASE_FILTER_DEFAULTS } from "@/src/config/initialRouterFilters";
 
 export function useFiltersModalData() {
   const { from } = useLocalSearchParams<{ from: string }>();
@@ -32,6 +33,10 @@ export function useFiltersModalData() {
   const reduxFilters = useAppSelector(
     (st) => (st.filters as Record<string, RouteFilters | undefined>)[from] ?? {}
   );
+  console.log(
+    `[useFiltersModalData] redux filters for "${from}":`,
+    reduxFilters
+  );
   const contextDefaults = deriveContextDefaults(from);
 
   // 3. Merge context into redux once
@@ -43,26 +48,25 @@ export function useFiltersModalData() {
       !reduxFilters.cityId
     ) {
       dispatch(
-        mergeFiltersForKey({ key: from, filters: contextDefaults as RouteFilters })
+        mergeFiltersForKey({
+          key: from,
+          filters: contextDefaults as RouteFilters,
+        })
       );
     }
   }, []);
 
   // 4. Final initial values
   const initial: RouteFilters = {
-    minRating: 0,
-    maxDistance: 500,
-    minElevation: 0,
-    maxElevation: 5000,
-    onlyFavorites: false,
+    ...BASE_FILTER_DEFAULTS,
     ...contextDefaults,
     ...reduxFilters,
   };
 
   // 5. Dynamic cities
-  const [selectedCountryId, setSelectedCountryId] = useState<number | undefined>(
-    initial.countryId
-  );
+  const [selectedCountryId, setSelectedCountryId] = useState<
+    number | undefined
+  >(initial.countryId);
   const { data: citiesRes } = useGetCitiesQuery(
     { countryId: selectedCountryId },
     { skip: !selectedCountryId }

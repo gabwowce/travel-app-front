@@ -24,6 +24,7 @@ import {
   useUpdateUserProfileMutation,
 } from "@/src/store/travelApi";
 import type { User, UserUpdateRequest } from "@/src/store/travelApi";
+import { showToast } from "@/src/components/ui/notify/Toast";
 
 /* ------------------------------------------------------------------------- */
 /* 🔹  ‘SAVE’ mygtukas Header’yje                                             */
@@ -62,7 +63,7 @@ function SaveActionHeader({
 /* 🖥️  Pagrindinis profilį redaguojantis ekranas                              */
 /* ------------------------------------------------------------------------- */
 export default function EditProfileScreen() {
-  const toast = useToast();
+  // const toast = useToast();
 
   /* 1) --- Užkraunam vartotoją */
   const { data, isLoading, isError, refetch } = useGetUserProfileQuery();
@@ -111,15 +112,22 @@ export default function EditProfileScreen() {
 
           await updateProfile({ userUpdateRequest: cleaned }).unwrap();
           await refetch();
-          toast.show({
+          showToast({
             title: "Profile updated",
+            description: "Your changes were saved successfully",
             status: "success",
-            placement: "top",
-          } as any);
+          });
           router.back();
         } catch (err: any) {
           const details = err?.data?.error?.details;
-          if (details) setErrors(details as FormikErrors<User>);
+          if (details) {
+            setErrors(details as FormikErrors<User>);
+            showToast({
+              title: "Could not update profile",
+              description: "There was an issue saving your changes.",
+              status: "error",
+            });
+          }
         }
       }}
     >

@@ -62,6 +62,7 @@ export function useSearchScreenData() {
   const [triggerRoutes, { data: routeRes, isFetching, isError }] =
     useLazyGetRoutesQuery();
 
+  //TODO 50 limitas tik???
   useEffect(() => {
     if (hasSearchOrFilters) {
       triggerRoutes({ ...filters, limit: 50, sort: "rating_desc" });

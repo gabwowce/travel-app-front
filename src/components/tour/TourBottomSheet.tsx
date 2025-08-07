@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
   useEffect,
+  useLayoutEffect,
 } from "react";
 import {
   StyleSheet,
@@ -17,13 +18,14 @@ import {
   Platform,
 } from "react-native";
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import { TourPoint } from "../map/map";
 import TourPointItem from "./TourPointItem";
 import Header from "../Header";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import SelectedTourPointDetails from "./SelectedTourPointDetails";
 import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
+import { TourPoint } from "@/src/types/tourPoint";
+import { useNavigation } from "expo-router";
 
 interface Props {
   points: TourPoint[];
@@ -50,6 +52,7 @@ const TourBottomSheet = forwardRef<BottomSheet, Props>(
     const insets = useSafeAreaInsets();
     const fullHeight = Dimensions.get("screen").height + insets.top;
     const snapPoints = useMemo(() => ["28%", "50%", "100%"], []);
+    const navigation = useNavigation();
 
     const [index, setIndex] = useState(1);
     const isFullScreen = index === 2;
@@ -61,6 +64,11 @@ const TourBottomSheet = forwardRef<BottomSheet, Props>(
     // }, [selectedPoint]);
 
     useImperativeHandle(ref, () => localRef.current as BottomSheet);
+    useLayoutEffect(() => {
+      navigation.setOptions({
+        headerShown: false,
+      });
+    }, []);
 
     // useEffect(() => {
     //   onFullScreenChange?.(isFullScreen);

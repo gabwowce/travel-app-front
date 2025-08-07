@@ -17,7 +17,10 @@ interface Props {
   userLocation?: { latitude: number; longitude: number } | null;
 }
 
-export default function SelectedTourPointDetails({ point, userLocation }: Props) {
+export default function SelectedTourPointDetails({
+  point,
+  userLocation,
+}: Props) {
   const openNavigation = () => {
     const { latitude, longitude } = point.coords;
     const url = Platform.select({
@@ -35,19 +38,41 @@ export default function SelectedTourPointDetails({ point, userLocation }: Props)
 
   return (
     <View style={styles.wrapper}>
-      <Text style={styles.title} accessibilityRole="header">{point.title}</Text>
-      <Text style={styles.address} accessibilityLabel={`Address: ${point.address}`}>{point.address}</Text>
+      <Text style={styles.title} accessibilityRole="header">
+        {point.title}
+      </Text>
+      <Text
+        style={styles.address}
+        accessibilityLabel={`Address: ${point.address}`}
+      >
+        {point.address}
+      </Text>
 
       {userLocation && (
-        <Text style={styles.distance} accessibilityLabel={`Distance to this location is ${getDistanceLabel(userLocation, point.coords)}`}>
+        <Text
+          style={styles.distance}
+          accessibilityLabel={`Distance to this location is ${getDistanceLabel(userLocation, point.coords)}`}
+        >
           📏 Distance: {getDistanceLabel(userLocation, point.coords)}
         </Text>
       )}
 
-      <TouchableOpacity onPress={() => Linking.openURL(point.url)} accessibilityRole="link"
-  accessibilityLabel={`Visit external website: ${point.url}`}>
+      {point.url && (
+        <TouchableOpacity
+          onPress={() => Linking.openURL(point.url)}
+          accessibilityRole="link"
+          accessibilityLabel={`Visit external website: ${point.url}`}
+        >
+          <Text style={styles.link}>{point.url}</Text>
+        </TouchableOpacity>
+      )}
+      {/* <TouchableOpacity
+        onPress={() => Linking.openURL(point.url)}
+        accessibilityRole="link"
+        accessibilityLabel={`Visit external website: ${point.url}`}
+      >
         <Text style={styles.link}>{point.url}</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       <View style={styles.buttons}>
         {/* <TouchableOpacity style={styles.button}>
@@ -55,14 +80,22 @@ export default function SelectedTourPointDetails({ point, userLocation }: Props)
           <Text style={styles.buttonText}>Save</Text>
         </TouchableOpacity> */}
 
-        <TouchableOpacity style={styles.button} onPress={handleShare} accessibilityRole="button"
-  accessibilityLabel={`Share link to ${point.title}`}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleShare}
+          accessibilityRole="button"
+          accessibilityLabel={`Share link to ${point.title}`}
+        >
           <Ionicons name="share-social-outline" size={20} color="#666" />
           <Text style={styles.buttonText}>Share</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={openNavigation} accessibilityRole="button"
-  accessibilityLabel={`Open navigation to ${point.title}`}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={openNavigation}
+          accessibilityRole="button"
+          accessibilityLabel={`Open navigation to ${point.title}`}
+        >
           <Ionicons name="navigate-outline" size={20} color="#1E90FF" />
           <Text style={styles.buttonText}>Navigate</Text>
         </TouchableOpacity>
@@ -74,8 +107,15 @@ export default function SelectedTourPointDetails({ point, userLocation }: Props)
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle} accessibilityRole="header">Description</Text>
-        <Text style={styles.sectionText} accessibilityLabel={`Description: ${point.description}`}>{point.description}</Text>
+        <Text style={styles.sectionTitle} accessibilityRole="header">
+          Description
+        </Text>
+        <Text
+          style={styles.sectionText}
+          accessibilityLabel={`Description: ${point.description}`}
+        >
+          {point.description}
+        </Text>
       </View>
     </View>
   );
@@ -84,7 +124,7 @@ export default function SelectedTourPointDetails({ point, userLocation }: Props)
 const styles = StyleSheet.create({
   wrapper: {
     width: "100%",
-    padding: 16,
+    padding: 0,
   },
   title: {
     fontSize: 20,
@@ -104,7 +144,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     fontSize: 13,
     color: "#333",
-    marginBottom: 8,
+    marginBottom: 12,
   },
   link: {
     fontSize: 14,
@@ -116,7 +156,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 12,
     flexWrap: "wrap",
-    marginBottom: 24,
+    marginBottom: 10,
   },
   button: {
     flexDirection: "row",
@@ -138,7 +178,7 @@ const styles = StyleSheet.create({
     borderColor: "#E0E0E0",
     borderWidth: 1,
     padding: 12,
-    marginBottom: 24,
+    marginBottom: 12,
   },
   sectionTitle: {
     fontSize: 16,

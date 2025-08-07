@@ -14,7 +14,7 @@ export default function AppLayout() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         {/* A separate screen for the Tour, using [id] param */}
         <Stack.Screen name="results" options={{ headerShown: false }} />
-        <Stack.Screen name="(modals)" options={{ headerShown: false }} />
+
         <Stack.Screen name="routes/[id]" options={{ headerShown: false }} />
       </Stack>
     </QueryClientProvider>

@@ -7,7 +7,6 @@ import {
   Divider,
   ScrollView,
   Avatar,
-  useToast,
 } from "native-base";
 import { router, useNavigation } from "expo-router";
 import { Formik } from "formik";
@@ -23,6 +22,7 @@ import {
   useGetUserProfileQuery,
   useUpdateUserProfileMutation,
 } from "@/src/store/travelApi";
+import { showToast } from "@/src/components/ui/notify/Toast";
 
 /* ------------------------------------------------------------------------- */
 /* 🔹 D Y N A M I N I S   'S A V E'   M Y G T U K A S   A P P  B A R ' e      */
@@ -59,7 +59,6 @@ function SaveActionHeader({
 /* 🖥️  P A G R I N D I N I S   E K R A N A S                                  */
 /* ------------------------------------------------------------------------- */
 export default function ChangePasswordScreen() {
-  const toast = useToast();
   const navigation = useNavigation();
 
   /* 👉  Užkraunam vartotojo profilį */
@@ -89,12 +88,11 @@ export default function ChangePasswordScreen() {
           setStatus({ success: true });
           resetForm();
 
-          toast.show({
+          showToast({
             title: "Password updated",
             description: "Your password has been changed successfully.",
             status: "success",
-            placement: "top",
-          } as any);
+          });
 
           setTimeout(() => {
             router.back(); // leiskim toast’ui pasimatyt 1 s
@@ -103,6 +101,11 @@ export default function ChangePasswordScreen() {
           const details = err?.data?.errors;
           if (details) {
             setErrors(details);
+            showToast({
+              title: "Could not update password",
+              description: "There was an issue updatig your password.",
+              status: "error",
+            });
           } else {
             setStatus({ error: "Something went wrong" });
           }
@@ -141,12 +144,20 @@ export default function ChangePasswordScreen() {
                   >
                     {user.name?.charAt(0).toUpperCase()}
                   </Avatar>
-                  <Heading fontSize="lg" accessibilityRole="header">{user.name}</Heading>
+                  <Heading fontSize="lg" accessibilityRole="header">
+                    {user.name}
+                  </Heading>
                 </VStack>
 
                 <Divider my={4} />
 
-                <Text mb={4} fontSize="sm" textAlign="center" color="gray.500" accessibilityLiveRegion="polite">
+                <Text
+                  mb={4}
+                  fontSize="sm"
+                  textAlign="center"
+                  color="gray.500"
+                  accessibilityLiveRegion="polite"
+                >
                   Enter a new password below.
                 </Text>
 
@@ -185,14 +196,21 @@ export default function ChangePasswordScreen() {
 
                 {/* Status messages */}
                 {status?.error && (
-                  <Text color="red.500" textAlign="center" accessibilityLiveRegion="assertive"
-    accessibilityRole="alert">
+                  <Text
+                    color="red.500"
+                    textAlign="center"
+                    accessibilityLiveRegion="assertive"
+                    accessibilityRole="alert"
+                  >
                     {status.error}
                   </Text>
                 )}
                 {status?.success && (
-                  <Text color="green.500" textAlign="center" accessibilityLiveRegion="polite"
-    accessibilityRole="status">
+                  <Text
+                    color="green.500"
+                    textAlign="center"
+                    accessibilityLiveRegion="polite"
+                  >
                     Password updated successfully!
                   </Text>
                 )}
