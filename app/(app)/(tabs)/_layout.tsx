@@ -7,6 +7,7 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         ...defaultHeaderOptions,
+        tabBarActiveTintColor: "#001F3F", // aktyvaus taba spalva
       }}
     >
       <Tabs.Screen

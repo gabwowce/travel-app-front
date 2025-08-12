@@ -1,11 +1,19 @@
 import React from "react";
-import { View, Pressable, StyleSheet, ViewStyle } from "react-native";
+import {
+  View,
+  Pressable,
+  StyleSheet,
+  ViewStyle,
+  TextStyle,
+} from "react-native";
 import { Text } from "native-base";
+
+type Variant = "primary" | "secondary" | "ouline";
 
 type Props = {
   label?: string;
   onPress: () => void;
-  theme?: "primary" | "secondary";
+  variant?: Variant;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   children?: React.ReactNode;
@@ -32,7 +40,7 @@ type Props = {
 export default function CustomButton({
   label,
   onPress,
-  theme = "primary",
+  variant = "primary",
   leftIcon,
   rightIcon,
   children,
@@ -65,29 +73,38 @@ export default function CustomButton({
     paddingRight: pr ?? px ?? p,
   };
 
+  const buttonVariantStyle: ViewStyle =
+    variant === "primary"
+      ? styles.primaryButton
+      : variant === "secondary"
+        ? styles.secondaryButton
+        : styles.outlineButton;
+
+  const textVariantStyle: TextStyle =
+    variant === "primary"
+      ? styles.primaryText
+      : variant === "secondary"
+        ? styles.secondaryText
+        : styles.outlineText;
+
   return (
     <View style={[styles.buttonContainer, spacingStyle]}>
       <Pressable
         accessibilityRole="button"
         accessibilityState={{ disabled: isDisabled }}
         accessibilityLabel={accessibilityLabel ? accessibilityLabel : label}
-        style={[
-          styles.button,
-          theme === "primary" && styles.primaryButton,
-          theme === "secondary" && styles.secondaryButton,
-          isDisabled && styles.disabledButton,
-        ]}
+        style={[styles.button, buttonVariantStyle]}
         onPress={onPress}
       >
         {leftIcon && <View style={styles.icon}>{leftIcon}</View>}
         {children ? (
           typeof children === "string" ? (
-            <Text style={styles.buttonLabel}>{children}</Text>
+            <Text style={[styles.label, textVariantStyle]}>{children}</Text>
           ) : (
             children
           )
         ) : (
-          <Text style={styles.buttonLabel}>{label}</Text>
+          <Text style={[styles.label, textVariantStyle]}>{label}</Text>
         )}
         {rightIcon && <View style={styles.icon}>{rightIcon}</View>}
       </Pressable>
@@ -99,16 +116,17 @@ const styles = StyleSheet.create({
   buttonContainer: {
     alignItems: "center",
     justifyContent: "center",
-    width: "100%",
+
+    flex: 1,
   },
   button: {
     flexDirection: "row",
     borderRadius: 12,
-    paddingVertical: 16,
     paddingHorizontal: 24,
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
+    height: 50,
   },
   primaryButton: {
     backgroundColor: "#001F3F",
@@ -116,15 +134,31 @@ const styles = StyleSheet.create({
   secondaryButton: {
     backgroundColor: "#CCCCCC",
   },
-  buttonLabel: {
-    color: "#FFFFFF",
-    fontSize: 16,
+  outlineButton: {
+    backgroundColor: "transparent",
+    borderWidth: 2,
+    borderColor: "#001F3F",
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+  pressed: {
+    opacity: 0.8,
+  },
+  label: {
+    fontSize: 15,
     fontWeight: "bold",
+  },
+  primaryText: {
+    color: "#FFFFFF",
+  },
+  secondaryText: {
+    color: "#FFFFFF",
+  },
+  outlineText: {
+    color: "#001F3F",
   },
   icon: {
     marginHorizontal: 4,
-  },
-  disabledButton: {
-    opacity: 0.5,
   },
 });

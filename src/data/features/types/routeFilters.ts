@@ -1,19 +1,30 @@
-/* src/types/routeFilters.ts */
+// src/types/filters.ts
+export type DifficultyLevel =
+  | ""
+  | "easy"
+  | "moderate"
+  | "challenging"
+  | "difficult"
+  | "hard";
+
 export interface RouteFilters {
   /** IDs */
   categoryId?: number;
   countryId?: number;
   cityId?: number;
 
+  /** Difficulty */
+  difficulty?: DifficultyLevel;
+
   /** Numeric filters */
-  minRating?: number;   // 1–5
+  minRating?: number; // 1–5 (gali būti ir .5 iš žvaigždučių)
+  minDistance?: number; // ⬅️ km
   maxDistance?: number; // km
-  minElevation?: number;
-  maxElevation?: number;
+  elevation?: [number, number]; // [min, max] m
 
   /** Flags */
   onlyFavorites?: boolean;
 
-  /** Free-text (naudojama Search ekrane) */
+  /** Free-text search */
   search?: string;
 }

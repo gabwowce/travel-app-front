@@ -1,26 +1,59 @@
-import { useEffect, useRef, useState } from "react";
-import type { FormikProps } from "formik";
-import { useLocalSearchParams } from "expo-router";
-
+// src/hooks/useFiltersModalData.ts
+import { useEffect, useRef } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
+import {
+  mergeFiltersDraftForKey,
+  clearFiltersDraft,
+  applyDraftForKey,
+  clearAllForKey,
+} from "@/src/data/features/filters/filtersSlice";
+import {
+  selectDraftByKey,
+  selectAppliedByKey,
+} from "@/src/data/features/filters/selectors";
+import type { RouteFilters } from "@/src/data/features/types/routeFilters";
 import {
   useGetCategoriesQuery,
   useGetCountriesQuery,
   useGetCitiesQuery,
 } from "@/src/store/travelApi";
-import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
-import { RouteFilters } from "@/src/data/features/types/routeFilters";
-import { deriveContextDefaults } from "@/src/utils/deriveContextDefaults";
-import { mergeFiltersForKey } from "@/src/data/features/filters/filtersSlice";
-import { BASE_FILTER_DEFAULTS } from "@/src/config/initialRouterFilters";
 
 export function useFiltersModalData() {
-  const { from } = useLocalSearchParams<{ from: string }>();
+  const { key: rawKey } = useLocalSearchParams<{ key: string | string[] }>();
+  const routeKey = Array.isArray(rawKey)
+    ? rawKey.join("/")
+    : rawKey || "default";
+
   const dispatch = useAppDispatch();
+  const router = useRouter();
 
-  // 1. Fetch dropdowns
-  const { data: categoriesRes } = useGetCategoriesQuery();
-  const { data: countriesRes } = useGetCountriesQuery();
+  const draftFilters = useAppSelector(
+    (st) => selectDraftByKey(st, routeKey) ?? {}
+  );
+  const appliedFilters = useAppSelector(
+    (st) => selectAppliedByKey(st, routeKey) ?? {}
+  );
 
+  const { data: categoriesRes = [] } = useGetCategoriesQuery(undefined, {
+    refetchOnMountOrArgChange: false,
+    refetchOnFocus: false,
+    refetchOnReconnect: false,
+  });
+  const { data: countriesRes = [] } = useGetCountriesQuery(undefined, {
+    refetchOnMountOrArgChange: false,
+    refetchOnFocus: false,
+    refetchOnReconnect: false,
+  });
+  const { data: cities = [] } = useGetCitiesQuery(
+    { countryId: draftFilters.countryId as number },
+    {
+      skip: !draftFilters.countryId,
+      refetchOnMountOrArgChange: false,
+      refetchOnFocus: false,
+      refetchOnReconnect: false,
+    }
+  );
   const categories = (categoriesRes?.data ?? [])
     .filter((c): c is { id: number; name: string } => !!c?.id && !!c?.name)
     .map((c) => ({ id: c.id, name: c.name }));
@@ -28,64 +61,48 @@ export function useFiltersModalData() {
   const countries = (countriesRes?.data ?? [])
     .filter((c): c is { id: number; name: string } => !!c?.id && !!c?.name)
     .map((c) => ({ id: c.id, name: c.name }));
+  const formRef = useRef<any>(null);
 
-  // 2. Context & redux filters
-  const reduxFilters = useAppSelector(
-    (st) => (st.filters as Record<string, RouteFilters | undefined>)[from] ?? {}
-  );
-  console.log(
-    `[useFiltersModalData] redux filters for "${from}":`,
-    reduxFilters
-  );
-  const contextDefaults = deriveContextDefaults(from);
+  // useEffect(() => {
+  //   dispatch(
+  //     mergeFiltersDraftForKey({
+  //       key: routeKey,
+  //       filters: appliedFilters,
+  //     })
+  //   );
+  // }, [routeKey]);
 
-  // 3. Merge context into redux once
-  useEffect(() => {
-    if (
-      Object.keys(contextDefaults).length &&
-      !reduxFilters.categoryId &&
-      !reduxFilters.countryId &&
-      !reduxFilters.cityId
-    ) {
-      dispatch(
-        mergeFiltersForKey({
-          key: from,
-          filters: contextDefaults as RouteFilters,
-        })
-      );
-    }
-  }, []);
-
-  // 4. Final initial values
-  const initial: RouteFilters = {
-    ...BASE_FILTER_DEFAULTS,
-    ...contextDefaults,
-    ...reduxFilters,
+  const handleApply = () => {
+    dispatch(applyDraftForKey({ key: routeKey }));
+    router.back();
   };
 
-  // 5. Dynamic cities
-  const [selectedCountryId, setSelectedCountryId] = useState<
-    number | undefined
-  >(initial.countryId);
-  const { data: citiesRes } = useGetCitiesQuery(
-    { countryId: selectedCountryId },
-    { skip: !selectedCountryId }
-  );
+  const handleResetDraft = () => {
+    dispatch(clearFiltersDraft({ key: routeKey }));
+  };
 
-  const cities = (citiesRes?.data ?? [])
-    .filter((c): c is { id: number; name: string } => !!c?.id && !!c?.name)
-    .map((c) => ({ id: c.id, name: c.name }));
+  const handleClearAll = () => {
+    dispatch(clearAllForKey({ key: routeKey }));
+  };
 
-  const formRef = useRef<FormikProps<RouteFilters>>(null);
+  const openFilters = () => {
+    router.push({
+      pathname: "/(app)/(tabs)/02-search/filters",
+      params: { key: routeKey },
+    });
+  };
 
   return {
-    from,
+    routeKey,
     formRef,
-    initial,
+    draftFilters,
+    appliedFilters,
     categories,
     countries,
     cities,
-    setSelectedCountryId,
-    dispatch,
+    handleApply,
+    handleResetDraft,
+    handleClearAll,
+    openFilters,
   };
 }

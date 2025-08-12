@@ -8,14 +8,10 @@ import {
   useLogoutUserMutation,
 } from "@/src/store/travelApi";
 import { AppRoutes } from "@/src/config/routes";
-import { useSelector } from "react-redux";
-import { RootState } from "../data/store";
 
 export function useProfileData() {
   const router = useRouter();
-  const dispatch = useAppDispatch();
 
-  const cachedUser = useSelector((s: RootState) => s.auth.user);
   const { data, isLoading, isError, refetch } = useGetCurrentUserQuery();
   const user = data?.data?.user;
   const { data: profileData } = useGetUserProfileQuery();

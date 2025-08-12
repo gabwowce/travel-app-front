@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F3F3F3",
     borderRadius: 10,
     paddingHorizontal: wp("3%"),
-    marginHorizontal: wp("3%"),
+    // marginHorizontal: wp("3%"),
     marginBottom: 20,
     height: 50,
 

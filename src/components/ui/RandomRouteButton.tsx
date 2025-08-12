@@ -1,25 +1,43 @@
 // src/components/ui/RandomRouteButton.tsx
 import React from "react";
-import { Box, VStack, Text, HStack, Button } from "native-base";
+import { VStack, Text, HStack, Button } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useGetRoutesQuery } from "@/src/store/travelApi";
+import { AccessibilityInfo } from "react-native";
+import { useLazyGetRoutesQuery } from "@/src/store/LazyHooks";
 import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
 
 export default function RandomRouteButton() {
   const router = useRouter();
-  // Gaunam visus turus (arba daug jų – pagal poreikį)
-  const { data, isLoading } = useGetRoutesQuery({ limit: 100 });
-  const routes = data?.data ?? [];
+  // Hook’ą kviesk top-level su pradiniu pranešimu (nebūtina):
+  // useAnnounceForAccessibility("Random button rendered");
 
-  const handleRandomRoute = () => {
-    if (!routes.length) return;
-    const random = routes[Math.floor(Math.random() * routes.length)];
-    useAnnounceForAccessibility(`Navigating to random tour: ${random.name}`);
-    router.push(`/routes/${random.id}`);
+  const [trigger, { isFetching }] = useLazyGetRoutesQuery();
+
+  const handleRandomRoute = async () => {
+    try {
+      const result = await trigger({
+        limit: 100,
+        sort: "rating_desc",
+      }).unwrap();
+      const routes = result?.data ?? [];
+      if (!routes.length) return;
+
+      const random = routes[Math.floor(Math.random() * routes.length)];
+
+      // saugus pranešimas
+      AccessibilityInfo.announceForAccessibility?.(
+        `Navigating to random tour: ${random.name}`
+      );
+
+      // jei naudoji route group'ą (app), URL vis tiek gali būti be grupės:
+      router.push(`/routes/${random.id}`);
+      // arba saugiau:
+      // router.push({ pathname: "/routes/[id]", params: { id: String(random.id) } });
+    } catch (e) {
+      console.warn("[RandomRouteButton] failed to fetch routes", e);
+    }
   };
-
-  if (isLoading) return null;
 
   return (
     <VStack
@@ -52,7 +70,8 @@ export default function RandomRouteButton() {
         accessibilityRole="button"
         accessibilityHint="Navigates to a randomly selected tour"
         onPress={handleRandomRoute}
-        isDisabled={!routes.length}
+        isLoading={isFetching}
+        isDisabled={isFetching}
         style={{
           shadowColor: "#000",
           shadowOpacity: 0.08,

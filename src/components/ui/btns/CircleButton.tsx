@@ -50,13 +50,13 @@ export default function CircleButton({
     close: {
       iconName: "close",
       color: "#181818",
-      bgColor: "#F7F7F7",
+      bgColor: "transparent",
       size: 44,
     },
     start: { iconName: "map", color: "#0C2736", bgColor: "#F7F7F7", size: 44 },
     apply: {
       label: "Apply",
-      color: "#3B82F6",
+      color: "#001F3F",
       bgColor: "transparent",
       size: 44,
       borderRadius: 0,
@@ -75,7 +75,7 @@ export default function CircleButton({
     },
     save: {
       label: "Save",
-      color: "#3B82F6",
+      color: "#001F3F",
       bgColor: "transparent",
       borderRadius: 0,
       width: 58,

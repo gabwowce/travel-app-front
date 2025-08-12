@@ -12,7 +12,6 @@ interface Props {
   isFetchingNextPage?: boolean;
   onEndReached?: () => void;
   filters: Record<string, any>;
-  onClearFilters: () => void;
 }
 
 /**
@@ -26,7 +25,6 @@ export default function ResponsiveTourList({
   isFetchingNextPage,
   onEndReached,
   filters,
-  onClearFilters,
 }: Props) {
   // determine column count per breakpoint
   const numColumns = useBreakpointValue({ base: 1, sm: 2, md: 3, lg: 3 }) ?? 1;
@@ -50,11 +48,6 @@ export default function ResponsiveTourList({
         hasNextPage && !isFetchingNextPage && onEndReached?.()
       }
       onEndReachedThreshold={0.5}
-      ListHeaderComponent={
-        <VStack pt={4} px={4}>
-          <FilterChips filters={filters} onClear={onClearFilters} />
-        </VStack>
-      }
       ListFooterComponent={
         isFetchingNextPage ? (
           <Spinner

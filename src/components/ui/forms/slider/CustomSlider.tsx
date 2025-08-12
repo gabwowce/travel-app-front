@@ -21,7 +21,13 @@ export default function CustomSlider({
   onChange,
 }: CustomSliderProps) {
   return (
-    <VStack accessible accessibilityRole="adjustable" accessibilityLabel={label} accessibilityValue={{ min, max, now: value }} accessibilityHint={`Adjust ${label} between ${min} and ${max}`}>
+    <VStack
+      accessible
+      accessibilityRole="adjustable"
+      accessibilityLabel={label}
+      accessibilityValue={{ min, max, now: value }}
+      accessibilityHint={`Adjust ${label} between ${min} and ${max}`}
+    >
       <Text>
         {label}: {value}
       </Text>
