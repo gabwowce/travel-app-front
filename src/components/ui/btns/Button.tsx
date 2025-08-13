@@ -19,6 +19,7 @@ type Props = {
   children?: React.ReactNode;
   isDisabled?: boolean;
   accessibilityLabel?: string;
+  isFlex1?: boolean; // If true, button will take full width of the parent
 
   // Spacing
   m?: number;
@@ -46,6 +47,7 @@ export default function CustomButton({
   children,
   isDisabled,
   accessibilityLabel,
+  isFlex1 = false,
   // spacing props
   m,
   mx,
@@ -88,7 +90,13 @@ export default function CustomButton({
         : styles.outlineText;
 
   return (
-    <View style={[styles.buttonContainer, spacingStyle]}>
+    <View
+      style={[
+        styles.buttonContainer,
+        spacingStyle,
+        isFlex1 ? { flex: 1 } : { width: "100%" },
+      ]}
+    >
       <Pressable
         accessibilityRole="button"
         accessibilityState={{ disabled: isDisabled }}
@@ -116,8 +124,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     alignItems: "center",
     justifyContent: "center",
-
-    flex: 1,
   },
   button: {
     flexDirection: "row",
@@ -146,7 +152,7 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   label: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "bold",
   },
   primaryText: {

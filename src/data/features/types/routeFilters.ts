@@ -4,8 +4,7 @@ export type DifficultyLevel =
   | "easy"
   | "moderate"
   | "challenging"
-  | "difficult"
-  | "hard";
+  | "difficult";
 
 export interface RouteFilters {
   /** IDs */

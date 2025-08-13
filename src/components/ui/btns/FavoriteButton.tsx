@@ -25,9 +25,16 @@ export default function FavoriteButton({ routeId, style }: Props) {
   // Lokalus optimistinis statusas (null = dar neapsisprendėm, remiamės serveriu)
   const [localFavorited, setLocalFavorited] = useState<boolean | null>(null);
 
-  const favorites = favoritesResp?.data ?? [];
+  const favorites = Array.isArray(favoritesResp?.data)
+    ? favoritesResp!.data
+    : Array.isArray(favoritesResp?.data?.data)
+      ? favoritesResp!.data.data
+      : [];
   const fromServer = useMemo(
-    () => favorites.some((fav: any) => String(fav.id) === String(routeId)),
+    () =>
+      Array.isArray(favorites)
+        ? favorites.some((fav: any) => String(fav.id) === String(routeId))
+        : false,
     [favorites, routeId]
   );
 
@@ -64,9 +71,18 @@ export default function FavoriteButton({ routeId, style }: Props) {
       // arba galim nulinti, kad remtųsi serveriu:
       setLocalFavorited(null);
     } catch (err) {
-      // jei nepavyko – rollback
-      setLocalFavorited(null);
-      console.error("Favorite toggle error", err);
+      const msg =
+        typeof err === "object" &&
+        err !== null &&
+        "data" in err &&
+        typeof (err as any).data?.message === "string"
+          ? (err as any).data.message
+          : "";
+      if (msg.toLowerCase().includes("already in favorites")) {
+        setLocalFavorited(true); // tiesiog sulyginam su tikrove
+      } else {
+        setLocalFavorited(null);
+      }
     }
   };
 

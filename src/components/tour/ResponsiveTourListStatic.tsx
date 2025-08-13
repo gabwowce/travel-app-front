@@ -1,10 +1,11 @@
 import React from "react";
-import { Spinner, VStack, useBreakpointValue, Box } from "native-base";
+import { Spinner, VStack, useBreakpointValue, Box, View } from "native-base";
 import { FlashList } from "@shopify/flash-list";
 import MiniTourCard from "@/src/components/MiniTourCard";
 import SearchBar from "@/src/components/SearchBar";
 import { ColumnItem } from "../getItemStyle";
 import { Route } from "@/src/store/travelApi";
+import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 
 type Props = {
   data: Route[];
@@ -29,8 +30,8 @@ export default function ResponsiveTourListStatic({
 
   return (
     <FlashList
-    accessible
-  accessibilityLabel="List of favorite tours"
+      accessible
+      accessibilityLabel="List of favorite tours"
       data={data}
       numColumns={numColumns}
       estimatedItemSize={220}
@@ -38,15 +39,24 @@ export default function ResponsiveTourListStatic({
       overrideItemKeyExtractor={getKey as any}
       columnWrapperStyle={{ justifyContent: "center" }}
       ListHeaderComponent={
-        <SearchBar
-          placeholder="Search favorites"
-          value={searchTerm}
-          onChangeText={setSearchTerm}
-          onClear={() => setSearchTerm("")}
-        />
+        <View style={{ marginHorizontal: wp("3%") }}>
+          <SearchBar
+            placeholder="Search Favorites"
+            value={searchTerm}
+            onChangeText={setSearchTerm}
+            onClear={() => setSearchTerm("")}
+          />
+        </View>
       }
-      ListFooterComponent={isFetching ? <Spinner my={4} accessibilityRole="progressbar"
-  accessibilityLabel="Loading favorite tours" /> : null}
+      ListFooterComponent={
+        isFetching ? (
+          <Spinner
+            my={4}
+            accessibilityRole="progressbar"
+            accessibilityLabel="Loading favorite tours"
+          />
+        ) : null
+      }
       ListEmptyComponent={ListEmptyComponent}
       contentContainerStyle={{ paddingBottom: 32 }}
       renderItem={({ item, index }) => (

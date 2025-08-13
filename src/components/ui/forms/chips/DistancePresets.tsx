@@ -9,7 +9,7 @@ import {
   Text,
 } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
-import Chip from "./Chip";
+import Chip from "./chips/Chip";
 
 const PRESETS = [undefined, 1, 3, 5, 10, 20] as (number | undefined)[];
 

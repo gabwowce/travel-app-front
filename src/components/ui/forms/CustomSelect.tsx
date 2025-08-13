@@ -58,13 +58,37 @@ export default function CustomSelect({
         minH={44}
         px={0}
         py={0}
+        fontSize={15}
         // 👇 Trigger teksto spalva nustatoma tiesiog su `color`
         color={isActive ? "#FFFFFF" : "#0F172A"}
+        _item={{
+          _text: { fontSize: 15, color: "#0F172A" }, // ← visi pasirinkimai 16
+          py: 3,
+        }}
         // papildomas svoris/dydis per _text
         _text={{
           fontSize: 15,
           fontWeight: isActive ? "700" : "600",
-          ...(inputTextStyle ?? {}),
+          // Only spread allowed text props, filter out unsupported ones like opacity
+          ...(inputTextStyle
+            ? Object.fromEntries(
+                Object.entries(inputTextStyle).filter(([key]) =>
+                  [
+                    "color",
+                    "fontFamily",
+                    "fontSize",
+                    "fontStyle",
+                    "fontWeight",
+                    "letterSpacing",
+                    "lineHeight",
+                    "textAlign",
+                    "textDecorationLine",
+                    "textTransform",
+                    "includeFontPadding",
+                  ].includes(key)
+                )
+              )
+            : {}),
         }}
         dropdownIcon={
           <Ionicons
@@ -74,11 +98,14 @@ export default function CustomSelect({
             style={{ marginTop: -2 }}
           />
         }
-        _actionSheetContent={{ bg: "white" }}
+        _actionSheet={{
+          useRNModal: true, // svarbu iOS
+          // papildomai galima: hideDragIndicator: true
+        }}
         // pažymėtas item dropdown'e
         _selectedItem={{
           bg: "transparent",
-          _text: { color: textColor, fontWeight: "700" },
+          _text: { color: textColor, fontWeight: "700", fontSize: 15 },
           endIcon: <Ionicons name="checkmark" size={18} color={ACCENT} />,
         }}
         placeholderTextColor={placeholderTextColor}

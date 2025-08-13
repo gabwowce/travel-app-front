@@ -14,12 +14,11 @@ export default function DifficultyChips({
   onChange: (v: DifficultyLevel) => void;
 }) {
   const items: { label: string; value: DifficultyLevel }[] = [
-    { label: "All", value: "" },
-    { label: "Easy", value: "easy" },
-    { label: "Moderate", value: "moderate" },
-    { label: "Challenging", value: "challenging" },
-    { label: "Difficult", value: "difficult" },
-    { label: "Hard", value: "hard" },
+    { label: "All", value: "" as DifficultyLevel },
+    { label: "Easy", value: "easy" as DifficultyLevel },
+    { label: "Moderate", value: "moderate" as DifficultyLevel },
+    { label: "Challenging", value: "challenging" as DifficultyLevel },
+    { label: "Difficult", value: "difficult" as DifficultyLevel },
   ];
 
   return (

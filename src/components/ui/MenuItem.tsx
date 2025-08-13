@@ -12,17 +12,34 @@ interface MenuItemProps {
   showArrow?: boolean;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({ icon, title, onPress, color = "black", showArrow = true }) => {
+const MenuItem: React.FC<MenuItemProps> = ({
+  icon,
+  title,
+  onPress,
+  color = "#001F3F",
+  showArrow = true,
+}) => {
   return (
-    <TouchableOpacity style={styles.listItem} onPress={onPress}  accessibilityRole="button"
-  accessibilityLabel={`${title} menu item`}>
+    <TouchableOpacity
+      style={styles.listItem}
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`${title} menu item`}
+    >
       <HStack alignItems="center">
-        <MaterialIcons name={icon as any} size={24} color={color} />
-        <Text ml={3} style={{ color }}>{title}</Text>
+        <MaterialIcons name={icon as any} size={20} color={color} />
+        <Text ml={3} style={{ color }}>
+          {title}
+        </Text>
       </HStack>
       {showArrow && (
-        <MaterialIcons name="keyboard-arrow-right" size={24} color="gray" accessible={false}
-    importantForAccessibility="no"/>
+        <MaterialIcons
+          name="keyboard-arrow-right"
+          size={24}
+          color="gray"
+          accessible={false}
+          importantForAccessibility="no"
+        />
       )}
     </TouchableOpacity>
   );
@@ -36,11 +53,12 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: wp("3%"),
     marginHorizontal: wp("3%"),
-    backgroundColor: "#fff",
+    backgroundColor: "#F5F7FA",
     borderRadius: 12,
     borderWidth: 1,
     borderColor: "#E5E7EB",
     marginBottom: 0,
+    height: 50,
   },
 });
 

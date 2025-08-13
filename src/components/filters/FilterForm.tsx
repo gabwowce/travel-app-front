@@ -23,6 +23,7 @@ import FormField from "../ui/forms/FormField";
 import RatingStars from "../ui/forms/RatingStars";
 import DistancePresets from "../ui/forms/chips/DistancePresets";
 import DistanceRange from "../ui/forms/DistanceRange";
+import { distanceCfg } from "@/src/config/distanceRange";
 
 type Props = {
   initialValues: RouteFilters;
@@ -135,16 +136,16 @@ const FilterForm = forwardRef<FormikProps<RouteFilters>, Props>(
 
         <FormField label="Distance">
           <DistanceRange
-            value={[values.minDistance ?? 0, values.maxDistance ?? 500]}
-            onChange={([minKm, maxKm]) => {
-              updateField("minDistance", minKm);
-              updateField("maxDistance", maxKm);
+            value={[
+              values.minDistance ?? distanceCfg.min,
+              values.maxDistance ?? distanceCfg.max,
+            ]}
+            config={distanceCfg}
+            onChange={([lo, hi]) => {
+              // kviečiama tik atleidus
+              updateField("minDistance", lo);
+              updateField("maxDistance", hi);
             }}
-            min={0}
-            max={200}
-            step={1}
-            onDragStart={() => setScrollEnabled(false)} // 👈 išjungiame scroll
-            onDragEnd={() => setScrollEnabled(true)} // 👈 vėl įjungiame
           />
         </FormField>
         {/* <FormField
@@ -174,10 +175,16 @@ const FilterForm = forwardRef<FormikProps<RouteFilters>, Props>(
 
         <View style={styles.btnsContainer}>
           {/* ✅ typo: 'outline' */}
-          <CustomButton variant="ouline" onPress={onCancel ?? (() => {})}>
+          <CustomButton
+            isFlex1={true}
+            variant="ouline"
+            onPress={onCancel ?? (() => {})}
+          >
             Clear Filters
           </CustomButton>
-          <CustomButton onPress={handleSubmit}>Apply Filters</CustomButton>
+          <CustomButton isFlex1={true} onPress={handleSubmit}>
+            Apply Filters
+          </CustomButton>
         </View>
       </>
     );

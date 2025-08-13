@@ -32,22 +32,12 @@ export default function TabsLayout() {
           ),
         }}
       />
-      {/* <Tabs.Screen
-      name="03-create-tour"
-      options={{
-        title: "Create",
-        headerShown: false,
-        tabBarIcon: ({ color }) => (
-          <Ionicons name="add-circle" size={34} color={color} />
-        ),
-        tabBarLabelStyle: { fontSize: 12, fontWeight: "bold" }, // Paryškintas tekstas
-      }}
-    /> */}
 
       <Tabs.Screen
-        name="saved"
+        name="03-saved"
         options={{
           title: "Saved",
+          headerShown: false,
           headerTitle: "Saved",
           tabBarIcon: ({ focused, color }) => (
             <Ionicons name="bookmark-outline" size={24} color={color} />

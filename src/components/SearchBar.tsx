@@ -28,7 +28,7 @@ export default function SearchBar({
         <Ionicons
           name="search-outline"
           size={20}
-          color="gray"
+          color="#708192"
           style={styles.iconLeft}
           accessibilityElementsHidden
           importantForAccessibility="no"
@@ -40,7 +40,7 @@ export default function SearchBar({
           placeholder={placeholder || "Search..."}
           value={value}
           onChangeText={onChangeText}
-          placeholderTextColor="gray"
+          placeholderTextColor="#708192"
           onEndEditing={onEndEditing}
           accessible
           accessibilityLabel={accessibilityLabel ?? "Search input"}
@@ -56,7 +56,7 @@ export default function SearchBar({
             accessibilityRole="button"
             accessibilityLabel="Clear search"
           >
-            <Ionicons name="close-circle" size={20} color="gray" />
+            <Ionicons name="close-circle" size={20} color="#708192" />
           </Pressable>
         )}
       </View>
@@ -68,8 +68,10 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#F3F3F3",
-    borderRadius: 10,
+    backgroundColor: "#F5F7FA",
+    borderColor: "#E5E7EB",
+    borderWidth: 1,
+    borderRadius: 12,
     paddingHorizontal: wp("3%"),
     // marginHorizontal: wp("3%"),
     marginBottom: 20,
@@ -83,7 +85,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 15,
     color: "#000",
   },
   clearButton: {

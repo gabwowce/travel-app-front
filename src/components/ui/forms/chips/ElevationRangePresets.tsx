@@ -7,7 +7,7 @@ import {
   Input,
   Text,
 } from "native-base";
-import Chip from "./Chip";
+import Chip from "./chips/Chip";
 
 type Range = [number, number];
 const PRESETS: Range[] = [

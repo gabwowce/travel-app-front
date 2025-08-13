@@ -1,24 +1,19 @@
+// src/components/filters/FilterChips.tsx
 import React, { useMemo } from "react";
-import { Box, HStack, Pressable, Text, Button } from "native-base";
+import { Box, Pressable, Text, Icon, HStack } from "native-base";
+import { Ionicons } from "@expo/vector-icons";
 import {
   useGetCategoriesQuery,
   useGetCountriesQuery,
   useGetCitiesQuery,
 } from "@/src/store/travelApi";
+import { RouteFilters } from "@/src/data/features/types/routeFilters";
 
 type Props = {
-  filters: {
-    categoryId?: number;
-    countryId?: number;
-    cityId?: number;
-    minRating?: number;
-    maxDistance?: number;
-    search?: string;
-  };
+  filters: RouteFilters;
   onClear?: () => void;
 };
 
-// Saugus normalizatorius: veikia tiek su masyvu, tiek su { data: [] }
 function normalize(resp: unknown): { id: number; name: string }[] {
   if (Array.isArray(resp)) {
     return resp.map((i: any) => ({ id: Number(i?.id), name: String(i?.name) }));
@@ -40,7 +35,6 @@ export default function FilterChips({ filters, onClear }: Props) {
   const needCountry = !!filters.countryId;
   const needCity = !!filters.countryId && !!filters.cityId;
 
-  // KVIEČIAM TIK JEI REIKIA
   const { data: catsResp } = useGetCategoriesQuery(undefined, {
     skip: !needCat,
     refetchOnMountOrArgChange: false,
@@ -62,23 +56,39 @@ export default function FilterChips({ filters, onClear }: Props) {
   const countryName = countries.find((c) => c.id === filters.countryId)?.name;
   const cityName = cities.find((c) => c.id === filters.cityId)?.name;
 
+  const makeDistanceLabel = (min?: number, max?: number) => {
+    if (min != null && max != null) return `${min}–${max} km`;
+    if (min != null) return `≥ ${min} km`;
+    if (max != null) return `≤ ${max} km`;
+    return null;
+  };
+
   const chips: string[] = [];
+  if (filters.difficulty) {
+    chips.push(`Difficulty: ${filters.difficulty}`);
+  }
+
   if (filters.categoryId)
     chips.push(`Category: ${categoryName ?? `#${filters.categoryId}`}`);
+
   if (filters.countryId)
     chips.push(`Country: ${countryName ?? `#${filters.countryId}`}`);
+
   if (filters.cityId) chips.push(`City: ${cityName ?? `#${filters.cityId}`}`);
-  if (filters.minRating !== undefined)
+
+  if (filters.minRating != null && filters.minRating > 0)
     chips.push(`Rating ≥ ${filters.minRating}`);
-  if (filters.maxDistance !== undefined)
-    chips.push(`≤ ${filters.maxDistance} km`);
+
+  const distLabel = makeDistanceLabel(filters.minDistance, filters.maxDistance);
+  if (distLabel) chips.push(distLabel);
+
   if (filters.search?.trim()) chips.push(`“${filters.search.trim()}”`);
 
   if (!chips.length) return null;
 
   return (
-    <Box>
-      <HStack flexWrap="wrap" space={2}>
+    <Box w="100%" pb={4}>
+      <Box flexDirection="row" flexWrap="wrap" alignItems="center">
         {chips.map((chip, idx) => (
           <Pressable
             key={idx}
@@ -88,29 +98,42 @@ export default function FilterChips({ filters, onClear }: Props) {
             borderRadius="full"
             px={3}
             py={1}
+            mr={2}
             mb={2}
           >
-            <Text fontSize="xs" color="primary.800" isTruncated>
+            <Text fontSize="xs" color="primary.800" noOfLines={1}>
               {chip}
             </Text>
           </Pressable>
         ))}
-      </HStack>
 
-      {onClear && (
-        <Button
-          accessibilityRole="button"
-          accessibilityLabel="Clear all active filters"
-          variant="ghost"
-          size="sm"
-          colorScheme="primary"
-          mt={2}
-          mb={2}
-          onPress={onClear}
-        >
-          Clear all filters
-        </Button>
-      )}
+        {onClear && (
+          <Pressable
+            onPress={onClear}
+            accessibilityRole="button"
+            accessibilityLabel="Clear all filters"
+            bg="primary.100"
+            borderRadius="full"
+            px={3}
+            py={1}
+            mr={2}
+            mb={2}
+            _pressed={{ opacity: 0.85 }}
+          >
+            <HStack alignItems="center" space={1}>
+              <Icon
+                as={Ionicons}
+                name="funnel-outline"
+                size="sm"
+                color="red.400"
+              />
+              <Text fontSize="xs" color="red.400">
+                Clear all filters
+              </Text>
+            </HStack>
+          </Pressable>
+        )}
+      </Box>
     </Box>
   );
 }

@@ -1,103 +1,170 @@
-import React, { useEffect, useState } from "react";
-import { useWindowDimensions } from "react-native";
-import { VStack, Box } from "native-base";
+import React, { useEffect, useMemo, useState } from "react";
+import { View, LayoutChangeEvent, StyleSheet } from "react-native";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
-import LabelHeader from "./LabelHeader";
+import { RangeSliderConfig, distanceCfg } from "@/src/config/distanceRange";
 
-interface Props {
-  label: string;
+type Props = {
   values: [number, number];
-  min?: number;
-  max?: number;
-  step?: number;
-  unit?: string;
-  onValuesChange: (v: [number, number]) => void;
-  onSlideStart?: () => void; // NEW
-  onSlideEnd?: () => void; // NEW
-}
+
+  // callback'ai
+  onValuesChange: (v: [number, number]) => void; // "live" į viršų
+  onValuesChangeStart?: () => void;
+  onValuesChangeFinish?: (v: [number, number]) => void; // "finish" į viršų
+
+  // alias'ai (nebūtina naudot)
+  onChange?: (v: [number, number]) => void;
+  onSlidingStart?: () => void;
+  onSlidingComplete?: (v: [number, number]) => void;
+
+  // dalinis konfigo override (jei nori)
+  config?: Partial<RangeSliderConfig>;
+};
 
 export default function RangeSlider({
-  label,
   values,
-  min = 0,
-  max = 1000,
-  step = 1, // mažesnis step -> „smoother“
-  unit = "",
   onValuesChange,
-  onSlideStart,
-  onSlideEnd,
+  onValuesChangeStart,
+  onValuesChangeFinish,
+  onChange,
+  onSlidingStart,
+  onSlidingComplete,
+  config,
 }: Props) {
-  const { width } = useWindowDimensions();
-  const horizontalPadding = 32;
-  const sliderLen = Math.max(0, width - horizontalPadding * 2);
+  const cfg: RangeSliderConfig = useMemo(() => {
+    // giliai sujungiame colors + pavienius laukus
+    return {
+      ...distanceCfg,
+      ...(config ?? {}),
+      colors: {
+        ...distanceCfg.colors,
+        ...(config?.colors ?? {}),
+      },
+      trackHeight: config?.trackHeight ?? distanceCfg.trackHeight,
+      trackRadius: config?.trackRadius ?? distanceCfg.trackRadius,
+      horizontalPadding:
+        config?.horizontalPadding ?? distanceCfg.horizontalPadding,
+      touchSize: config?.touchSize ?? distanceCfg.touchSize,
+      slipTolerance: config?.slipTolerance ?? distanceCfg.slipTolerance,
+      baseTrackColor: config?.baseTrackColor ?? distanceCfg.baseTrackColor,
+    };
+  }, [config]);
 
-  const [internal, setInternal] = useState(values);
-  useEffect(() => setInternal(values), [values]);
+  const {
+    min,
+    max,
+    step = 1,
+    colors,
+    trackHeight = 6,
+    trackRadius = 999,
+    horizontalPadding = 16,
+    touchSize = 140,
+    slipTolerance = 10000,
+    baseTrackColor = "#E5E7EB",
+  } = cfg;
+
+  const activeTrackColor = colors.active;
+  const inactiveTrackColor = colors.inactive;
+  const thumbColor = colors.thumb;
+  const thumbBorderColor = colors.thumbBorder;
+
+  const [internal, setInternal] = useState<[number, number]>(values);
+  const [sliderLen, setSliderLen] = useState(0);
+
+  useEffect(() => setInternal(values), [values[0], values[1]]);
+
+  const onLayout = (e: LayoutChangeEvent) => {
+    const w = e.nativeEvent.layout.width;
+    setSliderLen(Math.max(0, w - horizontalPadding * 2));
+  };
 
   const markerBase = {
-    height: 28,
-    width: 28,
-    backgroundColor: "#fff",
+    height: 30,
+    width: 30,
+    backgroundColor: thumbColor,
     borderWidth: 2,
-    borderColor: "#3B82F6",
-    borderRadius: 14,
-    elevation: 2,
+    borderColor: thumbBorderColor,
+    borderRadius: 15,
+    elevation: 1,
     shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 1 },
   } as const;
 
   return (
-    <VStack>
-      <LabelHeader
-        label={label}
-        valueText={`${unit} ${internal[0]} – ${unit} ${internal[1]}`}
-      />
-      <Box px={horizontalPadding / 2} py={2}>
+    <View
+      style={[styles.wrap, { paddingHorizontal: horizontalPadding }]}
+      onLayout={onLayout}
+    >
+      {/* bazinė pilka juosta po apačia */}
+      <View
+        pointerEvents="none"
+        style={[StyleSheet.absoluteFillObject, { justifyContent: "center" }]}
+      >
+        <View
+          style={{
+            height: trackHeight,
+            borderRadius: trackRadius,
+            backgroundColor: baseTrackColor,
+            marginHorizontal: horizontalPadding,
+          }}
+        />
+      </View>
+
+      {sliderLen > 0 && (
         <MultiSlider
           values={internal}
           sliderLength={sliderLen}
           min={min}
           max={max}
           step={step}
-          snapped={false} // palik false dėl „smoother“; jei reikia snap – true
-          onValuesChange={([l, r]) => setInternal([l as number, r as number])}
-          onValuesChangeFinish={([l, r]) =>
-            onValuesChange([l as number, r as number])
-          }
-          onValuesChangeStart={onSlideStart} // <-- išjungiam scroll
-          onValuesChangeFinish={(vals) => {
-            // <-- įjungiam scroll
-            onSlideEnd?.();
-            const [l, r] = vals as number[];
-            onValuesChange([l, r]);
-          }}
-          containerStyle={{ height: 56, alignSelf: "center" }}
+          // spalvos
           trackStyle={{
-            height: 6,
-            borderRadius: 3,
-            backgroundColor: "#E2E8F0",
+            height: trackHeight,
+            borderRadius: trackRadius,
+            backgroundColor: inactiveTrackColor,
           }}
-          selectedStyle={{ backgroundColor: "#3B82F6" }}
+          selectedStyle={{ backgroundColor: activeTrackColor }}
+          unselectedStyle={{ backgroundColor: inactiveTrackColor }}
           markerStyle={markerBase}
           pressedMarkerStyle={{
             ...markerBase,
-            height: 32,
-            width: 32,
-            borderRadius: 16,
+            height: 34,
+            width: 34,
+            borderRadius: 17,
           }}
-          touchDimensions={{
-            height: 56,
-            width: 56,
-            borderRadius: 28,
-            slipDisplacement: 250,
-          }}
-          allowOverlap={false}
           enableLabel={false}
-          slipDisplacement={250} // mažiau reaguoja į vertikalius „slips“
+          allowOverlap={false}
+          snapped={false}
+          // didelis hitbox + didelė slip tolerancija → drag nesibaigia iki atleidimo
+          touchDimensions={{
+            height: touchSize,
+            width: touchSize,
+            borderRadius: touchSize / 2,
+            slipDisplacement: slipTolerance,
+          }}
+          // LIVE → į viršų
+          onValuesChange={([l, r]) => {
+            const v: [number, number] = [l as number, r as number];
+            setInternal(v);
+            onValuesChange(v);
+            onChange?.(v);
+          }}
+          onValuesChangeStart={() => {
+            onValuesChangeStart?.();
+            onSlidingStart?.();
+          }}
+          onValuesChangeFinish={([l, r]) => {
+            const v: [number, number] = [l as number, r as number];
+            onValuesChangeFinish?.(v);
+            onSlidingComplete?.(v);
+          }}
         />
-      </Box>
-    </VStack>
+      )}
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  wrap: { height: 56, justifyContent: "center" },
+});

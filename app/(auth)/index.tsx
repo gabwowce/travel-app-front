@@ -4,7 +4,7 @@ import { Text } from "native-base";
 import { useRouter } from "expo-router";
 import { Formik } from "formik";
 
-import Button from "@/src/components/ui/btns/Button";
+import CustomButton from "@/src/components/ui/btns/Button";
 import CustomInput from "@/src/components/ui/input/CustomInput";
 import KeyboardWrapper from "@/src/components/KeyboardWrapper";
 import ScreenContainer from "@/src/components/ScreenContainer";
@@ -111,7 +111,7 @@ export default function LoginScreen() {
                 </Text>
               )}
 
-              <Button
+              <CustomButton
                 label={isLoading ? "Signing in..." : "Sign in"}
                 onPress={() => handleSubmit()}
               />

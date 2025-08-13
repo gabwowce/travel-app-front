@@ -1,5 +1,5 @@
 // validation/routesFilterSchema.ts
-import * as Yup from 'yup';
+import * as Yup from "yup";
 
 export const routesFilterSchema = Yup.object({
   /* Primary filters (dropdown / picker) */
@@ -57,15 +57,17 @@ export const routesFilterSchema = Yup.object({
   //   .default('created_at_desc')
   //   .nullable(),
 
-    categoryId: Yup.number().optional(),
-    countryId: Yup.number().optional(),
-    cityId: Yup.number().optional(),
-    difficulty: Yup.string().oneOf(["easy", "moderate", "hard"]).optional(),
-    minRating: Yup.number().min(0).max(5).optional(),
-    minDistance: Yup.number().min(0).max(1000).optional(),
-    maxDistance: Yup.number().min(0).max(1000).optional(),
-    minElevation: Yup.number().min(0).max(5000).optional(),
-    maxElevation: Yup.number().min(0).max(5000).optional(),
-    onlyFavorites: Yup.boolean().optional(),
-    search: Yup.string().optional(),
+  categoryId: Yup.number().optional(),
+  countryId: Yup.number().optional(),
+  cityId: Yup.number().optional(),
+  difficulty: Yup.string()
+    .oneOf(["easy", "moderate", "challenging", "difficult"])
+    .optional(),
+  minRating: Yup.number().min(0).max(5).optional(),
+  minDistance: Yup.number().min(0).max(1000).optional(),
+  maxDistance: Yup.number().min(0).max(1000).optional(),
+  minElevation: Yup.number().min(0).max(5000).optional(),
+  maxElevation: Yup.number().min(0).max(5000).optional(),
+  onlyFavorites: Yup.boolean().optional(),
+  search: Yup.string().optional(),
 });
