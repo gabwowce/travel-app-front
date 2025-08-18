@@ -8,7 +8,7 @@ import MiniTourCard from "@/src/components/MiniTourCard";
 import FlexContainer from "@/src/components/layout/FlexContainer";
 import { useRoutesInfinite } from "@/src/hooks/useRoutesInfinite";
 import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
-import FilterChips from "@/src/components/ui/FilterChips";
+import FilterChips from "@/src/components/filters/FilterChips";
 import { clearFilters } from "@/src/data/features/filters/filtersSlice";
 import ResponsiveTourList from "@/src/components/tour/ResponsiveTourList";
 import Spinner from "@/src/components/ui/Spinner";
