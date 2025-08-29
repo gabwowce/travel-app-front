@@ -21,6 +21,7 @@ export default function Header({ title, onBackPress, onPressClose, transparent =
 
   return (
     <View
+      accessible={false} importantForAccessibility="yes"
       style={[
         styles.headerContainer,
         { 
