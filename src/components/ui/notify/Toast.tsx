@@ -1,6 +1,7 @@
 // src/components/ui/notify/toast.ts
-import { Toast, Box, Text, HStack, Icon, Pressable, Slide } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
+import { Box, HStack, Icon, Slide, Text, Toast } from "native-base";
+import PressableLog from "../../PressableLog";
 
 type ToastStatus = "success" | "error" | "warning" | "info";
 
@@ -55,7 +56,8 @@ export function showToast({
             </Box>
 
             {/* uždarymo X */}
-            <Pressable
+            <PressableLog
+              analyticsLabel="Close notification"
               onPress={() => Toast.close(id)}
               accessibilityLabel="Close notification"
               hitSlop={8}
@@ -66,7 +68,7 @@ export function showToast({
                 size="sm"
                 color="gray.500"
               />
-            </Pressable>
+            </PressableLog>
           </HStack>
         </Box>
       </Slide>

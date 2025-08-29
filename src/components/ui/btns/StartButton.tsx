@@ -1,8 +1,8 @@
 // components/ui/btns/StartButton.tsx
-import React from 'react';
-import { Pressable } from 'react-native';
-import { Icon, Box } from 'native-base';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
+import { Box, Icon } from "native-base";
+import React from "react";
+import PressableLog from "../../PressableLog";
 
 type Props = {
   onPress: () => void;
@@ -12,18 +12,25 @@ type Props = {
 export default function StartButton({ onPress, iconName = "map" }: Props) {
   return (
     <Box>
-      <Pressable
+      <PressableLog
+        analyticsLabel={
+          iconName === "map"
+            ? "Start tour"
+            : iconName === "play"
+              ? "Play audio"
+              : "Start"
+        }
         onPress={onPress}
         accessibilityRole="button"
-  accessibilityLabel={
-    iconName === "map"
-      ? "Start tour"
-      : iconName === "play"
-      ? "Play audio"
-      : "Start"
-  }
-  accessibilityHint="Activates the selected function"
-  accessible={true}
+        accessibilityLabel={
+          iconName === "map"
+            ? "Start tour"
+            : iconName === "play"
+              ? "Play audio"
+              : "Start"
+        }
+        accessibilityHint="Activates the selected function"
+        accessible={true}
         style={{
           width: 44,
           height: 44,
@@ -36,7 +43,7 @@ export default function StartButton({ onPress, iconName = "map" }: Props) {
         android_ripple={{ color: "#E0E0E0", borderless: true }}
       >
         <Icon as={Ionicons} name={iconName} size="lg" color="#0C2736" />
-      </Pressable>
+      </PressableLog>
     </Box>
   );
 }

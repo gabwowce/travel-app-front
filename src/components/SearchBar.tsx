@@ -1,8 +1,9 @@
-import React from "react";
-import { View, TextInput, StyleSheet, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 import { VStack } from "native-base";
+import React from "react";
+import { StyleSheet, TextInput, View } from "react-native";
+import { widthPercentageToDP as wp } from "react-native-responsive-screen";
+import PressableLog from "./PressableLog";
 
 interface SearchBarProps {
   placeholder?: string;
@@ -50,14 +51,15 @@ export default function SearchBar({
 
         {/* ❌ Išvalymo mygtukas */}
         {value.length > 0 && (
-          <Pressable
+          <PressableLog
+            analyticsLabel="Clear search"
             onPress={onClear}
             style={styles.clearButton}
             accessibilityRole="button"
             accessibilityLabel="Clear search"
           >
             <Ionicons name="close-circle" size={20} color="#708192" />
-          </Pressable>
+          </PressableLog>
         )}
       </View>
     </VStack>

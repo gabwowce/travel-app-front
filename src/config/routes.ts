@@ -9,7 +9,7 @@ export const AppRoutes = {
 
   // Tabs
   HOME: "/(app)/(tabs)/home",
-  FAVORITES: "/(app)/(tabs)/saved",
+  FAVORITES: "/(app)/(tabs)/03-saved",
 
   // Profile
   PROFILE: "/(app)/profile",

@@ -1,9 +1,10 @@
 // src/hooks/useFiltersForm.ts
-import { useMemo, useCallback } from "react";
-import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
 import { mergeFiltersDraftForKey } from "@/src/data/features/filters/filtersSlice";
+import type { RouteFilters } from "@/src/data/features/types/routeFilters";
+import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
 import { useGetCitiesQuery } from "@/src/store/travelApi";
-import type { RouteFilters } from "@/src/components/filters/FilterForm";
+import { useCallback, useMemo } from "react";
+import { makeSelectDraftByKey } from "../data/features/filters/selectFiltersByKey";
 
 // numeriniai laukai
 const NUMERIC_FIELDS = new Set([
@@ -28,7 +29,8 @@ export function useFiltersForm(
   formik: { values: RouteFilters; setFieldValue: (f: string, v: any) => void }
 ) {
   const dispatch = useAppDispatch();
-  const draft = useAppSelector((st) => st.filters.drafts[routeKey] ?? {});
+  const selectDraft = useMemo(makeSelectDraftByKey, []);
+  const draft = useAppSelector((st) => selectDraft(st, routeKey));
 
   const currentCountryId =
     typeof formik.values.countryId === "number"

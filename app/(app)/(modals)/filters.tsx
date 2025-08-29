@@ -1,22 +1,22 @@
 // app/(modals)/filters.tsx
-import React, { useEffect, useCallback, useLayoutEffect } from "react";
-import { router, useNavigation } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { StatusBar } from "expo-status-bar";
 import FilterForm from "@/src/components/filters/FilterForm";
-import { useFiltersModalData } from "@/src/hooks/useFiltersModalData";
-import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
+import CircleButton from "@/src/components/ui/btns/CircleButton";
 import {
   applyDraftForKey,
-  mergeFiltersDraftForKey,
-  clearFiltersDraft,
   clearAppliedForKey,
+  clearFiltersDraft,
+  mergeFiltersDraftForKey,
 } from "@/src/data/features/filters/filtersSlice";
 import {
-  selectAppliedByKey,
-  selectDraftByKey,
-} from "@/src/data/features/filters/selectors";
-import CircleButton from "@/src/components/ui/btns/CircleButton";
+  makeSelectAppliedByKey,
+  makeSelectDraftByKey,
+} from "@/src/data/features/filters/selectFiltersByKey";
+import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
+import { useFiltersModalData } from "@/src/hooks/useFiltersModalData";
+import { router, useNavigation } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export const unstable_settings = { presentation: "modal" };
 
@@ -25,8 +25,14 @@ export default function FiltersModal() {
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
 
-  const applied = useAppSelector((st) => selectAppliedByKey(st, routeKey));
-  const draft = useAppSelector((st) => selectDraftByKey(st, routeKey));
+  const selectApplied = useMemo(makeSelectAppliedByKey, []);
+  const applied = useAppSelector((st) => selectApplied(st, routeKey));
+
+  const selectDraft = useMemo(makeSelectDraftByKey, []);
+  const draft = useAppSelector((st) => selectDraft(st, routeKey));
+
+  // const applied = useAppSelector((st) => selectAppliedByKey(st, routeKey));
+  // const draft = useAppSelector((st) => selectDraftByKey(st, routeKey));
 
   // ATIDARANT: draft = applied (jokio seno „šlamšto“)
   useEffect(() => {
@@ -79,7 +85,7 @@ export default function FiltersModal() {
 
   return (
     <>
-      <StatusBar style="light" translucent backgroundColor="transparent" />
+      <StatusBar style="dark" translucent />
       <SafeAreaView
         style={{ flex: 1, backgroundColor: "#fff" }}
         edges={["bottom", "right", "left"]}

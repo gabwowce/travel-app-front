@@ -1,7 +1,8 @@
 // src/components/ui/forms/DifficultyChips.tsx
+import PressableLog from "@/src/components/PressableLog";
 import { DifficultyLevel } from "@/src/data/features/types/routeFilters";
 import React from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 const ACCENT = "#001F3F";
 const BORDER = "#E5E7EB";
@@ -26,7 +27,8 @@ export default function DifficultyChips({
       {items.map((it) => {
         const selected = (value ?? "") === it.value;
         return (
-          <Pressable
+          <PressableLog
+            analyticsLabel={`Difficulty ${it.label}`}
             key={it.value || "all"}
             onPress={() => onChange(it.value)}
             style={[styles.chip, selected && styles.chipActive]}
@@ -38,7 +40,7 @@ export default function DifficultyChips({
             <Text style={[styles.txt, selected && styles.txtActive]}>
               {it.label}
             </Text>
-          </Pressable>
+          </PressableLog>
         );
       })}
     </View>

@@ -1,12 +1,8 @@
 // src/components/ui/forms/RatingStars.tsx
-import React from "react";
-import {
-  View,
-  Pressable,
-  StyleSheet,
-  GestureResponderEvent,
-} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import { GestureResponderEvent, StyleSheet, View } from "react-native";
+import PressableLog from "../../PressableLog";
 
 const ACCENT = "#001F3F";
 const EMPTY = "#E6ECF2";
@@ -50,7 +46,8 @@ export default function RatingStars({
           iconName = "star-half";
         }
         return (
-          <Pressable
+          <PressableLog
+            analyticsLabel={`Minimum rating ${idx}`}
             key={idx}
             onPress={(e) => handlePress(e, idx)}
             android_ripple={{ color: "#00000012", borderless: false }}
@@ -64,7 +61,7 @@ export default function RatingStars({
               size={size}
               color={(value ?? 0) >= idx - 0.5 ? ACCENT : EMPTY}
             />
-          </Pressable>
+          </PressableLog>
         );
       })}
     </View>

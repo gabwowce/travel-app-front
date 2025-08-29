@@ -1,21 +1,21 @@
+import { useNavigation } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
+import * as Location from "expo-location";
+import { StatusBar as ExpoStatusBar } from "expo-status-bar";
+import { Text } from "native-base";
 import React, { useEffect, useState } from "react";
 import {
-  View,
-  StyleSheet,
   ActivityIndicator,
   Alert,
   Platform,
+  StatusBar as RNStatusBar,
   StatusBar,
+  StyleSheet,
+  View,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import * as Location from "expo-location";
-import { LinearGradient } from "expo-linear-gradient";
-import { StatusBar as ExpoStatusBar } from "expo-status-bar";
-import { StatusBar as RNStatusBar } from "react-native";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import BackButton from "../navigation/BackButton";
-import { Text } from "native-base";
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
 // Geo taškai
 const points = [
@@ -90,12 +90,8 @@ export default function GoogleMap({ title }: MapProps) {
 
   return (
     <View style={styles.container}>
-      <ExpoStatusBar style="light" translucent backgroundColor="transparent" />
-      <RNStatusBar
-        barStyle="light-content"
-        translucent
-        backgroundColor="transparent"
-      />
+      <ExpoStatusBar style="light" translucent />
+      <RNStatusBar barStyle="light-content" translucent />
 
       <MapView
         provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined} // Google Maps tik Android

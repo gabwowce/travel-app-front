@@ -1,30 +1,29 @@
 // screens/EditProfileScreen.tsx
-import React from "react";
-import {
-  Avatar,
-  VStack,
-  Heading,
-  Text,
-  ScrollView,
-  Divider,
-  useToast,
-} from "native-base";
 import { router, useNavigation } from "expo-router";
 import { Formik, FormikErrors } from "formik";
+import {
+  Avatar,
+  Divider,
+  Heading,
+  ScrollView,
+  Text,
+  VStack,
+} from "native-base";
+import React from "react";
 
 import FlexContainer from "@/src/components/layout/FlexContainer";
 import Spinner from "@/src/components/ui/Spinner";
-import CustomInput from "@/src/components/ui/input/CustomInput";
 import Button from "@/src/components/ui/btns/Button";
 import CircleButton from "@/src/components/ui/btns/CircleButton";
-import { editProfileSchema } from "@/src/validation/editProfileSchema";
+import CustomInput from "@/src/components/ui/input/CustomInput";
+import { showToast } from "@/src/components/ui/notify/Toast";
 import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
+import type { User, UserUpdateRequest } from "@/src/store/travelApi";
 import {
   useGetUserProfileQuery,
   useUpdateUserProfileMutation,
 } from "@/src/store/travelApi";
-import type { User, UserUpdateRequest } from "@/src/store/travelApi";
-import { showToast } from "@/src/components/ui/notify/Toast";
+import { editProfileSchema } from "@/src/validation/editProfileSchema";
 
 /* ------------------------------------------------------------------------- */
 /* 🔹  ‘SAVE’ mygtukas Header’yje                                             */
@@ -156,7 +155,7 @@ export default function EditProfileScreen() {
                 <VStack alignItems="center">
                   <Avatar
                     size="xl"
-                    source={{ uri: "https://via.placeholder.com/150" }}
+                    source={require("@/src/assets/avatar.png")}
                     accessibilityLabel={`Profile avatar of ${values.name}`}
                   >
                     {values.name?.charAt(0).toUpperCase()}

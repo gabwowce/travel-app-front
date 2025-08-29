@@ -1,14 +1,10 @@
-import React from "react";
-import {
-  View,
-  Pressable,
-  StyleSheet,
-  ViewStyle,
-  TextStyle,
-} from "react-native";
+import { usePathname } from "expo-router";
 import { Text } from "native-base";
+import React, { useCallback } from "react";
+import { StyleSheet, TextStyle, View, ViewStyle } from "react-native";
+import PressableLog from "../../PressableLog";
 
-type Variant = "primary" | "secondary" | "ouline";
+type Variant = "primary" | "secondary" | "ouline" | "outline";
 
 type Props = {
   label?: string;
@@ -19,7 +15,10 @@ type Props = {
   children?: React.ReactNode;
   isDisabled?: boolean;
   accessibilityLabel?: string;
-  isFlex1?: boolean; // If true, button will take full width of the parent
+  isFlex1?: boolean;
+
+  /** ——— Analytics ——— */
+  analyticsLabel?: string; // jei nori konkretaus vardo loguose
 
   // Spacing
   m?: number;
@@ -38,6 +37,12 @@ type Props = {
   pr?: number;
 };
 
+// vieningas log formato helperis
+function logBtn(name: string, meta?: Record<string, any>) {
+  const ts = new Date().toISOString().replace("T", " ").slice(0, 19);
+  console.log(`[${ts}] 🖱️ [BTN] ${name}`, meta ? JSON.stringify(meta) : "");
+}
+
 export default function CustomButton({
   label,
   onPress,
@@ -48,6 +53,7 @@ export default function CustomButton({
   isDisabled,
   accessibilityLabel,
   isFlex1 = false,
+  analyticsLabel,
   // spacing props
   m,
   mx,
@@ -64,6 +70,8 @@ export default function CustomButton({
   pl,
   pr,
 }: Props) {
+  const path = usePathname();
+
   const spacingStyle: ViewStyle = {
     marginTop: mt ?? my ?? m,
     marginBottom: mb ?? my ?? m,
@@ -89,6 +97,19 @@ export default function CustomButton({
         ? styles.secondaryText
         : styles.outlineText;
 
+  // Automatinis mygtuko pavadinimas logui
+  const btnName =
+    analyticsLabel ??
+    (typeof children === "string"
+      ? children
+      : (label ?? accessibilityLabel ?? "Unnamed"));
+
+  const handlePress = useCallback(() => {
+    if (isDisabled) return;
+    logBtn(btnName, { screen: path });
+    onPress?.();
+  }, [btnName, path, isDisabled, onPress]);
+
   return (
     <View
       style={[
@@ -97,14 +118,21 @@ export default function CustomButton({
         isFlex1 ? { flex: 1 } : { width: "100%" },
       ]}
     >
-      <Pressable
+      <PressableLog
+        analyticsLabel={accessibilityLabel ? accessibilityLabel : label}
         accessibilityRole="button"
-        accessibilityState={{ disabled: isDisabled }}
+        accessibilityState={{ disabled: !!isDisabled }}
         accessibilityLabel={accessibilityLabel ? accessibilityLabel : label}
-        style={[styles.button, buttonVariantStyle]}
-        onPress={onPress}
+        onPress={handlePress}
+        style={({ pressed }) => [
+          styles.button,
+          buttonVariantStyle,
+          isDisabled && styles.disabled,
+          pressed && !isDisabled && styles.pressed,
+        ]}
       >
         {leftIcon && <View style={styles.icon}>{leftIcon}</View>}
+
         {children ? (
           typeof children === "string" ? (
             <Text style={[styles.label, textVariantStyle]}>{children}</Text>
@@ -114,17 +142,15 @@ export default function CustomButton({
         ) : (
           <Text style={[styles.label, textVariantStyle]}>{label}</Text>
         )}
+
         {rightIcon && <View style={styles.icon}>{rightIcon}</View>}
-      </Pressable>
+      </PressableLog>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
+  buttonContainer: { alignItems: "center", justifyContent: "center" },
   button: {
     flexDirection: "row",
     borderRadius: 12,
@@ -134,37 +160,18 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 50,
   },
-  primaryButton: {
-    backgroundColor: "#001F3F",
-  },
-  secondaryButton: {
-    backgroundColor: "#CCCCCC",
-  },
+  primaryButton: { backgroundColor: "#001F3F" },
+  secondaryButton: { backgroundColor: "#CCCCCC" },
   outlineButton: {
     backgroundColor: "transparent",
     borderWidth: 2,
     borderColor: "#001F3F",
   },
-  disabled: {
-    opacity: 0.5,
-  },
-  pressed: {
-    opacity: 0.8,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  primaryText: {
-    color: "#FFFFFF",
-  },
-  secondaryText: {
-    color: "#FFFFFF",
-  },
-  outlineText: {
-    color: "#001F3F",
-  },
-  icon: {
-    marginHorizontal: 4,
-  },
+  disabled: { opacity: 0.5 },
+  pressed: { opacity: 0.8 },
+  label: { fontSize: 16, fontWeight: "bold" },
+  primaryText: { color: "#FFFFFF" },
+  secondaryText: { color: "#FFFFFF" },
+  outlineText: { color: "#001F3F" },
+  icon: { marginHorizontal: 4 },
 });

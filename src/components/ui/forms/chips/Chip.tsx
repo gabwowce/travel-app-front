@@ -1,6 +1,6 @@
-import React from "react";
-import { Pressable } from "react-native";
+import PressableLog from "@/src/components/PressableLog";
 import { HStack, Text } from "native-base";
+import React from "react";
 
 export default function Chip({
   label,
@@ -14,7 +14,8 @@ export default function Chip({
   ariaLabel?: string;
 }) {
   return (
-    <Pressable
+    <PressableLog
+      analyticsLabel={ariaLabel ?? label}
       accessibilityRole="button"
       accessibilityLabel={ariaLabel ?? label}
       accessibilityState={{ selected: !!isActive }}
@@ -33,6 +34,6 @@ export default function Chip({
           {label}
         </Text>
       </HStack>
-    </Pressable>
+    </PressableLog>
   );
 }

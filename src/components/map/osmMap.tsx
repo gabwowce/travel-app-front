@@ -1,57 +1,58 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useNavigation } from "@react-navigation/native"; // Import useNavigation
+import { LinearGradient } from "expo-linear-gradient";
+import * as Location from "expo-location";
+import { StatusBar as ExpoStatusBar } from "expo-status-bar";
+import { Text } from "native-base";
+import React, { useEffect, useRef, useState } from "react";
 import {
-  View,
-  StyleSheet,
   ActivityIndicator,
   Alert,
   Platform,
+  StatusBar as RNStatusBar,
   StatusBar,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native'; // Import useNavigation
-import { WebView } from 'react-native-webview';
-import * as Location from 'expo-location';
-import { LinearGradient } from 'expo-linear-gradient';
-import { StatusBar as ExpoStatusBar } from "expo-status-bar";
-import { StatusBar as RNStatusBar } from "react-native";
+  StyleSheet,
+  View,
+} from "react-native";
+import MapView, { Marker } from "react-native-maps";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import BackButton from './btns/BackButton';
-import { Text } from "native-base";
-import { Linking } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import { WebView } from "react-native-webview";
+import BackButton from "./btns/BackButton";
 
-
-  // Sample geo points
+// Sample geo points
 const points = [
   {
-    id: '1',
-    title: 'Gedimino pilis',
+    id: "1",
+    title: "Gedimino pilis",
     coords: { latitude: 54.686855, longitude: 25.290715 },
-    url: 'https://lt.wikipedia.org/wiki/Gedimino_pilis',
+    url: "https://lt.wikipedia.org/wiki/Gedimino_pilis",
   },
   {
-    id: '2',
-    title: 'Katedros aikštė',
+    id: "2",
+    title: "Katedros aikštė",
     coords: { latitude: 54.68527, longitude: 25.287276 },
-    url: 'https://lt.wikipedia.org/wiki/Katedros_aikštė',
+    url: "https://lt.wikipedia.org/wiki/Katedros_aikštė",
   },
   {
-    id: '3',
-    title: 'Cili pica',
+    id: "3",
+    title: "Cili pica",
     coords: { latitude: 54.6777239, longitude: 25.2553553 },
-    url: 'https://www.cili.lt/',
+    url: "https://www.cili.lt/",
   },
 ];
 
 const defaultLocation = { latitude: 54.687157, longitude: 25.279652 };
 
 interface OSMMapProps {
-    title: string;
-  }
+  title: string;
+}
 
 export default function OSMMap({ title }: OSMMapProps) {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation(); // Access navigation
-  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(defaultLocation);
+  const [userLocation, setUserLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(defaultLocation);
   const [loading, setLoading] = useState(true);
   const [webViewUrl, setWebViewUrl] = useState<string | null>(null);
   const webViewRef = useRef<WebView>(null);
@@ -61,29 +62,34 @@ export default function OSMMap({ title }: OSMMapProps) {
     (async () => {
       try {
         let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          Alert.alert('Leidimas atmestas', 'Be leidimo negalėsime parodyti jūsų vietos.');
+        if (status !== "granted") {
+          Alert.alert(
+            "Leidimas atmestas",
+            "Be leidimo negalėsime parodyti jūsų vietos."
+          );
           setLoading(false);
           return;
         }
-  
+
         let location = await Location.getCurrentPositionAsync({
           accuracy: Location.Accuracy.High, // Naudoti aukštą tikslumą
         });
-  
+
         setUserLocation({
           latitude: location.coords.latitude,
           longitude: location.coords.longitude,
         });
       } catch (error) {
-        console.error('Klaida gaunant lokaciją:', error);
-        Alert.alert('Klaida', 'Nepavyko gauti lokacijos. Įsitikinkite, kad GPS įjungtas.');
+        console.error("Klaida gaunant lokaciją:", error);
+        Alert.alert(
+          "Klaida",
+          "Nepavyko gauti lokacijos. Įsitikinkite, kad GPS įjungtas."
+        );
       } finally {
         setLoading(false);
       }
     })();
   }, []);
-  
 
   if (loading) {
     return (
@@ -108,8 +114,8 @@ export default function OSMMap({ title }: OSMMapProps) {
           `L.marker([${point.coords.latitude}, ${point.coords.longitude}]).addTo(map)
             .bindPopup("<b>${point.title}</b>");`
       )
-      .join('\n');
-  
+      .join("\n");
+
     return `
       <!DOCTYPE html>
       <html>
@@ -153,67 +159,89 @@ export default function OSMMap({ title }: OSMMapProps) {
       </html>
     `;
   };
-  
 
   return (
     <View style={styles.container}>
-      {Platform.OS === 'ios' ? (
-        
-
-<>
-<ExpoStatusBar style={webViewUrl ? "dark" : "light"} translucent backgroundColor="transparent" />
-<RNStatusBar barStyle={webViewUrl ? "dark-content" : "light-content"} translucent backgroundColor="transparent" />
-{webViewUrl ? (
-  <>
-    <MapView
-          style={styles.map}
-          initialRegion={{
-            latitude: userLocation?.latitude || defaultLocation.latitude,
-            longitude: userLocation?.longitude || defaultLocation.longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          }}
-          mapType="mutedStandard" // Standartinis Apple Maps stilius
-          // Nustato šviesų režimą (tik iOS)
-          showsUserLocation
-          showsCompass
-        >
-          {points.map((point) => (
-            <Marker key={point.id} coordinate={point.coords} title={point.title} />
-          ))}
-        </MapView>
-    {!webViewLoading && <BackButton label="Grįžti į žemėlapį" onPress={() => setWebViewUrl(null)} />}
-  </>
-) : (
-  <>
-    <MapView
-          style={styles.map}
-          initialRegion={{
-            latitude: userLocation?.latitude || defaultLocation.latitude,
-            longitude: userLocation?.longitude || defaultLocation.longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          }}
-          showsUserLocation
-          showsCompass
-        >
-          {points.map((point) => (
-            <Marker key={point.id} coordinate={point.coords} title={point.title} />
-          ))}
-        </MapView>
-    <View style={styles.overlay}>
-      <LinearGradient colors={['rgba(0,0,0,0.8)', 'rgba(0,0,0,0.0)']} style={styles.gradient} />
-      <BackButton onPress={() => navigation.goBack()} />
-      <Text variant="header2Bold" style={styles.title}>{title}</Text>
-    </View>
-  </>
-)}
-</>
-        
+      {Platform.OS === "ios" ? (
+        <>
+          <ExpoStatusBar style={webViewUrl ? "dark" : "light"} translucent />
+          <RNStatusBar
+            barStyle={webViewUrl ? "dark-content" : "light-content"}
+            translucent
+          />
+          {webViewUrl ? (
+            <>
+              <MapView
+                style={styles.map}
+                initialRegion={{
+                  latitude: userLocation?.latitude || defaultLocation.latitude,
+                  longitude:
+                    userLocation?.longitude || defaultLocation.longitude,
+                  latitudeDelta: 0.01,
+                  longitudeDelta: 0.01,
+                }}
+                mapType="mutedStandard" // Standartinis Apple Maps stilius
+                // Nustato šviesų režimą (tik iOS)
+                showsUserLocation
+                showsCompass
+              >
+                {points.map((point) => (
+                  <Marker
+                    key={point.id}
+                    coordinate={point.coords}
+                    title={point.title}
+                  />
+                ))}
+              </MapView>
+              {!webViewLoading && (
+                <BackButton
+                  label="Grįžti į žemėlapį"
+                  onPress={() => setWebViewUrl(null)}
+                />
+              )}
+            </>
+          ) : (
+            <>
+              <MapView
+                style={styles.map}
+                initialRegion={{
+                  latitude: userLocation?.latitude || defaultLocation.latitude,
+                  longitude:
+                    userLocation?.longitude || defaultLocation.longitude,
+                  latitudeDelta: 0.01,
+                  longitudeDelta: 0.01,
+                }}
+                showsUserLocation
+                showsCompass
+              >
+                {points.map((point) => (
+                  <Marker
+                    key={point.id}
+                    coordinate={point.coords}
+                    title={point.title}
+                  />
+                ))}
+              </MapView>
+              <View style={styles.overlay}>
+                <LinearGradient
+                  colors={["rgba(0,0,0,0.8)", "rgba(0,0,0,0.0)"]}
+                  style={styles.gradient}
+                />
+                <BackButton onPress={() => navigation.goBack()} />
+                <Text variant="header2Bold" style={styles.title}>
+                  {title}
+                </Text>
+              </View>
+            </>
+          )}
+        </>
       ) : (
         <>
-          <ExpoStatusBar style={webViewUrl ? "dark" : "light"} translucent backgroundColor="transparent" />
-          <RNStatusBar barStyle={webViewUrl ? "dark-content" : "light-content"} translucent backgroundColor="transparent" />
+          <ExpoStatusBar style={webViewUrl ? "dark" : "light"} translucent />
+          <RNStatusBar
+            barStyle={webViewUrl ? "dark-content" : "light-content"}
+            translucent
+          />
           {webViewUrl ? (
             <>
               <WebView
@@ -223,24 +251,46 @@ export default function OSMMap({ title }: OSMMapProps) {
                 startInLoadingState={true}
                 onLoadStart={() => setWebViewLoading(true)}
                 onLoad={() => setWebViewLoading(false)}
-                renderLoading={() => <ActivityIndicator size="large" color="#444" style={{ flex: 1 }} />}
+                renderLoading={() => (
+                  <ActivityIndicator
+                    size="large"
+                    color="#444"
+                    style={{ flex: 1 }}
+                  />
+                )}
               />
-              {!webViewLoading && <BackButton label="Grįžti į žemėlapį" onPress={() => setWebViewUrl(null)} />}
+              {!webViewLoading && (
+                <BackButton
+                  label="Grįžti į žemėlapį"
+                  onPress={() => setWebViewUrl(null)}
+                />
+              )}
             </>
           ) : (
             <>
               <WebView
-                originWhitelist={['*']}
+                originWhitelist={["*"]}
                 source={{ html: generateMapHtml() }}
                 style={styles.fullWebView}
                 onMessage={handleMessage}
                 startInLoadingState={true}
-                renderLoading={() => <ActivityIndicator size="large" color="#444" style={{ flex: 1 }} />}
+                renderLoading={() => (
+                  <ActivityIndicator
+                    size="large"
+                    color="#444"
+                    style={{ flex: 1 }}
+                  />
+                )}
               />
               <View style={styles.overlay}>
-                <LinearGradient colors={['rgba(0,0,0,0.8)', 'rgba(0,0,0,0.0)']} style={styles.gradient} />
+                <LinearGradient
+                  colors={["rgba(0,0,0,0.8)", "rgba(0,0,0,0.0)"]}
+                  style={styles.gradient}
+                />
                 <BackButton onPress={() => navigation.goBack()} />
-                <Text variant="header2Bold" style={styles.title}>{title}</Text>
+                <Text variant="header2Bold" style={styles.title}>
+                  {title}
+                </Text>
               </View>
             </>
           )}
@@ -248,48 +298,47 @@ export default function OSMMap({ title }: OSMMapProps) {
       )}
     </View>
   );
-  
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor:"#fff"
+    backgroundColor: "#fff",
   },
   fullWebView: {
     ...StyleSheet.absoluteFillObject, // Žemėlapis per visą ekraną
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   overlay: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
-    alignItems: 'center',
-    paddingTop: Platform.OS === 'ios' ? 50 : StatusBar.currentHeight || 20,
+    alignItems: "center",
+    paddingTop: Platform.OS === "ios" ? 50 : StatusBar.currentHeight || 20,
   },
   gradient: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     height: 100, // Aukštis gradientui
   },
   backButton: {
-    position: 'absolute',
-    top: Platform.OS === 'ios' ? 50 : StatusBar.currentHeight || 20,
+    position: "absolute",
+    top: Platform.OS === "ios" ? 50 : StatusBar.currentHeight || 20,
     left: 20,
-    backgroundColor: '#F7F7F9',
+    backgroundColor: "#F7F7F9",
     padding: 10,
     borderRadius: 25,
   },
   title: {
-    marginTop: 10, 
+    marginTop: 10,
   },
-  map: { 
+  map: {
     flex: 1, // Priverčia MapView užimti visą ekraną
   },
 });

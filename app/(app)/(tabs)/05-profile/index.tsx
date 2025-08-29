@@ -1,15 +1,13 @@
-import { Divider, ScrollView, VStack } from "native-base";
 import FlexContainer from "@/src/components/layout/FlexContainer";
-import Header from "@/src/components/Header";
-import CircleButton from "@/src/components/ui/btns/CircleButton";
+import ProfileDetails from "@/src/components/profile/ProfileDetails";
+import ProfileHeaderInfo from "@/src/components/profile/ProfileHeaderInfo";
+import ProfileMenu from "@/src/components/profile/ProfileMenu";
 import LoadingScreen from "@/src/components/screens/loading";
 import { AppRoutes } from "@/src/config/routes";
-import ProfileMenu from "@/src/components/profile/ProfileMenu";
-import ProfileHeaderInfo from "@/src/components/profile/ProfileHeaderInfo";
-import ProfileDetails from "@/src/components/profile/ProfileDetails";
+import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
 import { useProfileData } from "@/src/hooks/useProfileData";
 import { useRouter } from "expo-router";
-import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
+import { Divider, ScrollView, VStack } from "native-base";
 
 export default function ProfileScreen() {
   useAnnounceForAccessibility("Profile screen opened");

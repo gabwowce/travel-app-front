@@ -1,6 +1,7 @@
-import { Box, Pressable, Text, Wrap } from "native-base";
-import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 import { Category } from "@/src/api/generated/models/Category";
+import { Box, Text, Wrap } from "native-base";
+import { widthPercentageToDP as wp } from "react-native-responsive-screen";
+import PressableLog from "../PressableLog";
 
 export default function CategoryGrid({
   categories,
@@ -12,8 +13,14 @@ export default function CategoryGrid({
   return (
     <Wrap direction="row" justify="flex-start">
       {categories.map((cat) => (
-        <Pressable accessibilityRole="button"
-  accessibilityLabel={`Category: ${cat.name}`} focusable key={cat.id} onPress={() => onPress(cat)}>
+        <PressableLog
+          accessibilityRole="button"
+          analyticsLabel={`Category: ${cat.name}`}
+          accessibilityLabel={`Category: ${cat.name}`}
+          focusable
+          key={cat.id}
+          onPress={() => onPress(cat)}
+        >
           {({ isPressed }) => (
             <Box
               px={4}
@@ -36,7 +43,7 @@ export default function CategoryGrid({
               </Text>
             </Box>
           )}
-        </Pressable>
+        </PressableLog>
       ))}
     </Wrap>
   );

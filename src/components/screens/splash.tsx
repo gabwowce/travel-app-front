@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
 import { Box, Center, Image, Text, VStack } from "native-base";
+import React, { useEffect } from "react";
 import { AccessibilityInfo } from "react-native";
 
 interface SplashProps {
@@ -14,6 +14,7 @@ export default function SplashScreen({ onFinish }: SplashProps) {
     AccessibilityInfo.isScreenReaderEnabled().then((enabled) => {
       timer = setTimeout(() => onFinish?.(), enabled ? 4000 : 3000);
     });
+    console.log("[SplashScreen]: ", "SplashScreen activated");
 
     return () => clearTimeout(timer);
   }, [onFinish]);

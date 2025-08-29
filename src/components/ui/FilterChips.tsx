@@ -1,13 +1,14 @@
 // src/components/filters/FilterChips.tsx
-import React, { useMemo } from "react";
-import { Box, Pressable, Text, Icon, HStack } from "native-base";
-import { Ionicons } from "@expo/vector-icons";
+import { RouteFilters } from "@/src/data/features/types/routeFilters";
 import {
   useGetCategoriesQuery,
-  useGetCountriesQuery,
   useGetCitiesQuery,
+  useGetCountriesQuery,
 } from "@/src/store/travelApi";
-import { RouteFilters } from "@/src/data/features/types/routeFilters";
+import { Ionicons } from "@expo/vector-icons";
+import { Box, HStack, Icon, Text } from "native-base";
+import React, { useMemo } from "react";
+import PressableLog from "../PressableLog";
 
 type Props = {
   filters: RouteFilters;
@@ -90,7 +91,8 @@ export default function FilterChips({ filters, onClear }: Props) {
     <Box w="100%" pb={4}>
       <Box flexDirection="row" flexWrap="wrap" alignItems="center">
         {chips.map((chip, idx) => (
-          <Pressable
+          <PressableLog
+            analyticsLabel={`Active filter: ${chip}`}
             key={idx}
             accessibilityRole="text"
             accessibilityLabel={`Active filter: ${chip}`}
@@ -104,11 +106,12 @@ export default function FilterChips({ filters, onClear }: Props) {
             <Text fontSize="xs" color="primary.800" noOfLines={1}>
               {chip}
             </Text>
-          </Pressable>
+          </PressableLog>
         ))}
 
         {onClear && (
-          <Pressable
+          <PressableLog
+            analyticsLabel="Clear all filters"
             onPress={onClear}
             accessibilityRole="button"
             accessibilityLabel="Clear all filters"
@@ -131,7 +134,7 @@ export default function FilterChips({ filters, onClear }: Props) {
                 Clear all filters
               </Text>
             </HStack>
-          </Pressable>
+          </PressableLog>
         )}
       </Box>
     </Box>

@@ -1,23 +1,21 @@
 // src/hooks/useFiltersModalData.ts
-import { useEffect, useRef } from "react";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
 import {
-  mergeFiltersDraftForKey,
-  clearFiltersDraft,
   applyDraftForKey,
   clearAllForKey,
+  clearFiltersDraft,
 } from "@/src/data/features/filters/filtersSlice";
 import {
-  selectDraftByKey,
   selectAppliedByKey,
+  selectDraftByKey,
 } from "@/src/data/features/filters/selectors";
-import type { RouteFilters } from "@/src/data/features/types/routeFilters";
+import { useAppDispatch, useAppSelector } from "@/src/data/hooks";
 import {
   useGetCategoriesQuery,
-  useGetCountriesQuery,
   useGetCitiesQuery,
+  useGetCountriesQuery,
 } from "@/src/store/travelApi";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useRef } from "react";
 
 export function useFiltersModalData() {
   const { key: rawKey } = useLocalSearchParams<{ key: string | string[] }>();

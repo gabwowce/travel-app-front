@@ -1,28 +1,28 @@
 // screens/ChangePasswordScreen.tsx
-import React from "react";
-import {
-  VStack,
-  Heading,
-  Text,
-  Divider,
-  ScrollView,
-  Avatar,
-} from "native-base";
 import { router, useNavigation } from "expo-router";
 import { Formik } from "formik";
+import {
+  Avatar,
+  Divider,
+  Heading,
+  ScrollView,
+  Text,
+  VStack,
+} from "native-base";
+import React from "react";
 
 import FlexContainer from "@/src/components/layout/FlexContainer";
-import CustomInput from "@/src/components/ui/input/CustomInput";
 import Button from "@/src/components/ui/btns/Button";
+import CustomInput from "@/src/components/ui/input/CustomInput";
 import Spinner from "@/src/components/ui/Spinner";
-import { passwordSchema } from "@/src/validation/passwordSchema";
 import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
+import { passwordSchema } from "@/src/validation/passwordSchema";
 
+import { showToast } from "@/src/components/ui/notify/Toast";
 import {
   useGetUserProfileQuery,
   useUpdateUserProfileMutation,
 } from "@/src/store/travelApi";
-import { showToast } from "@/src/components/ui/notify/Toast";
 
 /* ------------------------------------------------------------------------- */
 /* 🔹 D Y N A M I N I S   'S A V E'   M Y G T U K A S   A P P  B A R ' e      */
@@ -139,7 +139,7 @@ export default function ChangePasswordScreen() {
                 <VStack alignItems="center" mt={5} space={4}>
                   <Avatar
                     size="xl"
-                    source={{ uri: "https://via.placeholder.com/150" }}
+                    source={require("@/src/assets/avatar.png")}
                     accessibilityLabel={`Profile avatar of ${user.name}`}
                   >
                     {user.name?.charAt(0).toUpperCase()}

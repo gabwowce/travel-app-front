@@ -1,7 +1,8 @@
-import React from "react";
-import { Pressable, Text, StyleSheet, ViewStyle } from "react-native";
-import { Box, Icon } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
+import { Box, Icon } from "native-base";
+import React from "react";
+import { StyleSheet, Text, ViewStyle } from "react-native";
+import PressableLog from "../../PressableLog";
 
 type Variant =
   | "back"
@@ -100,7 +101,8 @@ export default function CircleButton({
 
   return (
     <Box>
-      <Pressable
+      <PressableLog
+        analyticsLabel={final.label || final.iconName || "Button"}
         onPress={onPress}
         accessibilityRole="button"
         accessibilityLabel={final.label || final.iconName || "Button"}
@@ -142,7 +144,7 @@ export default function CircleButton({
             {final.label}
           </Text>
         ) : null}
-      </Pressable>
+      </PressableLog>
     </Box>
   );
 }

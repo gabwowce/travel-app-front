@@ -1,15 +1,13 @@
-import React from "react";
-import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import ImageViewer from "../ImageViewer";
-import { useRouter } from "expo-router"; // Navigacijai
-
-import { Box, Text, Image, Button } from "native-base";
-import { useAppDispatch } from "@/src/data/hooks";
-import { useWindowDimensions } from "react-native";
-import { useBreakpointValue } from "native-base";
+import { useRouter } from "expo-router";
+import { Text, useBreakpointValue } from "native-base";
+import React from "react";
+import { StyleSheet, useWindowDimensions, View } from "react-native";
+// 👇 pridėk
+import PressableLog from "@/src/components/PressableLog";
 
 import FavoriteButton from "@/src/components/ui/btns/FavoriteButton";
+import ImageViewer from "../ImageViewer";
 import RatingText from "../ui/RatingText";
 
 interface TourCardProps {
@@ -19,6 +17,7 @@ interface TourCardProps {
   rating: number;
   location: string;
   accessibilityLabel?: string;
+  isFavorite?: boolean;
 }
 
 export function TourCard({
@@ -27,19 +26,20 @@ export function TourCard({
   title,
   rating,
   location,
-  accessibilityLabel
+  accessibilityLabel,
+  isFavorite,
 }: TourCardProps) {
   const router = useRouter();
   const { width: screenW } = useWindowDimensions();
+
   const cardW = useBreakpointValue({
-    base: 0.9 * screenW, // xs-sm: beveik visas ekranas
-    sm: 0.6 * screenW, // ~2 kortelės
-    md: 0.4 * screenW, // ~3 kortelės
-    lg: 0.3 * screenW, // ~4 kortelės
-    xl: 0.25 * screenW, // ~5 kortelių
+    base: 0.9 * screenW,
+    sm: 0.6 * screenW,
+    md: 0.4 * screenW,
+    lg: 0.3 * screenW,
+    xl: 0.25 * screenW,
   });
 
-  // skirtingas nuotraukos santykis (jei reikia)
   const imgRatio = useBreakpointValue({
     base: 4 / 3,
     sm: 4 / 3,
@@ -48,70 +48,87 @@ export function TourCard({
   });
 
   return (
-    <TouchableOpacity
-     accessibilityRole="button"
-  accessibilityLabel={
-    accessibilityLabel ??
-    `Open tour: ${title}, located in ${location}, rating ${rating} stars`
-  }
+    <PressableLog
+      analyticsLabel={`Open tour: ${title}`}
+      accessibilityRole="button"
+      accessibilityLabel={
+        accessibilityLabel ??
+        `Open tour: ${title}, located in ${location}, rating ${rating} stars`
+      }
       onPress={() =>
         router.push({
           pathname: "/routes/[id]",
           params: {
-            id,
+            id, // string ok
             title,
-            image: image.uri,
-            rating: rating.toString(),
+            image: image?.uri,
+            rating: String(rating),
             location,
+            is_favorite: isFavorite ? "1" : "0",
           },
         })
       }
+      // pressed efektas kaip su TouchableOpacity activeOpacity
+      style={({ pressed }) => [
+        styles.card,
+        { width: cardW },
+        pressed && styles.pressed,
+      ]}
+      testID={`tour-card-${id}`}
     >
-      <View style={[styles.card, { width: cardW }]}>
-        {/* Nuotrauka su bookmark ikona */}
-        <View style={styles.imageContainer}>
-          <View
-            style={[
-              styles.imageWrapper,
-              { width: "100%" },
-              { aspectRatio: imgRatio },
-            ]}
-          >
-            <ImageViewer imgSource={image} />
-          </View>
-          {/* <Ionicons name="bookmark-outline" size={20} color="white" style={styles.bookmarkIcon} /> */}
-          <FavoriteButton routeId={Number(id)} style={styles.bookmarkIcon} />
+      {/* Nuotrauka + bookmark */}
+      <View style={styles.imageContainer}>
+        <View style={[styles.imageWrapper, { aspectRatio: imgRatio }]}>
+          <ImageViewer imgSource={image} />
         </View>
-        {/* <Button size="sm" mt="2" colorScheme={isFavorite ? "red" : "blue"} onPress={handleFavoriteToggle}>
-          {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
-        </Button> */}
 
-        {/* Teksto dalis */}
-        <View style={styles.textContainer}>
-          <View style={styles.infoRow2}>
-            <Text variant="bodyBold">{title}</Text>
-            <View style={styles.infoRow}>
-              <Ionicons name="star" size={16} color="#FACC15" importantForAccessibility="no"
-  accessibilityElementsHidden/>
-              <RatingText value={rating} variant="bodyGray"  accessibilityLabel={`Rating: ${rating} stars`}/>
-            </View>
-          </View>
+        <FavoriteButton
+          routeId={Number(id)}
+          initialSelected={!!isFavorite}
+          style={styles.bookmarkIcon}
+        />
+      </View>
+
+      {/* Tekstas */}
+      <View style={styles.textContainer}>
+        <View style={styles.infoRow2}>
+          <Text variant="bodyBold">{title}</Text>
           <View style={styles.infoRow}>
-            <Ionicons name="location-outline" size={16} color="gray" importantForAccessibility="no"
-  accessibilityElementsHidden />
-            <Text variant="bodyGray">{location}</Text>
+            <Ionicons
+              name="star"
+              size={16}
+              color="#FACC15"
+              importantForAccessibility="no"
+              accessibilityElementsHidden
+            />
+            <RatingText
+              value={rating}
+              variant="bodyGray"
+              accessibilityLabel={`Rating: ${rating} stars`}
+            />
           </View>
+        </View>
+        <View style={styles.infoRow}>
+          <Ionicons
+            name="location-outline"
+            size={16}
+            color="gray"
+            importantForAccessibility="no"
+            accessibilityElementsHidden
+          />
+          <Text variant="bodyGray">{location}</Text>
         </View>
       </View>
-    </TouchableOpacity>
+    </PressableLog>
   );
 }
+
 const SHADOW = {
   shadowColor: "#000",
   shadowOpacity: 0.08,
   shadowOffset: { width: 1, height: 2 },
   shadowRadius: 2,
-  elevation: 4, // Android
+  elevation: 4,
 };
 
 const styles = StyleSheet.create({
@@ -120,14 +137,11 @@ const styles = StyleSheet.create({
     width: "auto",
     borderRadius: 24,
     backgroundColor: "#FFFCF9",
-
     alignSelf: "flex-start",
     ...SHADOW,
   },
-  imageContainer: {
-    position: "relative",
-    padding: 14,
-  },
+  pressed: { opacity: 0.9 },
+  imageContainer: { position: "relative", padding: 14 },
   bookmarkIcon: {
     position: "absolute",
     top: 24,
@@ -155,8 +169,10 @@ const styles = StyleSheet.create({
   },
   imageWrapper: {
     width: "100%",
-    aspectRatio: 16 / 9, // Galima keisti į 4/3 arba pan.
+    aspectRatio: 16 / 9,
     borderRadius: 12,
     overflow: "hidden",
   },
 });
+
+export default TourCard;

@@ -1,11 +1,11 @@
-import { Stack } from "expo-router";
 import { defaultHeaderOptions } from "@/src/navigation/headerOptions";
+import { Stack } from "expo-router";
 
 export default function SavedLayout() {
   return (
     <Stack screenOptions={{ ...defaultHeaderOptions }}>
       <Stack.Screen name="index" options={{ title: "Saved" }} />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="filters"
         options={{
           title: "Filters",
@@ -13,7 +13,7 @@ export default function SavedLayout() {
           animation: "slide_from_bottom",
           headerLeft: () => null,
         }}
-      />
+      /> */}
     </Stack>
   );
 }

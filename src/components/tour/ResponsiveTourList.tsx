@@ -1,20 +1,20 @@
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
-import {
-  useWindowDimensions,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
-} from "react-native";
-import {
-  Spinner,
-  VStack,
-  useBreakpointValue,
-  Box,
-  Text,
-  Button,
-} from "native-base";
-import { FlashList } from "@shopify/flash-list";
 import MiniTourCard from "@/src/components/MiniTourCard";
 import FilterChips from "@/src/components/ui/FilterChips";
+import { FlashList } from "@shopify/flash-list";
+import {
+  Box,
+  Button,
+  Spinner,
+  Text,
+  VStack,
+  useBreakpointValue,
+} from "native-base";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  useWindowDimensions,
+} from "react-native";
 import { ColumnItem } from "../getItemStyle";
 
 interface Props {
@@ -97,7 +97,7 @@ export default function ResponsiveTourList({
   return (
     <FlashList
       key={listKey}
-      style={{ flex: 1 }}
+      contentContainerStyle={{ flex: 1 }}
       estimatedListSize={{ width, height }}
       data={data}
       numColumns={numColumns}

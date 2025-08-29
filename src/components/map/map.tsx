@@ -1,24 +1,22 @@
 // Map.tsx
-import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
-import {
-  View,
-  StyleSheet,
-  StatusBar as RNStatusBar,
-  Linking,
-} from "react-native";
+import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
+import useUserLocation from "@/src/hooks/useUserLocation";
+import { TourPoint } from "@/src/types/tourPoint";
+import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  Platform,
+  StatusBar as RNStatusBar,
+  StyleSheet,
+  View,
+} from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import { Text } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import useUserLocation from "@/src/hooks/useUserLocation";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Header from "../Header";
 import TourBottomSheet from "../tour/TourBottomSheet";
 import { getMarkerIcon } from "../tour/getMarkerIconByCategory";
-import { Platform } from "react-native";
-import useAnnounceForAccessibility from "@/src/hooks/useAnnounceForAccessibility";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { TourPoint } from "@/src/types/tourPoint";
 
 interface MapProps {
   title: string;
@@ -96,12 +94,8 @@ export default function Map({ title, points }: MapProps) {
 
   return (
     <View style={styles.container}>
-      <ExpoStatusBar style="dark" translucent backgroundColor="transparent" />
-      <RNStatusBar
-        barStyle="dark-content"
-        translucent
-        backgroundColor="transparent"
-      />
+      <ExpoStatusBar style="dark" translucent />
+      <RNStatusBar barStyle="dark-content" translucent />
       {showMainHeader && (
         <View style={styles.headerContainer}>
           <Header
