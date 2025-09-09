@@ -6,7 +6,6 @@
     "version": "1.0.0",
     "orientation": "default",
     "icon": "./src/assets/logo/logo-v1.png",
-     "projectId": "07c32880-29b5-46df-9b6a-ff0822632599",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
