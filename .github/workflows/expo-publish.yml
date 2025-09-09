@@ -2,7 +2,7 @@ name: Expo Publish (EAS Update)
 
 on:
   push:
-    branches: [ dev, main, 'feature/**' ]
+    branches: [dev, main, "feature/**"]
   workflow_dispatch:
 
 jobs:
@@ -12,17 +12,20 @@ jobs:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       CI: true
 
-
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 20 }
+        with:
+          node-version: 20
 
       - name: Install deps
         run: npm ci
 
-      - name: Debug: print Expo config
+      - name: Install EAS CLI
+        run: npm i -g eas-cli
+
+      - name: Debug – Expo config
         run: npx expo config --json
 
       - name: EAS Update (branch=preview)
-        run: npx --yes eas-cli@latest update --branch preview --auto --non-interactive --message "${{ github.sha }}"
+        run: eas update --branch preview --auto --non-interactive --message "${{ github.sha }}"
