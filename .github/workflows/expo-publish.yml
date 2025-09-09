@@ -1,4 +1,5 @@
-name: EAS Update
+name: Expo Publish (EAS Update)
+
 on:
   push:
     branches: [ dev, main, 'feature/**' ]
@@ -15,9 +16,10 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
       - run: npm ci
-      - name: Expo login
-        run: npx expo login --non-interactive -t "$EXPO_TOKEN"
-      - name: Print config (debug)
+
+      # (nebūtina login'o)
+      - name: Debug – parodyk Expo config
         run: npx expo config --json
+
       - name: EAS Update
         run: npx eas update --branch preview --auto --non-interactive --message "${{ github.sha }}"
