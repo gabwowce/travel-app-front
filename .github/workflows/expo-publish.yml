@@ -11,15 +11,18 @@ jobs:
     env:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       CI: true
+
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
-      - run: npm ci
 
-      # (nebūtina login'o)
-      - name: Debug – parodyk Expo config
+      - name: Install deps
+        run: npm ci
+
+      - name: Debug: print Expo config
         run: npx expo config --json
 
-      - name: EAS Update
-        run: npx eas update --branch preview --auto --non-interactive --message "${{ github.sha }}"
+      - name: EAS Update (branch=preview)
+        run: npx --yes eas-cli@latest update --branch preview --auto --non-interactive --message "${{ github.sha }}"
