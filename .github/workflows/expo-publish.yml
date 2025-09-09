@@ -1,24 +1,13 @@
-name: Expo Publish (EAS Update)
+- uses: actions/setup-node@v4
+  with: { node-version: 20 }
+- run: npm ci
+- name: Expo login
+  run: npx expo login --non-interactive -t "$EXPO_TOKEN"
+  env: { EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }} }
 
-on:
-  push:
-    branches: [feature/rtk-query-refactor]
-  workflow_dispatch:
+# diagnostikai – pamatysi ar Project ID matosi
+- name: Print Expo config
+  run: npx expo config --json
 
-jobs:
-  publish:
-    runs-on: ubuntu-latest
-
-    env:
-      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - run: npm install --global expo eas-cli
-
-      # Įdiegia tavo priklausomybes (įskaitant expo-router)
-      - run: npm ci
-
-      # Publikuoja preview šakai (gausi QR kodą)
-      - run: eas update --branch preview --auto --non-interactive
+- name: EAS Update
+  run: npx eas update --branch preview --auto --non-interactive --message "${{ github.sha }}"
