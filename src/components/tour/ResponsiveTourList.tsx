@@ -1,5 +1,5 @@
 import MiniTourCard from "@/src/components/MiniTourCard";
-import FilterChips from "@/src/components/ui/FilterChips";
+import FilterChips from "@/src/components/filters/FilterChips";
 import { FlashList } from "@shopify/flash-list";
 import {
   Box,
