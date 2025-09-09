@@ -8,19 +8,15 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     env:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       CI: true
       NODE_OPTIONS: --max_old_space_size=4096
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
@@ -29,13 +25,18 @@ jobs:
       - name: Install deps
         run: npm ci
 
-      - name: Debug – Expo config
+      - name: Show Expo config (resolved)
         run: |
           npx expo --version
-          npx expo config --json | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const j=JSON.parse(s);console.log('owner:', j.owner);console.log('slug:', j.slug);console.log('extra.eas.projectId:', j.extra?.eas?.projectId || '(missing)');});"
-
-      - name: Verify EAS project link
-        run: npx --yes eas-cli@latest project:info
+          npx expo config --json | node -e "
+            let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{
+              const j=JSON.parse(s);
+              console.log('owner:', j.owner);
+              console.log('slug:', j.slug);
+              console.log('extra.eas.projectId:', j.extra?.eas?.projectId || '(MISSING)');
+              if(!j.extra?.eas?.projectId){ process.exit(2); }
+            });
+          "
 
       - name: Compute EAS branch
         run: |
