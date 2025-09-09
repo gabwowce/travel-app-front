@@ -1,13 +1,25 @@
-- uses: actions/setup-node@v4
-  with: { node-version: 20 }
-- run: npm ci
-- name: Expo login
-  run: npx expo login --non-interactive -t "$EXPO_TOKEN"
-  env: { EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }} }
+name: Expo Publish (EAS Update)
 
-# diagnostikai – pamatysi ar Project ID matosi
-- name: Print Expo config
-  run: npx expo config --json
+on:
+  push:
+    branches:
+      - dev
+      - main
+      - 'feature/**'
+  workflow_dispatch:
 
-- name: EAS Update
-  run: npx eas update --branch preview --auto --non-interactive --message "${{ github.sha }}"
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm ci
+      - name: Expo login
+        run: npx expo login --non-interactive -t "$EXPO_TOKEN"
+        env: { EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }} }
+      - name: Print config
+        run: npx expo config --json
+      - name: EAS Update
+        run: npx eas update --branch preview --auto --non-interactive --message "${{ github.sha }}"
