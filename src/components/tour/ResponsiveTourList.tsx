@@ -1,4 +1,5 @@
 import MiniTourCard from "@/src/components/MiniTourCard";
+import FilterChips from "@/src/components/ui/FilterChips";
 import { FlashList } from "@shopify/flash-list";
 import {
   Box,
@@ -14,7 +15,6 @@ import {
   NativeSyntheticEvent,
   useWindowDimensions,
 } from "react-native";
-import FilterChips from "../filters/FilterChips";
 import { ColumnItem } from "../getItemStyle";
 
 interface Props {
