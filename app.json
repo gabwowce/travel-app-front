@@ -91,7 +91,14 @@
       },
       "eas": {
         "projectId": "7f5aa1f4-1b7e-43af-a058-355be731db3e"
-      }
+      },
+      "apiBaseUrl": "https://travelapp.prus.dev",
+      "splashMinMs": 3000,
+      "availableLanguages": [
+        "lt",
+        "en",
+        "de"
+      ]
     },
     "owner": "gabwowce"
   }
