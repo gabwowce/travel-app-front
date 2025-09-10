@@ -1,105 +1,105 @@
 {
-  "expo": {
-    "name": "Elatray",
-    "slug": "elatray",
-    "runtimeVersion": "1.0.0",
-    "version": "1.0.0",
-    "orientation": "default",
-    "icon": "./src/assets/logo/logo-v1.png",
-    "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "plugins": [
-      "expo-router",
-      "expo-splash-screen",
-      "./plugins/android-uses-feature-plugin.js",
-      "./plugins/android-resizable-activity-plugin.js",
-      "expo-secure-store"
-    ],
-    "experimental": {
-      "plugins": {
-        "reactNative": {
-          "bridgeless": false
-        }
-      }
-    },
-    "androidStatusBar": {
-      "backgroundColor": "#00000000",
-      "translucent": true,
-      "barStyle": "dark-content"
-    },
-    "ios": {
-      "supportsTablet": true,
-      "config": {
-        "googleMapsApiKey": "AIzaSyAE9WjsB1kYDc_3tRQFgqeuuLWEz0VSA9E"
-      }
-    },
-    "infoPlist": {
-      "UIStatusBarStyle": "UIStatusBarStyleLightContent",
-      "UIViewControllerBasedStatusBarAppearance": false
-    },
-    "android": {
-      "permissions": [
-        "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION",
-        "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION"
-      ],
-      "adaptiveIcon": {
-        "foregroundImage": "./src/assets/logo/logo-v1.png",
-        "backgroundColor": "#FFFFFF"
-      },
-      "splash": {
-        "backgroundColor": "#FFFFFF",
-        "image": "./src/assets/images/splashscreen_logo.png",
-        "resizeMode": "contain",
-        "statusBarStyle": "dark"
-      },
-      "android12Splash": {
-        "backgroundColor": "#FFFFFF",
-        "image": "./src/assets/images/splashscreen_logo.png",
-        "resizeMode": "contain"
-      },
-      "config": {
-        "googleMaps": {
-          "apiKey": "AIzaSyAE9WjsB1kYDc_3tRQFgqeuuLWEz0VSA9E"
-        }
-      },
-      "windowLayout": {
-        "mode": "edgeToEdge"
-      },
-      "package": "com.gabwowce.elatray"
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
-    },
-    "splash": {
-      "statusBarStyle": "dark",
-      "backgroundColor": "#FFFFFF",
-      "image": "./src/assets/images/splashscreen_logo.png",
-      "resizeMode": "contain"
-    },
-    "experiments": {
-      "typedRoutes": true
-    },
-    "extra": {
-      "API_URL": "https://travelapp.prus.dev",
-      "router": {
-        "origin": false
-      },
-      "eas": {
-        "projectId": "7f5aa1f4-1b7e-43af-a058-355be731db3e"
-      },
-      "apiBaseUrl": "https://travelapp.prus.dev",
-      "splashMinMs": 3000,
-      "availableLanguages": [
-        "lt",
-        "en",
-        "de"
-      ]
-    },
-    "owner": "gabwowce"
-  }
+    "expo": {
+        "name": "Elatray",
+        "slug": "elatray",
+        "runtimeVersion": "1.0.0",
+        "version": "1.0.0",
+        "orientation": "default",
+        "icon": "./src/assets/logo/logo-v1.png",
+        "scheme": "myapp",
+        "userInterfaceStyle": "automatic",
+        "newArchEnabled": true,
+        "plugins": [
+            "expo-router",
+            "expo-splash-screen",
+            "./plugins/android-uses-feature-plugin.js",
+            "./plugins/android-resizable-activity-plugin.js",
+            "expo-secure-store"
+        ],
+        "experimental": {
+            "plugins": {
+                "reactNative": {
+                    "bridgeless": false
+                }
+            }
+        },
+        "androidStatusBar": {
+            "backgroundColor": "#FFFFFF",
+            "translucent": false,
+            "barStyle": "dark-content"
+        },
+        "ios": {
+            "supportsTablet": true,
+            "config": {
+                "googleMapsApiKey": "AIzaSyAE9WjsB1kYDc_3tRQFgqeuuLWEz0VSA9E"
+            }
+        },
+        "infoPlist": {
+            "UIStatusBarStyle": "UIStatusBarStyleLightContent",
+            "UIViewControllerBasedStatusBarAppearance": false
+        },
+        "android": {
+            "permissions": [
+                "ACCESS_FINE_LOCATION",
+                "ACCESS_COARSE_LOCATION",
+                "ACCESS_FINE_LOCATION",
+                "ACCESS_COARSE_LOCATION"
+            ],
+            "adaptiveIcon": {
+                "foregroundImage": "./src/assets/logo/logo-v1.png",
+                "backgroundColor": "#FFFFFF"
+            },
+            "splash": {
+                "backgroundColor": "#FFFFFF",
+                "image": "./src/assets/images/splashscreen_logo.png",
+                "resizeMode": "contain",
+                "statusBarStyle": "dark"
+            },
+            "android12Splash": {
+                "backgroundColor": "#FFFFFF",
+                "image": "./src/assets/images/splashscreen_logo.png",
+                "resizeMode": "contain"
+            },
+            "config": {
+                "googleMaps": {
+                    "apiKey": "AIzaSyAE9WjsB1kYDc_3tRQFgqeuuLWEz0VSA9E"
+                }
+            },
+            "windowLayout": {
+                "mode": "edgeToEdge"
+            },
+            "package": "com.gabwowce.elatray"
+        },
+        "web": {
+            "bundler": "metro",
+            "output": "static",
+            "favicon": "./assets/images/favicon.png"
+        },
+        "splash": {
+            "statusBarStyle": "dark",
+            "backgroundColor": "#FFFFFF",
+            "image": "./src/assets/images/splashscreen_logo.png",
+            "resizeMode": "contain"
+        },
+        "experiments": {
+            "typedRoutes": true
+        },
+        "extra": {
+            "API_URL": "https://travelapp.prus.dev",
+            "router": {
+                "origin": false
+            },
+            "eas": {
+                "projectId": "7f5aa1f4-1b7e-43af-a058-355be731db3e"
+            },
+            "apiBaseUrl": "https://travelapp.prus.dev",
+            "splashMinMs": 3000,
+            "availableLanguages": [
+                "lt",
+                "en",
+                "de"
+            ]
+        },
+        "owner": "gabwowce"
+    }
 }
