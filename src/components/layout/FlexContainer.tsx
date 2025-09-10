@@ -1,15 +1,14 @@
 // components/layout/FlexContainer.tsx
 
-import React from 'react';
-import { View, ViewStyle } from 'react-native';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
+import React from "react";
+import { View, ViewStyle } from "react-native";
 
 interface FlexContainerProps {
   children: React.ReactNode;
-  direction?: 'row' | 'column';
-  justify?: ViewStyle['justifyContent'];
-  align?: ViewStyle['alignItems'];
-  wrap?: ViewStyle['flexWrap'];
+  direction?: "row" | "column";
+  justify?: ViewStyle["justifyContent"];
+  align?: ViewStyle["alignItems"];
+  wrap?: ViewStyle["flexWrap"];
   gap?: number;
   style?: ViewStyle;
   flex?: number;
@@ -27,20 +26,20 @@ interface FlexContainerProps {
 
 export default function FlexContainer({
   children,
-  direction = 'column',
-  justify = 'flex-start',
-  align = 'stretch',
-  wrap = 'nowrap',
+  direction = "column",
+  justify = "flex-start",
+  align = "stretch",
+  wrap = "nowrap",
   gap = 0,
   style,
   flex = 1,
-  backgroundColor = '#fff',
+  backgroundColor = "#fff",
 
   p,
   px,
   py,
   pt,
-  pb ,
+  pb,
   pl,
   pr,
 }: FlexContainerProps) {
