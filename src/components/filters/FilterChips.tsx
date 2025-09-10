@@ -6,9 +6,8 @@ import {
   useGetCountriesQuery,
 } from "@/src/store/travelApi";
 import { Ionicons } from "@expo/vector-icons";
-import { Box, HStack, Icon, Text } from "native-base";
+import { Badge, Box, HStack, Icon, Pressable, Text } from "native-base";
 import React, { useMemo } from "react";
-import PressableLog from "../PressableLog";
 
 type Props = {
   filters: RouteFilters;
@@ -65,18 +64,12 @@ export default function FilterChips({ filters, onClear }: Props) {
   };
 
   const chips: string[] = [];
-  if (filters.difficulty) {
-    chips.push(`Difficulty: ${filters.difficulty}`);
-  }
-
+  if (filters.difficulty) chips.push(`Difficulty: ${filters.difficulty}`);
   if (filters.categoryId)
     chips.push(`Category: ${categoryName ?? `#${filters.categoryId}`}`);
-
   if (filters.countryId)
     chips.push(`Country: ${countryName ?? `#${filters.countryId}`}`);
-
   if (filters.cityId) chips.push(`City: ${cityName ?? `#${filters.cityId}`}`);
-
   if (filters.minRating != null && filters.minRating > 0)
     chips.push(`Rating ≥ ${filters.minRating}`);
 
@@ -84,43 +77,39 @@ export default function FilterChips({ filters, onClear }: Props) {
   if (distLabel) chips.push(distLabel);
 
   if (filters.search?.trim()) chips.push(`“${filters.search.trim()}”`);
-
   if (!chips.length) return null;
 
   return (
     <Box w="100%" pb={4}>
       <Box flexDirection="row" flexWrap="wrap" alignItems="center">
         {chips.map((chip, idx) => (
-          <PressableLog
-            analyticsLabel={`Active filter: ${chip}`}
+          <Badge
             key={idx}
-            accessibilityRole="text"
-            accessibilityLabel={`Active filter: ${chip}`}
-            bg="primary.100"
+            variant="subtle"
+            colorScheme="primary"
             borderRadius="full"
             px={3}
-            py={1}
+            py={1.5}
             mr={2}
             mb={2}
           >
             <Text fontSize="xs" color="primary.800" noOfLines={1}>
               {chip}
             </Text>
-          </PressableLog>
+          </Badge>
         ))}
 
         {onClear && (
-          <PressableLog
-            analyticsLabel="Clear all filters"
+          <Pressable
             onPress={onClear}
             accessibilityRole="button"
             accessibilityLabel="Clear all filters"
-            bg="primary.100"
             borderRadius="full"
             px={3}
-            py={1}
+            py={1.5}
             mr={2}
             mb={2}
+            bg="primary.100"
             _pressed={{ opacity: 0.85 }}
           >
             <HStack alignItems="center" space={1}>
@@ -134,7 +123,7 @@ export default function FilterChips({ filters, onClear }: Props) {
                 Clear all filters
               </Text>
             </HStack>
-          </PressableLog>
+          </Pressable>
         )}
       </Box>
     </Box>

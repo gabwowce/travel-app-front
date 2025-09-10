@@ -85,7 +85,7 @@ export default function FiltersModal() {
 
   return (
     <>
-      <StatusBar style="dark" translucent />
+      <StatusBar style="dark" />
       <SafeAreaView
         style={{ flex: 1, backgroundColor: "#fff" }}
         edges={["bottom", "right", "left"]}

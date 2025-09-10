@@ -2,6 +2,8 @@ import { Platform } from "react-native";
 import BackButton from "./BackButton";
 
 export const defaultHeaderOptions = {
+  headerTransparent: false,
+  statusBarTranslucent: false,
   headerStyle: { backgroundColor: "#FFFCF9" },
   headerTitleStyle: { fontWeight: "bold", fontSize: 18 },
   headerBackTitleVisible: false,

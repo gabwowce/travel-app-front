@@ -19,6 +19,10 @@ import { NativeBaseProvider } from "native-base";
 import React, { useEffect, useRef } from "react";
 import { BackHandler, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import {
+  SafeAreaProvider,
+  initialWindowMetrics,
+} from "react-native-safe-area-context";
 import { Provider as ReduxProvider } from "react-redux";
 
 if (__DEV__) {
@@ -63,21 +67,23 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ReduxProvider store={store}>
         <NativeBaseProvider theme={theme}>
-          <BottomSheetModalProvider>
-            {!ready ? (
-              <SplashScreen />
-            ) : error ? (
-              <ErrorScreen message={error} />
-            ) : (
-              <>
-                <StatusBar style="dark" translucent />
-                <View style={{ flex: 1 }}>
-                  <Slot />
-                  <BusyOverlay />
-                </View>
-              </>
-            )}
-          </BottomSheetModalProvider>
+          <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+            <BottomSheetModalProvider>
+              {!ready ? (
+                <SplashScreen />
+              ) : error ? (
+                <ErrorScreen message={error} />
+              ) : (
+                <>
+                  <StatusBar style="dark" />
+                  <View style={{ flex: 1 }}>
+                    <Slot />
+                    <BusyOverlay />
+                  </View>
+                </>
+              )}
+            </BottomSheetModalProvider>
+          </SafeAreaProvider>
         </NativeBaseProvider>
       </ReduxProvider>
     </GestureHandlerRootView>

@@ -94,8 +94,8 @@ export default function Map({ title, points }: MapProps) {
 
   return (
     <View style={styles.container}>
-      <ExpoStatusBar style="dark" translucent />
-      <RNStatusBar barStyle="dark-content" translucent />
+      <ExpoStatusBar style="dark" />
+      <RNStatusBar barStyle="dark-content" />
       {showMainHeader && (
         <View style={styles.headerContainer}>
           <Header

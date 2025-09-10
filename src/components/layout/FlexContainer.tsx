@@ -1,8 +1,7 @@
 // components/layout/FlexContainer.tsx
 
 import React from "react";
-import { ViewStyle } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { View, ViewStyle } from "react-native";
 
 interface FlexContainerProps {
   children: React.ReactNode;
@@ -55,7 +54,7 @@ export default function FlexContainer({
   };
 
   return (
-    <SafeAreaView
+    <View
       style={[
         {
           flexDirection: direction,
@@ -71,6 +70,6 @@ export default function FlexContainer({
       ]}
     >
       {children}
-    </SafeAreaView>
+    </View>
   );
 }
