@@ -10,8 +10,10 @@
         "userInterfaceStyle": "automatic",
         "newArchEnabled": true,
         "plugins": [
-            "expo-router",
-            "expo-splash-screen",
+            "expo-router", ["expo-splash-screen", {
+                "statusBarTranslucent": false,
+                "android": { "statusBarTranslucent": false }
+            }],
             "./plugins/android-uses-feature-plugin.js",
             "./plugins/android-resizable-activity-plugin.js",
             "expo-secure-store"
@@ -24,7 +26,7 @@
             }
         },
         "androidStatusBar": {
-            "backgroundColor": "#FFFFFF",
+            "backgroundColor": "#FFFCF9",
             "translucent": false,
             "barStyle": "dark-content"
         },

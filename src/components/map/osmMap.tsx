@@ -164,8 +164,12 @@ export default function OSMMap({ title }: OSMMapProps) {
     <View style={styles.container}>
       {Platform.OS === "ios" ? (
         <>
-          <ExpoStatusBar style={webViewUrl ? "dark" : "light"} />
+          <ExpoStatusBar
+            style={webViewUrl ? "dark" : "light"}
+            translucent={false}
+          />
           <RNStatusBar
+            translucent={false}
             barStyle={webViewUrl ? "dark-content" : "light-content"}
           />
           {webViewUrl ? (

@@ -90,8 +90,8 @@ export default function GoogleMap({ title }: MapProps) {
 
   return (
     <View style={styles.container}>
-      <ExpoStatusBar style="light" />
-      <RNStatusBar barStyle="light-content" />
+      <ExpoStatusBar style="light" translucent={false} />
+      <RNStatusBar barStyle="light-content" translucent={false} />
 
       <MapView
         provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined} // Google Maps tik Android

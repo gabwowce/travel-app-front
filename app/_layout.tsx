@@ -75,7 +75,7 @@ export default function RootLayout() {
                 <ErrorScreen message={error} />
               ) : (
                 <>
-                  <StatusBar style="dark" />
+                  <StatusBar style="dark" translucent={false} />
                   <View style={{ flex: 1 }}>
                     <Slot />
                     <BusyOverlay />
