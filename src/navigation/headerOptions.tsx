@@ -5,7 +5,6 @@ export const defaultHeaderOptions = {
   headerStyle: { backgroundColor: "#FFFCF9" },
   headerTitleStyle: { fontWeight: "bold", fontSize: 18 },
   headerBackTitleVisible: false,
-  statusBarTranslucent: false,
   headerLeft: () => (
     <BackButton
       style={{
